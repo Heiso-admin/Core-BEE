@@ -1,0 +1,195 @@
+{
+  "roleSelect": {
+    "title": "Please select your role to enter the system",
+    "dashboard": {
+      "title": "Dashboard Portal",
+      "description": "Site Management, Menu, Article Management, Form Management"
+    },
+    "admin": {
+      "title": "System Admin Portal",
+      "description": "User Management, System Configuration, Reports"
+    }
+  },
+  "2stepLogin": {
+    "title": "Login",
+    "description": {
+      "step1": "Enter your email to get started.",
+      "step2": "Welcome back, {email}"
+    },
+    "email": {
+      "label": "Email",
+      "placeholder": "Enter your email",
+      "error": "No account found with this email address."
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "Enter your password",
+      "error": "Incorrect password. Please try again."
+    },
+    "submit": {
+      "next": "Next",
+      "login": "Login",
+      "loading": {
+        "step1": "Please wait",
+        "step2": "Logging in..."
+      }
+    },
+    "actions": {
+      "forgotPassword": "Forgot password?",
+      "signup": "Sign up"
+    }
+  },
+  "2fa": {
+    "title": "Two-factor Authentication",
+    "description": "Please enter the authentication code. We have sent the authentication code to your email.",
+    "submit": "Verify",
+    "resend": "Haven't received it? Resend a new code."
+  },
+  "emailVerification": {
+    "title": "Verify Your Email",
+    "description": "We've sent a verification code to {email}",
+    "input": {
+      "placeholder": "Enter verification code"
+    },
+    "error": {
+      "title": "Error",
+      "invalid": "Invalid verification code. Please try again."
+    },
+    "submit": {
+      "verifying": "Verifying...",
+      "verify": "Verify Email"
+    },
+    "actions": {
+      "resending": "Resending...",
+      "resend": "Resend Code",
+      "change": "Change Email"
+    },
+    "spamNotice": "Check your spam folder if you don't see the email",
+    "success": {
+      "title": "Email Verified!",
+      "description": "Your email has been successfully verified. You can now proceed to your account.",
+      "action": "Continue to Account"
+    }
+  },
+  "changePassword": {
+    "title": "Change Password",
+    "description": "Enter your new password below. Make sure it's strong and unique.",
+    "password": {
+      "label": "New Password",
+      "confirm": "Confirm New Password",
+      "strength": {
+        "label": "Password strength: ",
+        "weak": "Weak",
+        "fair": "Fair",
+        "good": "Good",
+        "strong": "Strong"
+      }
+    },
+    "error": {
+      "title": "Error",
+      "mismatch": "Passwords do not match.",
+      "weak": "Please choose a stronger password.",
+      "generic": "An error occurred. Please try again later."
+    },
+    "submit": {
+      "default": "Change Password",
+      "loading": "Changing Password..."
+    },
+    "success": {
+      "title": "Password Changed Successful",
+      "description": "Your password has been successfully changed. You can now log in with your new password.",
+      "action": "Go to Dashboard"
+    },
+    "cancel": "Cancel and return to login"
+  },
+  "resetPassword": {
+    "title": "Reset Password",
+    "description": "Enter your new password below. Make sure it's strong and unique.",
+    "password": {
+      "label": "New Password",
+      "confirm": "Confirm New Password",
+      "strength": {
+        "label": "Password strength: ",
+        "weak": "Weak",
+        "fair": "Fair",
+        "good": "Good",
+        "strong": "Strong"
+      }
+    },
+    "error": {
+      "title": "Error",
+      "mismatch": "Passwords do not match.",
+      "weak": "Please choose a stronger password.",
+      "generic": "An error occurred. Please try again later."
+    },
+    "submit": {
+      "default": "Reset Password",
+      "loading": "Resetting Password..."
+    },
+    "success": {
+      "title": "Password Reset Successful",
+      "description": "Your password has been successfully reset. You can now log in with your new password.",
+      "action": "Go to Login"
+    },
+    "cancel": "Cancel and return to login"
+  },
+  "signup": {
+    "title": "Create an account",
+    "name": {
+      "label": "Name",
+      "placeholder": "Your Name",
+      "error": "Name is required"
+    },
+    "email": {
+      "label": "Email address",
+      "placeholder": "Your Email address",
+      "error": "Please enter a valid email address"
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "Your Password",
+      "error": "Password must be at least 6 characters"
+    },
+    "submit": "Create an account",
+    "error": "Something went wrong"
+  },
+  "login": {
+    "title": "Sign In",
+    "email": {
+      "label": "Email address",
+      "placeholder": "Email address",
+      "error": "Invalid email address"
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "Password",
+      "error": "Password must be at least 6 characters",
+      "forgot": "Forgot your password?"
+    },
+    "submit": "Sign In",
+    "error": "Invalid email or password"
+  },
+  "forgotPassword": {
+    "title": "Forgot Password",
+    "description": "Enter your email address and we'll send you a link to reset your password.",
+    "email": {
+      "label": "Email",
+      "placeholder": "Enter your email address"
+    },
+    "error": {
+      "title": "Error",
+      "invalidEmail": "Please enter a valid email address.",
+      "generic": "An error occurred. Please try again later."
+    },
+    "submit": {
+      "default": "Send Reset Link",
+      "loading": "Sending Reset Link..."
+    },
+    "success": {
+      "title": "Check Your Email",
+      "description": "We've sent a password reset link to {email}. Please check your inbox and follow the instructions to reset your password."
+    },
+    "backToLogin": "Back to Login",
+    "returnToLogin": "Return to Login"
+  }
+}

@@ -1,0 +1,195 @@
+{
+  "roleSelect": {
+    "title": "請選擇您的角色以進入系統",
+    "dashboard": {
+      "title": "儀表板入口",
+      "description": "網站管理、選單、文章管理、表單管理"
+    },
+    "admin": {
+      "title": "系統管理入口",
+      "description": "用戶管理、系統配置、報表"
+    }
+  },
+  "2stepLogin": {
+    "title": "登入",
+    "description": {
+      "step1": "請輸入您的電子郵件以開始。",
+      "step2": "歡迎回來，{email}"
+    },
+    "email": {
+      "label": "電子郵件",
+      "placeholder": "請輸入您的電子郵件",
+      "error": "找不到使用此電子郵件的帳號。"
+    },
+    "password": {
+      "label": "密碼",
+      "placeholder": "請輸入您的密碼",
+      "error": "密碼錯誤，請重試。"
+    },
+    "submit": {
+      "next": "下一步",
+      "login": "登入",
+      "loading": {
+        "step1": "請稍候",
+        "step2": "登入中..."
+      }
+    },
+    "actions": {
+      "forgotPassword": "忘記密碼？",
+      "signup": "註冊"
+    }
+  },
+  "2fa": {
+    "title": "雙重認證",
+    "description": "請輸入認證碼。我們已將認證碼發送至您的電子郵件。",
+    "submit": "驗證",
+    "resend": "沒有收到？重新發送新的驗證碼。"
+  },
+  "emailVerification": {
+    "title": "驗證您的電子郵件",
+    "description": "我們已發送驗證碼至 {email}",
+    "input": {
+      "placeholder": "請輸入驗證碼"
+    },
+    "error": {
+      "title": "錯誤",
+      "invalid": "驗證碼無效，請重試。"
+    },
+    "submit": {
+      "verifying": "驗證中...",
+      "verify": "驗證電子郵件"
+    },
+    "actions": {
+      "resending": "重新發送中...",
+      "resend": "重新發送驗證碼",
+      "change": "更改電子郵件"
+    },
+    "spamNotice": "如果沒有收到郵件，請檢查垃圾郵件資料夾",
+    "success": {
+      "title": "電子郵件驗證成功！",
+      "description": "您的電子郵件已成功驗證。現在可以進入您的帳戶。",
+      "action": "前往帳戶"
+    }
+  },
+  "changePassword": {
+    "title": "更換密碼",
+    "description": "請在下方輸入您的新密碼。請確保密碼夠強且獨特。",
+    "password": {
+      "label": "新密碼",
+      "confirm": "確認新密碼",
+      "strength": {
+        "label": "密碼強度：",
+        "weak": "弱",
+        "fair": "一般",
+        "good": "良好",
+        "strong": "強"
+      }
+    },
+    "error": {
+      "title": "錯誤",
+      "mismatch": "密碼不相符。",
+      "weak": "請選擇更強的密碼。",
+      "generic": "發生錯誤，請稍後再試。"
+    },
+    "submit": {
+      "default": "更換密碼",
+      "loading": "正在更換密碼..."
+    },
+    "success": {
+      "title": "密碼更換成功",
+      "description": "您的密碼已成功更換。現在可以使用新密碼登入。",
+      "action": "前往儀表板"
+    },
+    "cancel": "取消並返回登入"
+  },
+  "resetPassword": {
+    "title": "重設密碼",
+    "description": "請在下方輸入您的新密碼。請確保密碼夠強且獨特。",
+    "password": {
+      "label": "新密碼",
+      "confirm": "確認新密碼",
+      "strength": {
+        "label": "密碼強度：",
+        "weak": "弱",
+        "fair": "一般",
+        "good": "良好",
+        "strong": "強"
+      }
+    },
+    "error": {
+      "title": "錯誤",
+      "mismatch": "密碼不相符。",
+      "weak": "請選擇更強的密碼。",
+      "generic": "發生錯誤，請稍後再試。"
+    },
+    "submit": {
+      "default": "重設密碼",
+      "loading": "正在重設密碼..."
+    },
+    "success": {
+      "title": "密碼重設成功",
+      "description": "您的密碼已成功重設。現在可以使用新密碼登入。",
+      "action": "前往登入"
+    },
+    "cancel": "取消並返回登入"
+  },
+  "signup": {
+    "title": "建立帳號",
+    "name": {
+      "label": "姓名",
+      "placeholder": "請輸入您的姓名",
+      "error": "請輸入姓名"
+    },
+    "email": {
+      "label": "電子郵件地址",
+      "placeholder": "請輸入您的電子郵件地址",
+      "error": "請輸入有效的電子郵件地址"
+    },
+    "password": {
+      "label": "密碼",
+      "placeholder": "請輸入您的密碼",
+      "error": "密碼長度必須至少為 6 個字元"
+    },
+    "submit": "建立帳號",
+    "error": "發生錯誤，請稍後再試"
+  },
+  "login": {
+    "title": "登入",
+    "email": {
+      "label": "電子郵件地址",
+      "placeholder": "請輸入電子郵件地址",
+      "error": "無效的電子郵件地址"
+    },
+    "password": {
+      "label": "密碼",
+      "placeholder": "請輸入密碼",
+      "error": "密碼長度必須至少為 6 個字元",
+      "forgot": "忘記密碼？"
+    },
+    "submit": "登入",
+    "error": "電子郵件或密碼錯誤"
+  },
+  "forgotPassword": {
+    "title": "忘記密碼",
+    "description": "請輸入您的電子郵件地址，我們將發送重設密碼連結給您。",
+    "email": {
+      "label": "電子郵件",
+      "placeholder": "請輸入您的電子郵件地址"
+    },
+    "error": {
+      "title": "錯誤",
+      "invalidEmail": "請輸入有效的電子郵件地址。",
+      "generic": "發生錯誤，請稍後再試。"
+    },
+    "submit": {
+      "default": "發送重設連結",
+      "loading": "正在發送重設連結..."
+    },
+    "success": {
+      "title": "請查看您的電子郵件",
+      "description": "我們已將重設密碼連結發送至 {email}。請查看您的收件匣並按照指示重設密碼。"
+    },
+    "backToLogin": "返回登入",
+    "returnToLogin": "返回登入頁面"
+  }
+}

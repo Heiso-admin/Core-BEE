@@ -18,5 +18,8 @@
     "lib": "@/lib",
     "hooks": "@/hooks"
   },
-  "registries": {}
+  "registries": {
+    "@codists": "https://registry.codists.space/r/{name}.json",
+    "@codists_local": "http://localhost:3001/r/{name}.json"
+  }
 }
