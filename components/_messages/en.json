@@ -1,0 +1,19 @@
+{
+  "sidebarNavList": {
+    "add": "Add",
+    "edit":"Edit",
+    "remove": "Remove"
+  },
+  "pagination": {
+    "showingItems": "Showing {start}-{end} of {total}",
+    "rows":"Rows per page:"
+  },
+  "block": {
+    "found": "Article Not Found",
+    "noFilledText": "This is the content body preview area.\n Please check the display effects of paragraphs, image spacing, link colors, and other formatted components.",
+    "noFilledTitle": "Title Not Set",
+    "web":"Web Content",
+    "mobile":"Mobile Content",
+    "edit": "Edit"
+  }
+}

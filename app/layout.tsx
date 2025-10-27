@@ -20,8 +20,8 @@ const ptSans = PT_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Mini CMS',
-  description: 'Mini CMS is a minimalistic CMS.',
+  title: 'Sunlife',
+  description: 'Sunlife dashboard.',
 };
 
 export default async function RootLayout({

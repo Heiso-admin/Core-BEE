@@ -10,18 +10,6 @@ export async function getDashboardMessages(locale: Locale) {
     )
   ).default;
 
-  const article = (
-    await import(`../(dashboard)/(features)/article/_messages/${locale}.json`)
-  ).default;
-
-  const pages = (
-    await import(`../(dashboard)/(features)/pages/_messages/${locale}.json`)
-  ).default;
-
-  const faq = (
-    await import(`../(dashboard)/(features)/faq/_messages/${locale}.json`)
-  ).default;
-
   const permission = (
     await import(`../(dashboard)/(permission)/_messages/${locale}.json`)
   ).default;
@@ -33,9 +21,6 @@ export async function getDashboardMessages(locale: Locale) {
   return {
     ...dashboard,
     navigation,
-    article,
-    pages,
-    faq,
     permission,
     settings,
   };
