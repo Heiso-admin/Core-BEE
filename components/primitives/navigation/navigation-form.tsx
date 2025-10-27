@@ -8,12 +8,12 @@ import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import { getCategoryList } from "@/app/dashboard/(dashboard)/(features)/article/_server/category.service";
-import { getPostList } from "@/app/dashboard/(dashboard)/(features)/article/_server/post.service";
-import {
-  getCategories,
-  getPages,
-} from "@/app/dashboard/(dashboard)/(features)/pages/_server/pages.service";
+// import { getCategoryList } from "@/app/dashboard/(dashboard)/(features)/article/_server/category.service";
+// import { getPostList } from "@/app/dashboard/(dashboard)/(features)/article/_server/post.service";
+// import {
+//   getCategories,
+//   getPages,
+// } from "@/app/dashboard/(dashboard)/(features)/pages/_server/pages.service";
 import { ActionButton } from "@/components/primitives";
 import { Button } from "@/components/ui/button";
 import {
@@ -99,18 +99,18 @@ export function NavigationForm({
   onCancel,
   navigationItems,
 }: NavigationFormProps) {
-  const t = useTranslations("dashboard.navigation.navigation-manager");
+  const t = useTranslations('dashboard.navigation.navigation-manager');
   const { uploadFile, isUploading } = useUploadFile();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: item?.title ?? "",
-      slug: item?.slug ?? "",
-      subTitle: item?.subTitle ?? "",
-      parentItem: item?.parentId ?? "null",
-      linkType: item?.linkType ?? "none",
-      linkCategory: item?.link.split("/")[0] ?? "",
-      linkItem: item?.link.split("/")[1] ?? "",
+      title: item?.title ?? '',
+      slug: item?.slug ?? '',
+      subTitle: item?.subTitle ?? '',
+      parentItem: item?.parentId ?? 'null',
+      linkType: item?.linkType ?? 'none',
+      linkCategory: item?.link.split('/')[0] ?? '',
+      linkItem: item?.link.split('/')[1] ?? '',
       icon: item?.icon,
     },
   });
@@ -133,54 +133,54 @@ export function NavigationForm({
     Array<{ id: string; title: string; slug: string }>
   >([]);
 
-  useEffect(() => {
-    getCategories().then((categories) => {
-      setPageCategories(categories);
-    });
-    getCategoryList().then(setArticleCategories);
-  }, []);
+  // useEffect(() => {
+  //   getCategories().then((categories) => {
+  //     setPageCategories(categories);
+  //   });
+  //   getCategoryList().then(setArticleCategories);
+  // }, []);
 
   const linkType = useWatch({
     control: form.control,
-    name: "linkType",
+    name: 'linkType',
   });
 
   const linkCategory = useWatch({
     control: form.control,
-    name: "linkCategory",
+    name: 'linkCategory',
   });
 
   useEffect(() => {
-    if (linkType === "page") {
+    if (linkType === 'page') {
       const categoryId = linkCategory;
       if (categoryId) {
-        getPages({ categoryId }).then((result) => {
-          if (result?.pages) {
-            setPages(
-              result.pages.map((page) => ({
-                id: page.id,
-                title: page.title || "",
-              })),
-            );
-          }
-        });
+        // getPages({ categoryId }).then((result) => {
+        //   if (result?.pages) {
+        //     setPages(
+        //       result.pages.map((page) => ({
+        //         id: page.id,
+        //         title: page.title || "",
+        //       })),
+        //     );
+        //   }
+        // });
       } else {
         setPages([]);
       }
-    } else if (linkType === "article") {
+    } else if (linkType === 'article') {
       const categoryId = linkCategory;
       if (categoryId) {
-        getPostList({ categoryId, start: 0, limit: 100 }).then((result) => {
-          if (result?.data) {
-            setArticles(
-              result.data.map((post) => ({
-                id: post.id,
-                title: post.title || "",
-                slug: post.slug,
-              })),
-            );
-          }
-        });
+        // getPostList({ categoryId, start: 0, limit: 100 }).then((result) => {
+        //   if (result?.data) {
+        //     setArticles(
+        //       result.data.map((post) => ({
+        //         id: post.id,
+        //         title: post.title || "",
+        //         slug: post.slug,
+        //       })),
+        //     );
+        //   }
+        // });
       } else {
         setArticles([]);
       }
@@ -188,22 +188,22 @@ export function NavigationForm({
   }, [linkType, linkCategory]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    let finalLink = "";
+    let finalLink = '';
     if (
-      (values.linkType === "page" || values.linkType === "article") &&
+      (values.linkType === 'page' || values.linkType === 'article') &&
       values.linkCategory &&
       values.linkItem
     ) {
       finalLink = `${values.linkCategory}/${values.linkItem}`;
-    } else if (values.linkType === "link") {
-      finalLink = values.linkItem || "";
+    } else if (values.linkType === 'link') {
+      finalLink = values.linkItem || '';
     }
 
-    const dataToSave: Partial<Omit<NavigationItem, "id">> = {
+    const dataToSave: Partial<Omit<NavigationItem, 'id'>> = {
       title: values.title.trim(),
       slug: values.slug.trim(),
-      subTitle: values.subTitle.trim() ?? "",
-      parentId: values.parentItem === "null" ? null : values.parentItem,
+      subTitle: values.subTitle.trim() ?? '',
+      parentId: values.parentItem === 'null' ? null : values.parentItem,
       linkType: values.linkType,
       link: finalLink,
       icon: values.icon,
@@ -212,13 +212,13 @@ export function NavigationForm({
     // 檢查 icon 欄位是否是一個新的 File 物件
     if (values.icon instanceof File) {
       try {
-        toast.info("Uploading icon...");
+        toast.info('Uploading icon...');
         const uploadedFile = await uploadFile(values.icon);
 
         dataToSave.icon = uploadedFile.url;
-        toast.success("Icon uploaded successfully!");
+        toast.success('Icon uploaded successfully!');
       } catch (error) {
-        toast.error("Icon upload failed");
+        toast.error('Icon upload failed');
         console.error(error);
         return;
       }
@@ -237,10 +237,10 @@ export function NavigationForm({
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel required>{t("titleItem")}</FormLabel>
+              <FormLabel>{t('titleItem')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t("enterTitle")}
+                  placeholder={t('enterTitle')}
                   className="w-full"
                   {...field}
                 />
@@ -254,10 +254,10 @@ export function NavigationForm({
           name="subTitle"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("subtitleItem")}</FormLabel>
+              <FormLabel>{t('subtitleItem')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t("enterSubtitle")}
+                  placeholder={t('enterSubtitle')}
                   className="w-full"
                   {...field}
                 />
@@ -272,7 +272,7 @@ export function NavigationForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel onClick={() => console.log(item)}>
-                {t("parentItem.title")}
+                {t('parentItem.title')}
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -283,8 +283,8 @@ export function NavigationForm({
                     </TooltipTrigger>
                     <TooltipContent className="whitespace-pre-line">
                       {item?.children && item.children.length > 0
-                        ? t("parentItem.note.cannotMove")
-                        : t("parentItem.note.canSelectParent")}
+                        ? t('parentItem.note.cannotMove')
+                        : t('parentItem.note.canSelectParent')}
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -299,11 +299,11 @@ export function NavigationForm({
                   disabled={item?.children && item.children.length > 0}
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t("parentItem.note.text")} />
+                    <SelectValue placeholder={t('parentItem.note.text')} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="null">
-                      {t("parentItem.note.none")}
+                      {t('parentItem.note.none')}
                     </SelectItem>
                     {navigationItems?.map((nav) => (
                       <SelectItem
@@ -326,14 +326,14 @@ export function NavigationForm({
           name="linkType"
           render={({ field }) => (
             <FormItem>
-              <FormLabel required>{t("linkItem")}</FormLabel>
+              <FormLabel>{t('linkItem')}</FormLabel>
               <FormControl>
                 <Select
                   value={field.value}
                   onValueChange={(value) => {
                     // 每次切換 linkType 時，清空 link 的值
-                    form.setValue("linkCategory", "");
-                    form.setValue("linkItem", "");
+                    form.setValue('linkCategory', '');
+                    form.setValue('linkItem', '');
                     field.onChange(`${value}`);
                   }}
                 >
@@ -341,10 +341,10 @@ export function NavigationForm({
                     <SelectValue placeholder="Select link type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">{t("typeNone")}</SelectItem>
-                    <SelectItem value="link">{t("typeLink")}</SelectItem>
-                    <SelectItem value="page">{t("typePage")}</SelectItem>
-                    <SelectItem value="article">{t("typeArticle")}</SelectItem>
+                    <SelectItem value="none">{t('typeNone')}</SelectItem>
+                    <SelectItem value="link">{t('typeLink')}</SelectItem>
+                    <SelectItem value="page">{t('typePage')}</SelectItem>
+                    <SelectItem value="article">{t('typeArticle')}</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -352,16 +352,16 @@ export function NavigationForm({
           )}
         />
 
-        {linkType === "link" && (
+        {linkType === 'link' && (
           <FormField
             control={form.control}
             name="linkItem"
             render={({ field }) => (
               <FormItem>
-                <FormLabel required>{t("typeLink")}</FormLabel>
+                <FormLabel>{t('typeLink')}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={t("inputLink")}
+                    placeholder={t('inputLink')}
                     className="w-full"
                     {...field}
                   />
@@ -371,21 +371,21 @@ export function NavigationForm({
           />
         )}
 
-        {linkType === "page" && (
+        {linkType === 'page' && (
           <div className="space-y-4">
             <FormField
               control={form.control}
               name="linkCategory"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel required>{t("typePageCategory")}</FormLabel>
+                  <FormLabel>{t('typePageCategory')}</FormLabel>
                   <Select
-                    value={field.value || ""}
+                    value={field.value || ''}
                     onValueChange={(value) => field.onChange(`${value}`)}
                   >
                     <FormControl>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder={t("inputPageCategory")} />
+                        <SelectValue placeholder={t('inputPageCategory')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -400,20 +400,20 @@ export function NavigationForm({
               )}
             />
 
-            {form.watch("linkCategory") && (
+            {form.watch('linkCategory') && (
               <FormField
                 control={form.control}
                 name="linkItem"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>{t("typePage")}</FormLabel>
+                    <FormLabel>{t('typePage')}</FormLabel>
                     <Select
-                      value={field.value || ""}
+                      value={field.value || ''}
                       onValueChange={field.onChange}
                     >
                       <FormControl>
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder={t("inputPage")} />
+                          <SelectValue placeholder={t('inputPage')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -431,21 +431,21 @@ export function NavigationForm({
           </div>
         )}
 
-        {linkType === "article" && (
+        {linkType === 'article' && (
           <div className="space-y-4">
             <FormField
               control={form.control}
               name="linkCategory"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel required>{t("typeArticleCategory")}</FormLabel>
+                  <FormLabel>{t('typeArticleCategory')}</FormLabel>
                   <Select
-                    value={field.value || ""}
+                    value={field.value || ''}
                     onValueChange={(value) => field.onChange(`${value}`)}
                   >
                     <FormControl>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder={t("inputArticleCategory")} />
+                        <SelectValue placeholder={t('inputArticleCategory')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -460,20 +460,20 @@ export function NavigationForm({
               )}
             />
 
-            {form.watch("linkCategory") && (
+            {form.watch('linkCategory') && (
               <FormField
                 control={form.control}
                 name="linkItem"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>{t("typeArticle")}</FormLabel>
+                    <FormLabel>{t('typeArticle')}</FormLabel>
                     <Select
-                      value={field.value || ""}
+                      value={field.value || ''}
                       onValueChange={field.onChange}
                     >
                       <FormControl>
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder={t("inputArticle")} />
+                          <SelectValue placeholder={t('inputArticle')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -496,7 +496,7 @@ export function NavigationForm({
           name="icon"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("iconItem")}</FormLabel>
+              <FormLabel>{t('iconItem')}</FormLabel>
               <FormControl>
                 <IconUploader
                   value={field.value}
@@ -509,14 +509,14 @@ export function NavigationForm({
 
         <div className="flex justify-end space-x-3 pt-4">
           <Button type="button" variant="outline" onClick={onCancel}>
-            {t("cancel")}
+            {t('cancel')}
           </Button>
           <ActionButton
             disabled={isPending || isUploading}
             loading={isPending || isUploading}
             type="submit"
           >
-            {t("save")}
+            {t('save')}
           </ActionButton>
         </div>
       </form>
