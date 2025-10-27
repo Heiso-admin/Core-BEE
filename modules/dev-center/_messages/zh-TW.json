@@ -1,0 +1,156 @@
+{
+  "menu": {
+    "title": "選單",
+    "loading": "正在加載選單...",
+    "total": "({count} / 無限制)",
+    "actions": {
+      "add": {
+        "title": "新增選單",
+        "button": "新增",
+        "parent_title": " - {title}"
+      },
+      "edit": {
+        "title": "編輯選單"
+      },
+      "remove": {
+        "title": "刪除選單",
+        "content": "您確定要刪除此選單嗎？",
+        "cancel": "取消",
+        "confirm": "刪除",
+        "removing": "刪除中..."
+      }
+    }
+  },
+  "settings": {
+    "title": "設置",
+    "basic": {
+      "title": "基本信息",
+      "description": "配置您的網站基本信息。",
+      "name": {
+        "label": "網站名稱",
+        "description": "請最多使用32個字符。"
+      },
+      "title": {
+        "label": "標題"
+      },
+      "base_url": {
+        "label": "基礎網址"
+      },
+      "domain": {
+        "label": "域名"
+      }
+    },
+    "branding": {
+      "title": "品牌",
+      "description": "自定義您的網站品牌元素。",
+      "organization": {
+        "label": "組織"
+      },
+      "slogan": {
+        "label": "標語"
+      },
+      "description": {
+        "label": "描述"
+      },
+      "copyright": {
+        "label": "版權"
+      }
+    },
+    "assets": {
+      "title": "資源",
+      "description": "管理您的網站視覺資源。",
+      "logo": {
+        "label": "標誌"
+      },
+      "favicon": {
+        "label": "網站圖標"
+      },
+      "ogImage": {
+        "label": "社交媒體預覽圖"
+      }
+    },
+    "actions": {
+      "save": {
+        "button": "保存更改"
+      }
+    },
+    "toast": {
+      "success": "網站設置已更新"
+    }
+  },
+  "keys": {
+    "title": "API 密鑰設置",
+    "openai": {
+      "title": "OpenAI",
+      "description": "配置您的 OpenAI API 密鑰以使用 AI 功能。",
+      "api_key": {
+        "label": "API 密鑰",
+        "description": "您可以在 OpenAI 儀表板中找到您的 API 密鑰。",
+        "required": "請輸入 OpenAI API 密鑰"
+      }
+    },
+    "github": {
+      "title": "GitHub",
+      "description": "配置您的 GitHub 訪問令牌以進行倉庫集成。",
+      "access_token": {
+        "label": "訪問令牌",
+        "description": "在 GitHub 開發者設置中創建個人訪問令牌。",
+        "required": "請輸入 GitHub 訪問令牌"
+      }
+    },
+    "resend": {
+      "title": "Resend",
+      "description": "配置您的 Resend API 密鑰以使用電子郵件服務。",
+      "api_key": {
+        "label": "API 密鑰",
+        "description": "您可以在 Resend 儀表板中找到您的 API 密鑰。",
+        "required": "請輸入 Resend API 密鑰"
+      }
+    },
+    "actions": {
+      "save": "保存更改"
+    },
+    "toast": {
+      "success": "API 密鑰已更新"
+    }
+  },
+  "developers": {
+    "title": "開發者",
+    "loading": "正在加載開發者列表...",
+    "columns": {
+      "name": "姓名",
+      "email": "電子郵件",
+      "youBadge": "你"
+    },
+    "actions": {
+      "moreActions": "更多操作",
+      "remove": "移除開發者"
+    },
+    "search": {
+      "inputPlaceholder": "搜尋姓名或電子郵件..."
+    },
+    "add": {
+      "buttonLabel": "新增開發者",
+      "dialogTitle": "新增開發者",
+      "dialogDescription": "輸入電子郵件地址以新增開發者。",
+      "emailLabel": "電子郵件地址",
+      "emailPlaceholder": "輸入開發者的電子郵件",
+      "savingButton": "新增中...",
+      "saveButton": "新增開發者"
+    },
+    "notifications": {
+      "addSuccess": "成功新增開發者",
+      "addError": "新增開發者失敗"
+    },
+    "table": {
+      "totalCount": "共 {count} 位開發者"
+    },
+    "validation": {
+      "emailInvalid": "請輸入有效的電子郵件地址"
+    },
+    "errors": {
+      "user_not_found": "找不到用戶",
+      "developer_not_found": "找不到開發者"
+    }
+  }
+}

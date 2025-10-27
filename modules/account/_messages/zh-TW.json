@@ -1,0 +1,155 @@
+{
+  "layout": {
+    "breadcrumb": {
+      "account": "帳戶"
+    },
+    "navigation": {
+      "preferences": "偏好設定",
+      "authentication": "驗證"
+    },
+    "userMenu": {
+      "dashboard": "儀表板",
+      "accountSettings": "帳戶設定",
+      "theme": "主題",
+      "homePage": "首頁",
+      "logOut": "登出",
+      "developer": "開發者"
+    }
+  },
+  "avatar": {
+    "dialog": {
+      "title": "建立你的頭像",
+      "description": "產生頭像或上傳自己的圖片",
+      "tabs": {
+        "generate": "產生頭像",
+        "upload": "上傳圖片"
+      },
+      "randomize": "隨機產生",
+      "upload_area": {
+        "button": "上傳檔案",
+        "description": "或拖放至此",
+        "file_types": "PNG、JPG、GIF，最大 10MB"
+      },
+      "save": "儲存頭像",
+      "change": "更換頭像"
+    },
+    "options": {
+      "avatarStyle": "頭像樣式",
+      "topType": "頭部類型",
+      "accessoriesType": "配件類型",
+      "hairColor": "髮色",
+      "facialHairType": "鬍鬚類型",
+      "facialHairColor": "鬍鬚顏色",
+      "clotheType": "衣服類型",
+      "clotheColor": "衣服顏色",
+      "eyeType": "眼睛類型",
+      "eyebrowType": "眉毛類型",
+      "mouthType": "嘴巴類型",
+      "skinColor": "膚色"
+    }
+  },
+  "me": {
+    "avatar": {
+      "title": "頭像",
+      "description": "這是您的頭像。點擊頭像可以從您的檔案中上傳自定義頭像。",
+      "footer": "頭像是可選的，但強烈建議設置。"
+    },
+    "displayName": {
+      "title": "顯示名稱",
+      "description": "請輸入您的全名，或是您覺得舒適的顯示名稱。",
+      "footer": "請最多使用32個字符。",
+      "save": "儲存"
+    },
+    "email": {
+      "title": "電子郵件",
+      "description": "您的主要電子郵件將用於接收帳戶相關通知。",
+      "footer": "電子郵件必須經過驗證才能用於登入或作為主要電子郵件。",
+      "save": "儲存"
+    },
+    "appearance": {
+      "title": "外觀",
+      "description": "選擇系統的顯示方式。選擇單一主題，或與系統同步。",
+      "themeMode": {
+        "title": "主題模式",
+        "description": "系統將使用您選擇的主題",
+        "dark": "深色",
+        "light": "淺色",
+        "system": "系統"
+      }
+    },
+    "userId": {
+      "title": "您的 {siteName} ID",
+      "description": "這是您在 {siteName} 中的用戶 ID。",
+      "footer": "用於與 API 互動時使用。"
+    },
+    "deleteAccount": {
+      "title": "刪除帳戶",
+      "description": "永久從平台移除您的個人帳戶及其所有內容。此操作不可逆，請謹慎操作。",
+      "button": "刪除個人帳戶"
+    },
+    "common": {
+      "save": "儲存"
+    }
+  },
+  "2fa": {
+    "title": "雙重認證",
+    "description": "透過啟用雙重認證為您的帳戶添加額外的安全層級。",
+    "toggle": "啟用雙重認證",
+    "tabs": {
+      "setup": "設置",
+      "backup": "備用碼"
+    },
+    "setup": {
+      "qrDescription": "使用您的驗證器應用程式掃描此 QR 碼，或手動輸入設置金鑰。",
+      "verificationCode": "驗證碼",
+      "codePlaceholder": "輸入 6 位數驗證碼",
+      "verifyButton": "驗證並啟用",
+      "verifying": "驗證中..."
+    },
+    "backup": {
+      "description": "請將這些備用碼保存在安全的地方。如果您遺失了設備，可以使用這些備用碼訪問您的帳戶。",
+      "generateButton": "產生新的備用碼"
+    },
+    "alerts": {
+      "error": "錯誤",
+      "success": "成功",
+      "disabled": "雙重認證已停用。",
+      "enabled": "雙重認證已啟用。請進行設置。",
+      "setupSuccess": "雙重認證已成功設置。",
+      "invalidCode": "驗證碼無效。請重試。"
+    },
+    "footer": "使用 Google Authenticator 或 Authy 等驗證器應用程式。"
+  },
+  "auth": {
+    "password": {
+      "title": "變更密碼",
+      "description": "定期更改密碼可以提高帳戶安全性",
+      "currentPassword": "目前密碼",
+      "newPassword": "新密碼",
+      "confirmPassword": "確認新密碼",
+      "button": "變更密碼",
+      "validation": {
+        "currentRequired": "請輸入目前密碼",
+        "newMinLength": "密碼必須至少包含 8 個字符",
+        "confirmRequired": "請確認新密碼",
+        "passwordsMismatch": "密碼不一致"
+      },
+      "toast": {
+        "success": "密碼已更新",
+        "error": "密碼更新失敗"
+      }
+    },
+    "2fa": {
+      "title": "雙重認證",
+      "description": "啟用雙重認證以增加額外的帳戶安全性",
+      "label": "雙重認證 (2FA)",
+      "subtext": "使用驗證器應用程式進行雙重驗證",
+      "toast": {
+        "enabled": "2FA 已成功啟用",
+        "disabled": "2FA 已成功停用",
+        "enableError": "啟用 2FA 失敗",
+        "disableError": "停用 2FA 失敗"
+      }
+    }
+  }
+}

@@ -25,7 +25,7 @@ export async function getUsers() {
 export async function getUser(email: string) {
   const user = await db.query.users.findFirst({
     with: {
-      administrator: true,
+      developer: true,
     },
     where: (table, { eq }) => eq(table.email, email),
   });

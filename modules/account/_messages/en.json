@@ -1,0 +1,155 @@
+{
+  "layout": {
+    "breadcrumb": {
+      "account": "Account"
+    },
+    "navigation": {
+      "preferences": "Preferences",
+      "authentication": "Authentication"
+    },
+    "userMenu": {
+      "dashboard": "Dashboard",
+      "accountSettings": "Account Settings",
+      "theme": "Theme",
+      "homePage": "Home Page",
+      "logOut": "Log out",
+      "developer": "developers"
+    }
+  },
+  "avatar": {
+    "dialog": {
+      "title": "Create Your Avatar",
+      "description": "Generate an avatar or upload your own image",
+      "tabs": {
+        "generate": "Generate Avatar",
+        "upload": "Upload Image"
+      },
+      "randomize": "Randomize",
+      "upload_area": {
+        "button": "Upload a file",
+        "description": "or drag and drop",
+        "file_types": "PNG, JPG, GIF up to 10MB"
+      },
+      "save": "Save Avatar",
+      "change": "Change Avatar"
+    },
+    "options": {
+      "avatarStyle": "Avatar Style",
+      "topType": "Top Type",
+      "accessoriesType": "Accessories Type",
+      "hairColor": "Hair Color",
+      "facialHairType": "Facial Hair Type",
+      "facialHairColor": "Facial Hair Color",
+      "clotheType": "Clothe Type",
+      "clotheColor": "Clothe Color",
+      "eyeType": "Eye Type",
+      "eyebrowType": "Eyebrow Type",
+      "mouthType": "Mouth Type",
+      "skinColor": "Skin Color"
+    }
+  },
+  "me": {
+    "avatar": {
+      "title": "Avatar",
+      "description": "This is your avatar. Click on the avatar to upload a custom one from your files.",
+      "footer": "An avatar is optional but strongly recommended."
+    },
+    "displayName": {
+      "title": "Display Name",
+      "description": "Please enter your full name, or a display name you are comfortable with.",
+      "footer": "Please use 32 characters at maximum.",
+      "save": "Save"
+    },
+    "email": {
+      "title": "Email",
+      "description": "Your primary email will be used for account-related notifications.",
+      "footer": "Emails must be verified to be able to login with them or be used as primary email.",
+      "save": "Save"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose how system looks to you. Select a single theme, or sync with your system.",
+      "themeMode": {
+        "title": "Theme mode",
+        "description": "System will use your selected theme",
+        "dark": "Dark",
+        "light": "Light",
+        "system": "System"
+      }
+    },
+    "userId": {
+      "title": "Your {siteName} ID",
+      "description": "This is your user ID within {siteName}.",
+      "footer": "Used when interacting with the API."
+    },
+    "deleteAccount": {
+      "title": "Delete Account",
+      "description": "Permanently remove your Personal Account and all of its contents from the platform. This action is not reversible, so please continue with caution.",
+      "button": "Delete Personal Account"
+    },
+    "common": {
+      "save": "Save"
+    }
+  },
+  "2fa": {
+    "title": "Two-Factor Authentication",
+    "description": "Add an extra layer of security to your account by enabling two-factor authentication.",
+    "toggle": "Enable Two-Factor Authentication",
+    "tabs": {
+      "setup": "Setup",
+      "backup": "Backup Codes"
+    },
+    "setup": {
+      "qrDescription": "Scan this QR code with your authenticator app or enter the setup key manually.",
+      "verificationCode": "Verification Code",
+      "codePlaceholder": "Enter 6-digit code",
+      "verifyButton": "Verify and Activate",
+      "verifying": "Verifying..."
+    },
+    "backup": {
+      "description": "Save these backup codes in a safe place. You can use them to access your account if you lose your device.",
+      "generateButton": "Generate New Backup Codes"
+    },
+    "alerts": {
+      "error": "Error",
+      "success": "Success",
+      "disabled": "Two-factor authentication has been disabled.",
+      "enabled": "Two-factor authentication has been enabled. Please set it up.",
+      "setupSuccess": "Two-factor authentication has been set up successfully.",
+      "invalidCode": "Invalid verification code. Please try again."
+    },
+    "footer": "Use an authenticator app like Google Authenticator or Authy."
+  },
+  "auth": {
+    "password": {
+      "title": "Change Password",
+      "description": "Regular password changes enhance account security",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "button": "Change Password",
+      "validation": {
+        "currentRequired": "Please enter current password",
+        "newMinLength": "Password must be at least 8 characters",
+        "confirmRequired": "Please confirm new password",
+        "passwordsMismatch": "Passwords do not match"
+      },
+      "toast": {
+        "success": "Password updated",
+        "error": "Failed to update password"
+      }
+    },
+    "2fa": {
+      "title": "Two-Factor Authentication",
+      "description": "Enable two-factor authentication for additional account security",
+      "label": "Two-Factor Authentication (2FA)",
+      "subtext": "Use an authenticator app for two-factor verification",
+      "toast": {
+        "enabled": "2FA enabled successfully",
+        "disabled": "2FA disabled successfully",
+        "enableError": "Failed to enable 2FA",
+        "disableError": "Failed to disable 2FA"
+      }
+    }
+  }
+}

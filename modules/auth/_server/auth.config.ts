@@ -3,30 +3,30 @@ import Credentials from "next-auth/providers/credentials";
 import { verifyPassword } from "@/lib/hash";
 import { getUser } from "./user.service";
 
-declare module "next-auth" {
+declare module 'next-auth' {
   interface Session {
     user: {
-      isAdmin: boolean;
-    } & DefaultSession["user"];
+      isDeveloper: boolean;
+    } & DefaultSession['user'];
   }
   interface JWT {
-    isAdmin?: boolean;
+    isDeveloper?: boolean;
   }
 
   interface User {
-    isAdmin: boolean;
+    isDeveloper: boolean;
   }
 }
 
 class InvalidLoginError extends CredentialsSignin {
-  code = "Invalid identifier or password";
+  code = 'Invalid identifier or password';
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.isAdmin = user.isAdmin;
+        token.isDeveloper = user.isDeveloper;
       }
       return token;
     },
@@ -34,7 +34,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (token) {
         session.user = {
           ...session.user,
-          isAdmin: token.isAdmin as boolean,
+          isDeveloper: token.isDeveloper as boolean,
           id: token.sub!,
         };
       }
@@ -45,8 +45,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
       credentials: {
-        username: { label: "Username" },
-        password: { label: "Password", type: "password" },
+        username: { label: 'Username' },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) {
@@ -67,8 +67,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           throw new InvalidLoginError();
         }
 
-        const isAdmin = !!user?.administrator;
-        return { id: user.id, name: user.name, email: user.email, isAdmin };
+        const isDeveloper = !!user?.developer;
+        return { id: user.id, name: user.name, email: user.email, isDeveloper };
       },
     }),
   ],

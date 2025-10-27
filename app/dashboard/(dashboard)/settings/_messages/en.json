@@ -1,0 +1,112 @@
+{
+  "site": {
+    "title": "Site Settings",
+    "basic": {
+      "title": "Basic Information",
+      "description": "Configure your site's basic information.",
+      "form": {
+        "name": {
+          "label": "Site Name",
+          "description": "Please use 32 characters at maximum."
+        },
+        "title": {
+          "label": "Fallback title"
+        },
+        "base_url": {
+          "label": "Base URL"
+        },
+        "domain": {
+          "label": "Domain"
+        }
+      }
+    },
+    "branding": {
+      "title": "Branding",
+      "description": "Customize your site's brand elements.",
+      "form": {
+        "organization": {
+          "label": "Organization"
+        },
+        "slogan": {
+          "label": "Slogan"
+        },
+        "description": {
+          "label": "Fallback Description"
+        },
+        "copyright": {
+          "label": "Copyright"
+        }
+      }
+    },
+    "assets": {
+      "title": "Assets",
+      "description": "Manage your site's visual assets.",
+      "form": {
+        "logo": {
+          "label": "Logo"
+        },
+        "favicon": {
+          "label": "Preset Favicon"
+        },
+        "ogImage": {
+          "label": "Preset OG Image"
+        }
+      }
+    },
+    "actions": {
+      "save": {
+        "button": "Save Changes"
+      }
+    },
+    "toast": {
+      "success": "Site settings updated"
+    }
+  },
+  "tracking": {
+    "title": "Analysis Tool Management",
+    "loading": "Loading...",
+    "selector": {
+      "title": "Add Customer Activity Tracking",
+      "tools": {
+        "google_analytics_4": "Google Analytics 4",
+        "google_tag_manager": "Google Tag Manager",
+        "facebook_pixel": "Facebook Pixel",
+        "tiktok_pixel": "TikTok Pixel",
+        "line_tag": "LINE Tag",
+        "microsoft_clarity": "Microsoft Clarity"
+      }
+    },
+    "table": {
+      "headers": {
+        "tool": "Tracking Tool",
+        "tracking_id": "Tracking ID / Name",
+        "actions": "Actions"
+      }
+    },
+    "form": {
+      "title": "Tracking Tool",
+      "tool_label": "The tracking tool I want to use is:",
+      "tracking_id_label": "My Google Tag Manager tracking ID is:",
+      "tracking_id_placeholder": "GTM-NPRBBWWB",
+      "tracking_id_required": "Please enter tracking ID",
+      "actions": {
+        "discard": "Discard",
+        "save": "Save",
+        "saving": "Saving..."
+      }
+    },
+    "confirm_remove": {
+      "title": "Delete tracking Tool",
+      "content": "Are you sure you want to delete this tracking tool?",
+      "actions": {
+        "cancel": "Cancel",
+        "remove": "Remove"
+      }
+    },
+    "toast": {
+      "success": "Analytics tool settings saved",
+      "error": "Save failed, please try again",
+      "removed": "Tracking tool removed"
+    }
+  }
+}

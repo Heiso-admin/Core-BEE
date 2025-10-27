@@ -45,6 +45,24 @@
     "submit": "驗證",
     "resend": "沒有收到？重新發送新的驗證碼。"
   },
+  "loginNext": {
+    "title": "登入",
+    "titleStep2": "歡迎回來",
+    "description": "輸入您的電子郵件開始使用。",
+    "descriptionStep2": "正在以 {email} 登入",
+    "email": {
+      "label": "電子郵件",
+      "placeholder": "輸入您的電子郵件",
+      "error": "請輸入有效的電子郵件地址。"
+    },
+    "continue": "繼續",
+    "backToEmail": "使用其他電子郵件",
+    "newUser": "{siteName} 新用戶？",
+    "signUp": "註冊",
+    "error": {
+      "general": "發生錯誤，請重試。"
+    }
+  },
   "emailVerification": {
     "title": "驗證您的電子郵件",
     "description": "我們已發送驗證碼至 {email}",
@@ -191,5 +209,49 @@
     },
     "backToLogin": "返回登入",
     "returnToLogin": "返回登入頁面"
+  },
+  "otp": {
+    "title": "使用驗證碼登入",
+    "description": "請輸入您的電子郵件地址以接收一次性密碼",
+    "email": {
+      "label": "電子郵件地址",
+      "placeholder": "請輸入您的電子郵件地址",
+      "error": "請輸入有效的電子郵件地址"
+    },
+    "code": {
+      "label": "驗證碼",
+      "placeholder": "請輸入 6 位數驗證碼",
+      "error": "請輸入有效的 6 位數驗證碼"
+    },
+    "submit": {
+      "sendCode": "發送驗證碼",
+      "verify": "驗證並登入",
+      "loading": {
+        "sendCode": "正在發送驗證碼...",
+        "verify": "正在驗證..."
+      }
+    },
+    "resend": {
+      "text": "沒有收到驗證碼？",
+      "action": "重新發送驗證碼",
+      "countdown": "{seconds} 秒後可重新發送"
+    },
+    "success": {
+      "codeSent": "驗證碼已發送至 {email}",
+      "codeResent": "驗證碼已重新發送",
+      "verified": "驗證碼驗證成功"
+    },
+    "error": {
+      "invalidEmail": "找不到使用此電子郵件的帳號",
+      "invalidCode": "驗證碼無效或已過期",
+      "tooManyAttempts": "嘗試次數過多，請稍後再試",
+      "sendFailed": "發送驗證碼失敗",
+      "verifyFailed": "驗證碼驗證失敗",
+      "login": "登入失敗，請重試",
+      "general": "發生錯誤，請稍後再試"
+    },
+    "backToPassword": "改用密碼登入",
+    "back": "返回",
+    "codeSentTo": "驗證碼已發送至"
   }
 }

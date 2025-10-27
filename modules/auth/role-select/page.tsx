@@ -10,7 +10,7 @@ export default function RoleSelect() {
 
   return (
     <div className="flex w-full max-w-lg flex-col gap-4">
-      <h3 className="text-center text-muted-foreground">{t("title")}</h3>
+      <h3 className="text-center text-muted-foreground">{t('title')}</h3>
 
       <Link href="/dashboard" className="block">
         <Card className="group flex flex-row cursor-pointer items-center justify-between p-6 transition-colors hover:bg-muted/50">
@@ -19,9 +19,9 @@ export default function RoleSelect() {
               <User className="h-6 w-6" />
             </div>
             <div>
-              <h2 className="font-semibold">{t("dashboard.title")}</h2>
+              <h2 className="font-semibold">{t('dashboard.title')}</h2>
               <p className="text-sm text-muted-foreground">
-                {t("dashboard.description")}
+                {t('dashboard.description')}
               </p>
             </div>
           </div>
@@ -29,16 +29,16 @@ export default function RoleSelect() {
         </Card>
       </Link>
 
-      <Link href="/admin" className="block">
+      <Link href="/dev-center" className="block">
         <Card className="group flex flex-row cursor-pointer items-center justify-between p-6 transition-colors hover:bg-muted/50">
           <div className="flex items-center gap-4">
             <div className="rounded-full bg-purple-100 p-2">
               <UserCog className="h-6 w-6 text-purple-500" />
             </div>
             <div>
-              <h2 className="font-semibold">{t("admin.title")}</h2>
+              <h2 className="font-semibold">{t('admin.title')}</h2>
               <p className="text-sm text-muted-foreground">
-                {t("admin.description")}
+                {t('admin.description')}
               </p>
             </div>
           </div>
