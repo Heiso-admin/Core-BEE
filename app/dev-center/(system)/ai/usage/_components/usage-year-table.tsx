@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import {
   ColumnDef,
   flexRender,
@@ -23,7 +22,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { monthlyRange } from '@/lib/format';
-import { useBreadcrumb } from '@/contexts/breadcrumb-context';
 import Link from 'next/link';
 
 type Usage = {
@@ -83,12 +81,6 @@ const columns: ColumnDef<Usage>[] = [
 ];
 
 export function UsageYearTable({ data }: { data: Usage[] }) {
-  const { setBreadcrumb } = useBreadcrumb();
-
-  useEffect(() => {
-    setBreadcrumb([{ title: 'General Info' }, { title: 'AI Usage' }]);
-  }, [setBreadcrumb]);
-
   const table = useReactTable({
     data,
     columns,
@@ -122,8 +114,8 @@ export function UsageYearTable({ data }: { data: Usage[] }) {
                       header.column.getIsSorted() === 'asc'
                         ? 'ascending'
                         : header.column.getIsSorted() === 'desc'
-                        ? 'descending'
-                        : 'none'
+                          ? 'descending'
+                          : 'none'
                     }
                   >
                     {header.isPlaceholder ? null : header.column.getCanSort() ? (
