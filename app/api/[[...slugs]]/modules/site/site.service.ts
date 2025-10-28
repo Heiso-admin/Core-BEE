@@ -10,14 +10,3 @@ export async function getSiteSetting() {
   }
   return result;
 }
-
-export async function getAnalyticsTools() {
-  return await db.query.analyticsToolsSettings.findMany({
-    columns: {
-      id: true,
-      name: true,
-      trackingId: true,
-    },
-    where: (t, { isNull }) => isNull(t.deletedAt),
-  });
-}
