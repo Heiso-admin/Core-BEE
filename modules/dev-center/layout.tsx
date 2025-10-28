@@ -53,6 +53,14 @@ const nav: Navigation = {
     ],
     [
       {
+        id: 'AI Usage',
+        title: 'AI Usage',
+        path: `/ai/usage`,
+        icon: 'chart-line',
+      },
+    ],
+    [
+      {
         id: 'Keys',
         title: 'Keys',
         path: '/key',

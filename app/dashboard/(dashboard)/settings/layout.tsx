@@ -19,11 +19,6 @@ export default async function Layout({
           href: `/site`,
           active: true,
         },
-        {
-          title: 'Tracking Settings',
-          href: `/tracking`,
-          active: true,
-        },
       ],
     },
   ];
