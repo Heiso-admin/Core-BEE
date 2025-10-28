@@ -1,7 +1,7 @@
-import NextAuth, { CredentialsSignin, type DefaultSession } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import { verifyPassword } from "@/lib/hash";
-import { getUser } from "./user.service";
+import NextAuth, { CredentialsSignin, type DefaultSession } from 'next-auth';
+import Credentials from 'next-auth/providers/credentials';
+import { verifyPassword } from '@/lib/hash';
+import { getUser } from './_server/user.service';
 
 declare module 'next-auth' {
   interface Session {

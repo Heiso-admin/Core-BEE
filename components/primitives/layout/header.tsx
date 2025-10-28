@@ -1,7 +1,7 @@
 import { ChevronDownIcon, SlashIcon } from "lucide-react";
 import Link from "next/link";
 import { Fragment } from "react";
-import { auth } from "@/app/(auth)/auth.config";
+import { auth } from '@/modules/auth/auth.config';
 import { UserAvatar } from "@/components/primitives";
 import { Logo } from "@/components/primitives/logo";
 import type { UserAvatarMenuItem } from "@/components/primitives/user-avatar";

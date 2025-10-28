@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/app/(auth)/auth.config";
+import { auth } from '@/modules/auth/auth.config';
 import * as roleService from "./role";
 
 const permissionCache = new Map<string, roleService.UserPermission>();

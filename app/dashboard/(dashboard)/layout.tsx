@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
-import { auth } from '@/app/(auth)/auth.config';
+import { auth } from '@/modules/auth/auth.config';
 import { Layout } from '@/components/primitives';
 import type { UserAvatarMenuItem } from '@/components/primitives/user-avatar';
 import { LayoutSkeleton } from '@/components/skeleton';

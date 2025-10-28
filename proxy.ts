@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/app/(auth)/auth.config';
+import { auth } from '@/modules/auth/auth.config';
 
 export default auth(async (req) => {
   const requestHeaders = new Headers(req.headers);

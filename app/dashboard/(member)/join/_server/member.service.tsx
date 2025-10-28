@@ -2,7 +2,7 @@
 
 import { and, eq, isNull } from "drizzle-orm";
 import { cookies } from "next/headers";
-import { auth } from "@/app/(auth)/auth.config";
+import { auth } from '@/modules/auth/auth.config';
 import { db } from "@/lib/db";
 import { members } from "@/lib/db/schema";
 

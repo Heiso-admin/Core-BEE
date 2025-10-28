@@ -1,7 +1,7 @@
 "use server";
 
 import { eq, sql } from "drizzle-orm";
-import { auth } from "@/app/(auth)/auth.config";
+import { auth } from '@/modules/auth/auth.config';
 import { db } from "@/lib/db";
 import { fileStorageCategories, files } from "@/lib/db/schema";
 import { generateId } from "@/lib/id-generator";

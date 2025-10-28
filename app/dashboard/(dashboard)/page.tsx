@@ -1,7 +1,7 @@
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
-import { auth } from '@/app/(auth)/auth.config';
+import { auth } from '@/modules/auth/auth.config';
 import { ProjectSkeleton } from '@/components/skeleton';
 import { Overview } from './_components/overview';
 import {

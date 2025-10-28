@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { auth } from "@/app/(auth)/auth.config";
+import { auth } from '@/modules/auth/auth.config';
 import { Card } from "@/components/ui/card";
 import { AccountConfirmAlert } from "./_components/account-confirm-alert";
 import { InvalidJoinToken } from "./_components/invalid-join-token";

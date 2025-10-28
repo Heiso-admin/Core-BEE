@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/app/(auth)/auth.config";
+import { auth } from '@/modules/auth/auth.config';
 import { db } from "@/lib/db";
 import type { TMenu, TPermission } from "@/lib/db/schema";
 

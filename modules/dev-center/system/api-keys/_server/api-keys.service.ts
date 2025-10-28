@@ -3,7 +3,7 @@
 import { db } from '@/lib/db';
 import { eq, and, desc, isNull, count } from 'drizzle-orm';
 import { apiKeys } from '@/lib/db/schema';
-import { auth } from '@/app/(auth)/auth.config';
+import { auth } from '@/modules/auth/auth.config';
 import { revalidatePath } from 'next/cache';
 import { generateApiKey, hashApiKey } from '@/lib/hash';
 import type { TPublicApiKey } from '@/lib/db/schema';

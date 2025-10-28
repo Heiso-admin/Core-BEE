@@ -1,6 +1,6 @@
 "use server";
 
-import { signIn, signOut } from "@/app/(auth)/auth.config";
+import { signIn, signOut } from '@/modules/auth/auth.config';
 import { db } from "@/lib/db";
 import { users as usersTable } from "@/lib/db/schema";
 import { hashPassword } from "@/lib/hash";
