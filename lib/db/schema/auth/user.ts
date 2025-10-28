@@ -29,6 +29,7 @@ export const users = pgTable(
     avatar: varchar('avatar', { length: 255 }),
     active: boolean('active').notNull().default(false),
     lastLoginAt: timestamp('last_login_at'),
+    loginMethod: varchar('login_method', { length: 20 }),
     twoFactorEnabled: boolean('two_factor_enabled').default(false),
     twoFactorSecret: varchar('two_factor_secret', { length: 255 }),
     mustChangePassword: boolean('must_change_password').default(false),

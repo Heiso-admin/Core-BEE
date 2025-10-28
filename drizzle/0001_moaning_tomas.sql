@@ -1,0 +1,1 @@
+ALTER TABLE "users" ADD COLUMN "login_method" varchar(20);
