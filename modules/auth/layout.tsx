@@ -21,7 +21,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <Logo
           hasTitle={false}
           classNames={{
-            img: "w-40 text-primary",
+            img: "w-12 text-primary",
           }}
         />
       </div>
