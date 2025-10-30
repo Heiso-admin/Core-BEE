@@ -7,6 +7,7 @@ async function getMenus() {
     columns: {
       id: true,
       title: true,
+      icon: true,
     },
     where: (t, { isNull }) => isNull(t.deletedAt),
     orderBy: (t, { asc }) => [asc(t.order)],

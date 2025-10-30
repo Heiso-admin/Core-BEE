@@ -14,7 +14,7 @@ async function getPermissions() {
 }
 
 async function groupPermissionsByMenu<T extends TMenu, P extends TPermission>(
-  menus: Pick<T, "id" | "title">[],
+  menus: Pick<T, "id" | "title" | "icon" >[],
   permissions: P[],
 ) {
   return menus.map((menu) => {
@@ -25,6 +25,7 @@ async function groupPermissionsByMenu<T extends TMenu, P extends TPermission>(
     return {
       id: menu.id,
       title: menu.title,
+      icon: menu.icon,
       permissions: menuPermissions.map((p) => ({
         id: p.id,
         resource: p.resource,
