@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState, useTransition } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormReturn } from 'react-hook-form';
 import * as z from 'zod';
 import { ActionButton } from '@/components/primitives';
 import {
@@ -40,6 +40,7 @@ import {
   deletePermission,
   updatePermission,
 } from '@/modules/dev-center/permission/_server/permission.service';
+import { DynamicIcon, type IconName } from "lucide-react/dynamic";
 
 export interface Permission {
   id: string;
@@ -50,6 +51,7 @@ export interface Permission {
 export interface PermissionGroup {
   id: string;
   title: string;
+  icon: string | null;
   permissions: Permission[];
 }
 
@@ -60,171 +62,7 @@ const permissionFormSchema = z.object({
 
 type PermissionFormValues = z.infer<typeof permissionFormSchema>;
 
-// TODO: remove this if the real PermissionGroups is ready
-export const DemoPermissionGroups: PermissionGroup[] = [
-  {
-    id: 'USER',
-    title: 'USER',
-    permissions: ['view', 'edit', 'reset-password', 'create', 'delete'].map(
-      (action) => ({
-        id: `user:${action}`,
-        name: `${
-          action.charAt(0).toUpperCase() + action.slice(1).replace('-', ' ')
-        } User`,
-        resource: 'user',
-        action,
-      })
-    ),
-  },
-  {
-    id: 'ROLE',
-    title: 'ROLE',
-    permissions: ['view', 'edit', 'create', 'delete'].map((action) => ({
-      id: `role:${action}`,
-      name: `${action.charAt(0).toUpperCase() + action.slice(1)} Role`,
-      resource: 'role',
-      action,
-    })),
-  },
-  {
-    id: 'REPORTS',
-    title: 'REPORTS',
-    permissions: [
-      {
-        id: 'reports:view-all-cash',
-        name: 'View All Cash Reports',
-        resource: 'reports',
-        action: 'view-all-cash',
-      },
-    ],
-  },
-  {
-    id: 'PHARMACY PRODUCT',
-    title: 'PHARMACY PRODUCT',
-    permissions: ['view', 'edit', 'create', 'delete'].map((action) => ({
-      id: `product:${action}`,
-      name: `${action.charAt(0).toUpperCase() + action.slice(1)} Product`,
-      resource: 'product',
-      action,
-    })),
-  },
-  {
-    id: 'PATIENT',
-    title: 'PATIENT',
-    permissions: ['view', 'edit', 'create', 'delete'].map((action) => ({
-      id: `patient:${action}`,
-      name: `${action.charAt(0).toUpperCase() + action.slice(1)} Patient`,
-      resource: 'patient',
-      action,
-    })),
-  },
-  {
-    id: 'OTHER SERVICE',
-    title: 'OTHER SERVICE',
-    permissions: ['view', 'edit', 'create', 'delete'].map((action) => ({
-      id: `service:${action}`,
-      name: `${action.charAt(0).toUpperCase() + action.slice(1)} Service`,
-      resource: 'service',
-      action,
-    })),
-  },
-  {
-    id: 'LAB REPORT',
-    title: 'LAB REPORT',
-    permissions: [
-      ...['view', 'edit', 'create', 'delete'].map((action) => ({
-        id: `lab-report:${action}`,
-        name: `${action.charAt(0).toUpperCase() + action.slice(1)} Lab Report`,
-        resource: 'lab-report',
-        action,
-      })),
-      ...['view', 'edit', 'create', 'delete'].map((action) => ({
-        id: `unit:${action}`,
-        name: `${action.charAt(0).toUpperCase() + action.slice(1)} Unit`,
-        resource: 'unit',
-        action,
-      })),
-      ...['view', 'edit', 'create', 'delete'].map((action) => ({
-        id: `result-category:${action}`,
-        name: `${
-          action.charAt(0).toUpperCase() + action.slice(1)
-        } Result Category`,
-        resource: 'result-category',
-        action,
-      })),
-      ...['view', 'edit', 'create', 'delete'].map((action) => ({
-        id: `test-data:${action}`,
-        name: `${action.charAt(0).toUpperCase() + action.slice(1)} Test Data`,
-        resource: 'test-data',
-        action,
-      })),
-      ...['view', 'edit', 'create', 'delete'].map((action) => ({
-        id: `test-data-category:${action}`,
-        name: `${
-          action.charAt(0).toUpperCase() + action.slice(1)
-        } Test Data Category`,
-        resource: 'test-data-category',
-        action,
-      })),
-      {
-        id: 'patient-lab-report:view',
-        name: 'View Patient Lab Report',
-        resource: 'patient-lab-report',
-        action: 'view',
-      },
-      {
-        id: 'patient-lab-report:update',
-        name: 'Update Patient Lab Report',
-        resource: 'patient-lab-report',
-        action: 'update',
-      },
-      {
-        id: 'patient-lab-report:print',
-        name: 'Print Patient Lab Report',
-        resource: 'patient-lab-report',
-        action: 'print',
-      },
-    ],
-  },
-  {
-    id: 'INVOICE',
-    title: 'INVOICE',
-    permissions: [
-      {
-        id: 'invoice:create',
-        name: 'Create Invoice',
-        resource: 'invoice',
-        action: 'create',
-      },
-      {
-        id: 'invoice:reverse',
-        name: 'Reverse Invoice',
-        resource: 'invoice',
-        action: 'reverse',
-      },
-    ],
-  },
-  {
-    id: 'DOCTOR',
-    title: 'DOCTOR',
-    permissions: ['view', 'edit', 'create', 'delete'].map((action) => ({
-      id: `doctor:${action}`,
-      name: `${action.charAt(0).toUpperCase() + action.slice(1)} Doctor`,
-      resource: 'doctor',
-      action,
-    })),
-  },
-  {
-    id: 'CHANEL SESSION',
-    title: 'CHANEL SESSION',
-    permissions: ['view', 'edit', 'create', 'delete'].map((action) => ({
-      id: `session:${action}`,
-      name: `${action.charAt(0).toUpperCase() + action.slice(1)} Session`,
-      resource: 'session',
-      action,
-    })),
-  },
-];
+
 
 export function PermissionCard({
   permissionGroup,
@@ -249,7 +87,7 @@ export function PermissionCard({
         .filter((p) => selectable.value.includes(p.id))
         .map((p) => p.id)
     : [];
-
+    
   const form = useForm<PermissionFormValues>({
     resolver: zodResolver(permissionFormSchema),
     defaultValues: {
@@ -318,66 +156,20 @@ export function PermissionCard({
 
   return (
     <div className="">
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {editingPermission ? 'Edit Permission' : 'Create Permission'}
-              <span className="ml-1 text-xs text-muted-foreground">
-                - {permissionGroup.title}
-              </span>
-            </DialogTitle>
-          </DialogHeader>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(
-                editingPermission
-                  ? handleEditPermission
-                  : handleCreatePermission
-              )}
-              className="space-y-4"
-            >
-              <FormField
-                control={form.control}
-                name="resource"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Resource</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="action"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Action</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <ActionButton
-                type="submit"
-                className="w-full"
-                disabled={editingPermission ? isEditPending : isCreatePending}
-                loading={editingPermission ? isEditPending : isCreatePending}
-              >
-                {editingPermission ? 'Update' : 'Create'}
-              </ActionButton>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+      <AddOrEditPermission
+        isDialogOpen={isDialogOpen}
+        setIsDialogOpen={setIsDialogOpen}
+        editingPermission={editingPermission}
+        permissionGroup={permissionGroup}
+        form={form}
+        handleCreatePermission={handleCreatePermission}
+        handleEditPermission={handleEditPermission}
+        isCreatePending={isCreatePending}
+        isEditPending={isEditPending}
+      />
 
-      <Card className="shadow-sm rounded-lg">
-        <CardHeader className="space-y-1 border-b">
+      <Card className="shadow-none rounded-lg gap-0 h-full">
+        <CardHeader className="space-y-1">
           <div className="flex justify-between">
             <div className="flex items-center space-x-2">
               {selectable && (
@@ -389,11 +181,9 @@ export function PermissionCard({
                   }
                 />
               )}
-              <CardTitle className="text-lg font-medium">
-                {permissionGroup.title}{' '}
-                <span className="ml-2 text-sm text-muted-foreground">
-                  Permission
-                </span>
+              <CardTitle className="text-md font-medium text-gray-400 flex items-center gap-2">
+                {permissionGroup.icon && <DynamicIcon name={permissionGroup.icon as IconName} size={20} />}
+                {permissionGroup.title}
               </CardTitle>
             </div>
 
@@ -419,7 +209,7 @@ export function PermissionCard({
             {permissionGroup.permissions.map((permission, permissionIndex) => (
               <div
                 key={permission.id}
-                className="flex min-h-6 items-center justify-between"
+                className="flex min-h-6 items-center justify-between mb-0"
               >
                 <div className="flex items-center space-x-2">
                   {selectable && (
@@ -472,6 +262,88 @@ export function PermissionCard({
       </Card>
     </div>
   );
+}
+
+function AddOrEditPermission({
+  isDialogOpen,
+  setIsDialogOpen,
+  editingPermission,
+  permissionGroup,
+  form,
+  handleCreatePermission,
+  handleEditPermission,
+  isCreatePending,
+  isEditPending,
+}: {
+  isDialogOpen: boolean;
+  setIsDialogOpen: (isOpen: boolean) => void;
+  editingPermission?: Permission | null;
+  permissionGroup: PermissionGroup;
+  form: UseFormReturn<PermissionFormValues>;
+  handleCreatePermission: (data: PermissionFormValues) => Promise<void>;
+  handleEditPermission: (data: PermissionFormValues) => Promise<void>;
+  isCreatePending: boolean;
+  isEditPending: boolean;
+}){
+  return (
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>
+            {editingPermission ? 'Edit Permission' : 'Create Permission'}
+            <span className="ml-1 text-xs text-muted-foreground">
+              - {permissionGroup.title}
+            </span>
+          </DialogTitle>
+        </DialogHeader>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(
+              editingPermission
+                ? handleEditPermission
+                : handleCreatePermission
+            )}
+            className="space-y-4"
+          >
+            <FormField
+              control={form.control}
+              name="resource"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Resource</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="action"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Action</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <ActionButton
+              type="submit"
+              className="w-full"
+              disabled={editingPermission ? isEditPending : isCreatePending}
+              loading={editingPermission ? isEditPending : isCreatePending}
+            >
+              {editingPermission ? 'Update' : 'Create'}
+            </ActionButton>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  )
 }
 
 function DeleteConfirm({
