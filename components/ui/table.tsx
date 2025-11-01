@@ -3,6 +3,8 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { SortDirection } from "@tanstack/react-table"
+import { Icon } from "@iconify/react"
 
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
@@ -28,6 +30,7 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
     />
   )
 }
+
 
 function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
   return (
@@ -65,18 +68,45 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
   )
 }
 
-function TableHead({ className, ...props }: React.ComponentProps<"th">) {
+function TableHead({
+  className,
+  isSortable = false, 
+  sorted = false,
+  isCenter,
+  handleSort,
+  children,
+  ...props
+}: React.ComponentProps<"th"> & { 
+  isSortable?: boolean;
+  sorted?: false | SortDirection;
+  isCenter?: boolean; //標題置中
+  handleSort?: (event: unknown) => void;
+}) {
   return (
     <th
       data-slot="table-head"
       className={cn(
         "text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
-        className
+        isSortable && "cursor-pointer",
+        className,
       )}
+      onClick={isSortable ? handleSort : undefined}
       {...props}
-    />
-  )
+    >
+      <div className={cn("flex items-center gap-1", isCenter && "w-full justify-center")}>
+        {children}
+        {isSortable && (
+          <span className="inline-flex items-center text-muted-foreground ml-1.5">
+            {sorted === "asc" && <Icon icon="fa-solid:sort-up" className="size-3 text-muted-foreground" />}
+            {sorted === "desc" && <Icon icon="fa-solid:sort-down" className="size-3 text-muted-foreground" />}
+            {!sorted && <Icon icon="fa-solid:sort" className="size-3 text-muted-foreground" />}
+          </span>
+        )}
+      </div>
+    </th>
+  );
 }
+
 
 function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   return (
