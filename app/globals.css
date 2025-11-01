@@ -3,6 +3,19 @@
 
 @custom-variant dark (&:is(.dark *));
 
+html{
+   @apply overflow-y-hidden;
+}
+
+.main-section-item{
+  @apply my-4 ml-4 flex-col last:mr-4;
+}
+
+.layout-split-pane{
+  @apply bg-background border p-3 rounded-xl;
+}
+
+
 @theme inline {
   --color-background: var(--background);
   --color-sub-background: var(--sub-background);
