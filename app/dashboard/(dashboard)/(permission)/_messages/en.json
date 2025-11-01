@@ -45,12 +45,14 @@
     }
   },
   "team": {
-    "title": "Team Management",
+    "title": "Team Members",
     "members": {
       "user": "User",
       "status": "Status",
       "role": "Role",
       "actions": "Actions",
+      "createdDate": "Created Date",
+      "updatedDate": "Updated Date",
       "you": "You",
       "invited": "Invited",
       "declined": "Declined",
@@ -58,9 +60,15 @@
       "owner": "Owner",
       "edit": "Edit",
       "more": "More actions",
-      "filterMembers": "Filter members...",
+      "searchMembers": "Search members...",
       "invite": "Invite Member",
-      "usersCount": "{count, plural, =0 {No users} =1 {1 user} other {# users}}"
+      "usersCount": "{count, plural, =0 {No users} =1 {1 user} other {# users}}",
+      "statuses": {
+        "invited": "Invited",
+        "declined": "Declined",
+        "joined": "Joined",
+        "review": "Review"
+      }
     },
     "addMember": {
       "title": "Add Member",
@@ -127,6 +135,43 @@
         "title": "Member Updated",
         "description": "Member information has been updated successfully."
       }
+    }
+  },
+  "message":{
+    "edit":{
+      "title": "Details & Management",
+      "description": "Update member information for {email}",
+      "lastLogin": "Last Login Time",
+      "role": "Role",
+      "selectRole": "Please select role",
+      "status": "Member Access Permission",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving...",
+      "statuses": {
+        "activate": "Activate",
+        "deactivate": "Deactivate"
+      },
+      "successfully": "Member access permission updated successfully",
+      "failed": "Failed to update member access permission",
+      "invitedDescription": "This user has not completed verification (invited). Please confirm whether the user has received the verification email.",
+      "lastOwnerDescription": "This user is the last owner and their permissions cannot be modified."
+    },
+    "remove":{
+      "action": "Remove Member",
+      "title": "Confirm to remove member",
+      "content": "Are you sure you want to remove {email} ?",
+      "cancel": "Cancel",
+      "remove": "Remove"
+    },
+    "transfer":{
+      "title": "Transfer Organization Owner",
+      "content": "You are about to transfer the highest \"Owner\" privileges of the organization to \"Target Member Name\".",
+      "logoutWarning": "You will be automatically logged out after the transfer is completed.",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "successfully": "Ownership transferred successfully",
+      "failed": "Failed to transfer ownership"
     }
   }
 }
