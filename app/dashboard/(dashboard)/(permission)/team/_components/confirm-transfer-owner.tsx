@@ -11,49 +11,53 @@ import {
 import { useTranslations } from "next-intl";
 
 type Props = {
-  content?: React.ReactNode;
   open: boolean;
   data: {
     email: string;
+    name?: string;
   };
   pending: boolean;
   onClose: () => void;
   onConfirm: () => void;
 };
 
-export const ConfirmRemoveMember = ({
-  content,
+export const ConfirmTransferOwner = ({
   open,
   data,
   pending = false,
   onClose,
   onConfirm,
 }: Props) => {
-  const t = useTranslations("dashboard.permission.message.remove");
+  const t = useTranslations("dashboard.permission.message.transfer");
+  
   return (  
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
         </DialogHeader>
-
         <div className="flex flex-col gap-4">
-          <div className="flex items-start gap-4">{content}</div>
-          <p className="text-sm text-muted-foreground">
-            {t("content", { email: data.email })}
+          <p className="text-sm text-muted-foreground" style={{ whiteSpace: 'pre-line' }}>
+            {t("content", { 
+              email: data.email,
+              name: data.name || data.email.split("@")[0]
+            })}
           </p>
+          <p className="text-sm text-red-800 font-medium">
+              {t("logoutWarning")}
+            </p>
           <div className="flex justify-end gap-4">
-            <Button variant="outline" onClick={onClose}>{t("cancel")}</Button>
+            <Button variant="outline" onClick={onClose}>
+              {t("cancel")}
+            </Button>
             <ActionButton
-              variant="destructive"
+              variant="default"
               onClick={async () => {
                 await onConfirm();
-                onClose();
               }}
               loading={pending}
-              disabled={pending}
             >
-              {t("remove")}
+              {t("confirm")}
             </ActionButton>
           </div>
         </div>

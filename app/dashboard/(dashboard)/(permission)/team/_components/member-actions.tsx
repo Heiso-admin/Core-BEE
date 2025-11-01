@@ -1,6 +1,8 @@
-import { DoorOpen, Send, Trash2 } from "lucide-react";
+import { Trash2, Edit2, Crown } from "lucide-react";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,27 +10,44 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Member } from "../_server/team.service";
-import { leaveTeam, resendInvite } from "../_server/team.service";
+import { leaveTeam, resendInvite, transferOwnership } from "../_server/team.service";
 import { ConfirmRemoveMember } from "./confirm-remove-member";
 import { ConfirmResendInvitation } from "./confirm-resend-invitation";
+import { ConfirmTransferOwner } from "./confirm-transfer-owner";
+import { useTranslations } from "next-intl";
+import { EditMember } from "./edit-member";
+import { MemberStatus, Role } from "./member-list";
 
 export function MemberActions({
   member,
   currentMembers,
+  roles,
   children,
 }: {
   member: Member;
   currentMembers: Member[];
+  roles: Role[];
   children: React.ReactNode;
 }) {
+  const t = useTranslations("dashboard.permission.message");
+  const { data: session } = useSession();
   const [isRemovePending, startRemoveTransition] = useTransition();
   const [isResendPending, startResendTransition] = useTransition();
-  const [openResendConfirm, setOpenResendConfirm] = useState(false);
-  const [openRemoveConfirm, setOpenRemoveConfirm] = useState(false);
-  const ownerCount = currentMembers.filter(
-    (m) => m.isOwner && m.status === "joined",
-  ).length;
+  const [isTransferPending, startTransferTransition] = useTransition();
+  const [openEditConfirm, setOpenEditConfirm] = useState<boolean>(false);
+  const [openResendConfirm, setOpenResendConfirm] = useState<boolean>(false);
+  const [openRemoveConfirm, setOpenRemoveConfirm] = useState<boolean>(false);
+  const [openTransferConfirm, setOpenTransferConfirm] = useState<boolean>(false);
 
+  const lastOwner = (currentMembers.filter(
+    (m) => m.isOwner && m.status === MemberStatus.Joined,
+  ).length) === 1;
+
+  // 檢查當前用戶是否為擁有者
+  const currentUserMember = currentMembers.find(m => m.user?.id === session?.user?.id);
+  const isCurrentUserOwner = currentUserMember?.isOwner;
+  const canTransferTo = member.status === MemberStatus.Joined && member.user?.id !== session?.user?.id;
+  
   const handleRemove = () => {
     startRemoveTransition(async () => {
       await leaveTeam(member.id);
@@ -43,12 +62,58 @@ export function MemberActions({
     });
   };
 
+  const handleTransfer = () => {
+    if (!currentUserMember) return;
+    
+    startTransferTransition(async () => {
+      try {
+        await transferOwnership({
+          newOwnerId: member.id,
+          currentOwnerId: currentUserMember.id,
+        });
+        toast.success(t("transfer.successfully"));
+        setOpenTransferConfirm(false);
+        
+        // 轉移完成後登出當前用戶
+        setTimeout(() => {
+          signOut({
+            callbackUrl: "/login",
+            redirect: true,
+          });
+        }, 1500); // 給用戶1.5秒時間看到成功消息
+      } catch (error) {
+        toast.error(t("transfer.failed"));
+        console.error("Transfer ownership error:", error);
+      }
+    });
+  };
+
   return (
     <div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {member.status === "invited" && (
+          <DropdownMenuItem
+            className="text-xs cursor-pointer"
+            onClick={() => setOpenEditConfirm(true)}
+          >
+            <Edit2 className="h-4 w-4" />
+            {t("edit.title")}
+          </DropdownMenuItem>
+
+          {/* 只有當前用戶是擁有者且目標用戶是啟用狀態時才顯示轉移選項 */}
+          {isCurrentUserOwner && canTransferTo && (
+            <DropdownMenuItem
+              className="text-xs cursor-pointer"
+              onClick={() => setOpenTransferConfirm(true)}
+            >
+              <Crown className="h-4 w-4" />
+              {t("transfer.title")}
+            </DropdownMenuItem>
+          )}
+
+          {/* 重新計算邀請郵件，目前拔掉，請使用者再次申請 */}
+          {/* {member.status === MemberStatus.Invited && (
             <DropdownMenuItem
               className="text-xs"
               onClick={() => setOpenResendConfirm(true)}
@@ -56,70 +121,35 @@ export function MemberActions({
               <Send className="h-4 w-4" />
               Resend invitation
             </DropdownMenuItem>
-          )}
+          )} */}
 
-          {member.status === "declined" && (
+          {/* 踢出擁有者權限，但最後一個擁有者不能踢出 */}
+          {/* {member.isOwner && member.status === MemberStatus.Joined && (
             <DropdownMenuItem
               className="text-xs"
-              onClick={() => setOpenRemoveConfirm(true)}
-            >
-              <Trash2 className="h-4 w-4" />
-              Remove member
-            </DropdownMenuItem>
-          )}
-
-          {member.isOwner && member.status === "joined" && (
-            <DropdownMenuItem
-              className="text-xs"
-              disabled={ownerCount === 1}
+              disabled={lastOwner}
               onClick={() => setOpenRemoveConfirm(true)}
             >
               <DoorOpen className="h-4 w-4" />
               Leave team
             </DropdownMenuItem>
-          )}
+          )} */}
 
-          {!member.isOwner && (
+          {/* 刪除成員，僅未驗證者，已驗證者僅只能停用 */}
+          {member.status === "invited" && (
             <DropdownMenuItem
               className="text-xs"
               onClick={() => setOpenRemoveConfirm(true)}
             >
               <Trash2 className="h-4 w-4" />
-              Remove member
+              {t("remove.action")}
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
 
+
       <ConfirmRemoveMember
-        title="Confirm to remove member"
-        // content={
-        //   <>
-        //     <AlertTriangle className="h-5 w-5 text-amber-500" />
-        //     <div className="flex flex-col gap-2">
-        //       <p className="font-medium">
-        //         All user content from this member will be permanently removed.
-        //       </p>
-        //       <p className="text-sm text-muted-foreground">
-        //         Removing a member will delete all of the user's saved content in
-        //         all projects of this organization, which includes:
-        //       </p>
-        //       <ul className="list-inside list-disc text-sm text-muted-foreground">
-        //         <li>
-        //           SQL snippets (both <span className="underline">private</span>{' '}
-        //           and <span className="underline">shared</span> snippets)
-        //         </li>
-        //         <li>Custom reports</li>
-        //         <li>Log Explorer queries</li>
-        //       </ul>
-        //       <p className="text-sm text-muted-foreground">
-        //         If you'd like to retain the member's shared SQL snippets, right
-        //         click on them and "Duplicate query" in the SQL Editor before
-        //         removing this member.
-        //       </p>
-        //     </div>
-        //   </>
-        // }
         open={openRemoveConfirm}
         onClose={() => setOpenRemoveConfirm(false)}
         data={{
@@ -141,6 +171,25 @@ export function MemberActions({
         onClose={() => setOpenResendConfirm(false)}
         pending={isResendPending}
         onConfirm={handleResend}
+      />
+
+      <EditMember
+        member={member}
+        roles={roles}
+        open={openEditConfirm}
+        onClose={setOpenEditConfirm}
+        lastOwner={lastOwner && member.isOwner && member.status !== MemberStatus.Disabled}
+      />
+
+      <ConfirmTransferOwner
+        open={openTransferConfirm}
+        onClose={() => setOpenTransferConfirm(false)}
+        data={{
+          email: member.email,
+          name: member.user?.name,
+        }}
+        pending={isTransferPending}
+        onConfirm={handleTransfer}
       />
     </div>
   );
