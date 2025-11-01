@@ -1,12 +1,13 @@
 "use server";
 
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNull, asc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
+import { auth } from "@/modules/auth/auth.config";
 import { settings } from "@/config/settings";
 import { db } from "@/lib/db";
 import type { TMember, TRole, TUser } from "@/lib/db/schema";
-import { members } from "@/lib/db/schema";
+import { members, roles } from "@/lib/db/schema";
 import { users } from "@/lib/db/schema/auth/user";
 import { sendEmail, sendInviteUserEmail } from "@/lib/email";
 import { hashPassword } from "@/lib/hash";
@@ -72,6 +73,7 @@ async function updateMember({
   data: {
     isOwner?: boolean;
     roleId?: string | null;
+    status?: string;
   };
 }) {
   const member = await db.update(members).set(data).where(eq(members.id, id));
@@ -209,6 +211,78 @@ async function addMember({
   return { user, member };
 }
 
+async function transferOwnership({
+  newOwnerId,
+  currentOwnerId,
+}: {
+  newOwnerId: string;
+  currentOwnerId: string;
+}) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  // 查找當前擁有者
+  const currentOwnerMember = await db.query.members.findFirst({
+    where: and(
+      eq(members.id, currentOwnerId),
+      eq(members.userId, session.user.id),
+      eq(members.isOwner, true)
+    ),
+  });
+
+  if (!currentOwnerMember) {
+    throw new Error("Only current owner can transfer ownership");
+  }
+
+  // 查找新擁有者
+  const newOwnerMember = await db.query.members.findFirst({
+    where: and(
+      eq(members.id, newOwnerId),
+      eq(members.status, "joined")
+    ),
+  });
+
+  if (!newOwnerMember) {
+    throw new Error("Target member must be joined and active");
+  }
+
+  // 查找預設角色
+  const defaultRole = await db.query.roles.findFirst({
+    where: isNull(roles.deletedAt),
+    orderBy: [asc(roles.createdAt)],
+  });
+
+  if (!defaultRole) {
+    throw new Error("No available role found for former owner");
+  }
+
+  await db.transaction(async (tx) => {
+    // 設定新擁有者
+    await tx
+      .update(members)
+      .set({
+        isOwner: true,
+        roleId: null,
+      })
+      .where(eq(members.id, newOwnerId));
+
+    // 設定前擁有者角色
+    await tx
+      .update(members)
+      .set({
+        isOwner: false,
+        roleId: null, //移除權限
+      })
+      .where(eq(members.id, currentOwnerId));
+  });
+
+  revalidatePath("/dashboard/team");
+  
+  return { success: true };
+}
+
 export {
   getTeamMembers,
   invite,
@@ -217,4 +291,5 @@ export {
   revokeInvite,
   leaveTeam,
   addMember,
+  transferOwnership,
 };
