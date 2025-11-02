@@ -60,7 +60,7 @@
       "owner": "擁有者",
       "edit": "編輯",
       "more": "更多操作",
-      "invite": "邀請成員",
+      "invite": "新增成員",
       "searchMembers": "搜尋成員...",
       "usersCount": "{count, plural, =0 {無使用者} other {# 位使用者}}",
       "statuses": {
@@ -100,7 +100,7 @@
       }
     },
     "invite": {
-      "title": "邀請成員",
+      "title": "新增成員",
       "description": "邀請新成員加入您的團隊。",
       "form": {
         "name":"名稱",

@@ -61,7 +61,7 @@
       "edit": "Edit",
       "more": "More actions",
       "searchMembers": "Search members...",
-      "invite": "Invite Member",
+      "invite": "Add Member",
       "usersCount": "{count, plural, =0 {No users} =1 {1 user} other {# users}}",
       "statuses": {
         "invited": "Invited",
@@ -100,7 +100,7 @@
       }
     },
     "invite": {
-      "title": "Invite Member",
+      "title": "Add Member",
       "description": "Invite a new member to join your team.",
       "form": {
         "email": "Email",

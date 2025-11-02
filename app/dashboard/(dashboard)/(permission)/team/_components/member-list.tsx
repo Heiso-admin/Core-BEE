@@ -178,7 +178,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
             placeholder={t("searchMembers")}
           />
           <ProtectedArea resource="team" action="invite">
-            <AddMember roles={AllRoles} />
+            {/* <AddMember roles={AllRoles} /> */}
             <InviteMember userName={userName} roles={AllRoles}>
               <Button><Plus className="h-4 w-4" /> {t("invite")}</Button>
             </InviteMember>
