@@ -77,14 +77,14 @@
         "email": "Email",
         "emailPlaceholder": "Enter email address",
         "role": "Role",
-        "rolePlaceholder": "Select a role",
+        "rolePlaceholder": "Please select role",
         "initialPassword": "Initial Password",
         "initialPasswordPlaceholder": "Enter initial password",
         "showPassword": "Show password",
         "hidePassword": "Hide password",
         "validation": {
           "emailInvalid": "Please enter a valid email address",
-          "roleRequired": "Please select a role",
+          "roleRequired": "Please select role",
           "passwordRequired": "Password is required",
           "passwordMinLength": "Password must be at least 8 characters"
         }
@@ -108,7 +108,7 @@
         "name": "Name",
         "namePlaceholder": "Please enter user name",
         "role": "Role",
-        "rolePlaceholder": "Select a role",
+        "rolePlaceholder": "Please select role",
         "owner": "Owner",
         "validation": {
           "emailInvalid": "Please enter a valid email address",
@@ -128,7 +128,7 @@
       "description": "Update member information for {email}",
       "form": {
         "role": "Role",
-        "rolePlaceholder": "Select a role",
+        "rolePlaceholder": "Please select role",
         "owner": "Owner"
       },
       "actions": {
@@ -181,7 +181,7 @@
       "action": "Force Password Reset",
       "confirm":{
         "title": "Confirm Password Reset",
-        "description": "You are about to reset the password for {userName}.<br><br>Warning: After the reset, the user will need to use a new password to log in to the system.",
+        "description": "You are about to reset the password for {userName}.\n Warning: After the reset, the user will need to use a new password to log in to the system.",
         "cancel": "Cancel",
         "generate": "Generate New Password"
       },
@@ -198,10 +198,13 @@
       }
     },
     "review":{
+      "action":"Approve",
       "title":"Review Member",
-      "description":"Please assign an initial role to this new member.\n Click \"Approve\" to grant them system access; click \"Reject\" to disable their account.",
-      "cancel":"Reject",
-      "confirm":"Approve"
+      "description":"Please assign an initial role to this new member.\n * Approve: Grants system access and activates the account. \n * Reject: Disables the account and blocks system access.",
+      "reject":"Reject",
+      "approve":"Approve",
+      "success":"Member access permission updated successfully",
+      "failed":"Failed to update member access permission"
     }
   }
 }

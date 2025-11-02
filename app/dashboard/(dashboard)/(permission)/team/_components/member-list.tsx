@@ -9,17 +9,15 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { MoreHorizontal, Search } from "lucide-react";
+import { MoreHorizontal, Plus } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { ProtectedArea } from "@/components/permission/protected-area";
-import { ProtectedButton } from "@/components/permission/protected-button";
 import { Avatar, DataPagination } from "@/components/primitives";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -30,7 +28,6 @@ import {
 } from "@/components/ui/table";
 import type { Member } from "../_server/team.service";
 import { AddMember } from "./add-member";
-import { EditMember } from "./edit-member";
 import { InviteMember } from "./invite-member";
 import { MemberActions } from "./member-actions";
 import { SearchInput } from "@/components/ui/search-input";
@@ -42,7 +39,8 @@ export enum MemberStatus {
   Joined = "joined",          // 已加入/啟用
   Review = "review",          // 待審核
   Disabled = "disabled",      // 停用
-  Declined = "declined", // 已拒絕
+  Declined = "declined",      // 已拒絕
+  Owner = "Owner",            // 擁有者
 }
 
 export interface Role {
@@ -56,7 +54,9 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
   const te = useTranslations("dashboard.permission.team");
   const t = useTranslations("dashboard.permission.team.members");
   const [sorting, setSorting] = useState<SortingState>([]);
-  console.log(data);
+  console.log("roles--",data, roles);
+
+  const AllRoles: Role[]= [{id: MemberStatus.Owner, name: MemberStatus.Owner},...roles]
 
   const showStatus = useCallback((member: string | null) => {
     switch (member) {
@@ -92,7 +92,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
     {
       accessorFn: (row) => {
         if (row.isOwner) {
-          return "Owner"; 
+          return MemberStatus.Owner; 
         }
         return row.role?.name || "No Role";
       },
@@ -105,7 +105,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
       cell: ({ row }) => {
         const isOwner = row.original.isOwner;
         const nullOwner = row.original.role === null && !row.original.isOwner
-        return (!nullOwner&&<Badge variant="tag">{isOwner? t("owner"): row.original.role?.name}</Badge>);
+        return (!nullOwner&&<Badge variant="tag">{isOwner? MemberStatus.Owner: row.original.role?.name}</Badge>);
       },
     },
     {
@@ -136,7 +136,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
         return !isYou && (
           <div className="w-full flex items-center justify-center gap-2">
             <ProtectedArea resource="member" action="edit">
-              <MemberActions member={row.original} currentMembers={data} roles={roles}>
+              <MemberActions member={row.original} currentMembers={data} roles={AllRoles}>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
                   <MoreHorizontal className="h-4 w-4" />
                   <span className="sr-only">{t("more")}</span>
@@ -178,9 +178,9 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
             placeholder={t("searchMembers")}
           />
           <ProtectedArea resource="team" action="invite">
-            <AddMember roles={roles} />
-            <InviteMember userName={userName} roles={roles}>
-              <Button>{t("invite")}</Button>
+            <AddMember roles={AllRoles} />
+            <InviteMember userName={userName} roles={AllRoles}>
+              <Button><Plus className="h-4 w-4" /> {t("invite")}</Button>
             </InviteMember>
           </ProtectedArea>
         </div>

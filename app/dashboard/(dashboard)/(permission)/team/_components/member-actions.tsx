@@ -1,4 +1,4 @@
-import { Trash2, Edit2, Crown, RotateCcwKey } from "lucide-react";
+import { Trash2, Edit2, Crown, RotateCcwKey, BadgeCheck } from "lucide-react";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
@@ -11,14 +11,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import type { Member } from "../_server/team.service";
-import { leaveTeam, resendInvite, transferOwnership, resetMemberPassword } from "../_server/team.service";
+import { leaveTeam, resendInvite, transferOwnership, resetMemberPassword, updateMember } from "../_server/team.service";
 import { ConfirmRemoveMember } from "./confirm-remove-member";
 import { ConfirmResendInvitation } from "./confirm-resend-invitation";
 import { ConfirmTransferOwner } from "./confirm-transfer-owner";
 import { ConfirmResetPassword } from "./confirm-reset-password";
+import { ConfirmReviewMember } from "./confirm-review-member";
 import { useTranslations } from "next-intl";
 import { EditMember } from "./edit-member";
-import { MemberStatus, Role } from "./member-list";
+import { MemberStatus, type Role } from "./member-list";
 
 export function MemberActions({
   member,
@@ -37,12 +38,14 @@ export function MemberActions({
   const [isResendPending, startResendTransition] = useTransition();
   const [isTransferPending, startTransferTransition] = useTransition();
   const [isResetPasswordPending, startResetPasswordTransition] = useTransition();
+  const [isReviewPending, startReviewTransition] = useTransition();
   const [openEditConfirm, setOpenEditConfirm] = useState<boolean>(false);
   const [openResendConfirm, setOpenResendConfirm] = useState<boolean>(false);
   const [openRemoveConfirm, setOpenRemoveConfirm] = useState<boolean>(false);
   const [openTransferConfirm, setOpenTransferConfirm] = useState<boolean>(false);
   const [openResetPassword, setOpenResetPassword] = useState<boolean>(false);
-
+  const [openReviewConfirm, setOpenReviewConfirm] = useState<boolean>(false);
+  
   const lastOwner = (currentMembers.filter(
     (m) => m.isOwner && m.status === MemberStatus.Joined,
   ).length) === 1;
@@ -56,6 +59,38 @@ export function MemberActions({
     startRemoveTransition(async () => {
       await leaveTeam(member.id);
       toast.success("Member removed");
+    });
+  };
+
+  const handleApproveReview = (roleId: string) => {
+    startReviewTransition(async () => {
+      try {
+        await updateMember({
+          id: member.id,
+          data: { status: MemberStatus.Joined, roleId },
+        });
+        toast.success(t("review.success"));
+        setOpenReviewConfirm(false);
+      } catch (error) {
+        toast.error(t("review.failed"));
+        console.error("Approve review error:", error);
+      }
+    });
+  };
+
+  const handleRejectReview = () => {
+    startReviewTransition(async () => {
+      try {
+        await updateMember({
+          id: member.id,
+          data: { status: MemberStatus.Disabled, roleId: null },
+        });
+        toast.success(t("review.success"));
+        setOpenReviewConfirm(false);
+      } catch (error) {
+        toast.error(t("review.failed"));
+        console.error("Reject review error:", error);
+      }
     });
   };
 
@@ -139,6 +174,17 @@ export function MemberActions({
             >
               <Crown className="h-4 w-4" />
               {t("transfer.title")}
+            </DropdownMenuItem>
+          )}
+
+          {/* 審查用戶狀態，僅擁有者可操作 */}
+          {isCurrentUserOwner && member.status === MemberStatus.Review && (
+            <DropdownMenuItem
+              className="text-xs"
+              onClick={() => setOpenReviewConfirm(true)}
+            >
+              <BadgeCheck className="h-4 w-4" />
+              {t("review.action")}
             </DropdownMenuItem>
           )}
 
@@ -240,6 +286,16 @@ export function MemberActions({
         pending={isResetPasswordPending}
         onClose={() => setOpenResetPassword(false)}
         onConfirm={handleResetPassword}
+      />
+      
+      <ConfirmReviewMember
+        open={openReviewConfirm}
+        member={member}
+        roles={roles}
+        pending={isReviewPending}
+        onClose={() => setOpenReviewConfirm(false)}
+        onApprove={handleApproveReview}
+        onReject={handleRejectReview}
       />
     </div>
   );

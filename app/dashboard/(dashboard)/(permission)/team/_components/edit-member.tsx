@@ -56,7 +56,6 @@ interface EditMemberProps {
 
 export function EditMember({ open, onClose, member, roles, lastOwner }: EditMemberProps) {
   const t = useTranslations("dashboard.permission.message.edit");
-  const owner = useTranslations("dashboard.permission.team.members");
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<UpdateMemberFormValues>({
@@ -133,7 +132,7 @@ export function EditMember({ open, onClose, member, roles, lastOwner }: EditMemb
                           field.onChange(value);
                         }
                       }}
-                      value={form.watch("isOwner") ? "owner" : field.value}
+                      value={form.watch("isOwner") ? MemberStatus.Owner : field.value}
                     >
                       <FormControl>
                         <SelectTrigger className="w-full">
@@ -141,7 +140,6 @@ export function EditMember({ open, onClose, member, roles, lastOwner }: EditMemb
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="w-full">
-                        <SelectItem value="owner">{owner("owner")}</SelectItem>
                         {roles.map((role) => (
                           <SelectItem key={role.id} value={role.id}>
                             {role.name}

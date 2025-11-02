@@ -49,8 +49,12 @@ export function InviteMember({
   const [open, setOpen] = useState(false);
 
   const inviteFormSchema = z.object({
-    email: z.email().min(1, t("form.validation.emailInvalid")),
-    role: z.string().min(1, t("form.validation.roleInvalid")),
+    email: z
+      .string()
+      .min(1, t("form.validation.emailInvalid")),
+    role: z
+      .string()
+      .min(1, t("form.validation.roleInvalid")),
     entry: z.string().optional(),
   });
 
@@ -60,7 +64,7 @@ export function InviteMember({
     resolver: zodResolver(inviteFormSchema),
     defaultValues: {
       email: "",
-      role: "owner",
+      role: "",
       entry: "",
     },
   });
@@ -142,7 +146,6 @@ export function InviteMember({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="owner">{t("form.owner")}</SelectItem>
                       {roles.map((e) => (
                         <SelectItem key={e.id} value={e.id}>
                           {e.name}
