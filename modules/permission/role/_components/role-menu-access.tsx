@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import { useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import * as z from "zod";
-import { ActionButton, MenuTree } from "@/components/primitives";
-import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
+import { useTransition } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import * as z from 'zod';
+import { ActionButton, MenuTree } from '@/components/primitives';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import {
   Sheet,
   SheetContent,
@@ -16,10 +16,10 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import type { TMenu } from "@/lib/db/schema";
-import { assignMenus } from "../_server/assign.service";
-import type { Role } from "../_server/role.service";
+} from '@/components/ui/sheet';
+import type { TMenu } from '@/lib/db/schema';
+import { assignMenus } from '../_server/assign.service';
+import type { Role } from '../_server/role.service';
 
 const formSchema = z.object({
   selectedMenus: z.array(z.string()),
@@ -37,7 +37,7 @@ export function MenuAccess({
   menus: TMenu[];
 }) {
   const [isSaving, startTransition] = useTransition();
-  const t = useTranslations("dashboard.permission.role.menuAccess");
+  const t = useTranslations('role.menuAccess');
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -55,7 +55,7 @@ export function MenuAccess({
         roleId,
         menus: values.selectedMenus,
       });
-      toast(t("success"));
+      toast(t('success'));
     });
   };
 
@@ -64,9 +64,9 @@ export function MenuAccess({
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent className="min-w-3xl overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>{t("title")}</SheetTitle>
+          <SheetTitle>{t('title')}</SheetTitle>
           <SheetDescription>
-            {t("description", { name: data?.name || "" })}
+            {t('description', { name: data?.name || '' })}
           </SheetDescription>
         </SheetHeader>
         <Form {...form}>
@@ -102,9 +102,9 @@ export function MenuAccess({
                 variant="outline"
                 onClick={() => form.reset()}
               >
-                {t("actions.cancel")}
+                {t('actions.cancel')}
               </Button>
-              <Button type="submit">{t("actions.save")}</Button>
+              <Button type="submit">{t('actions.save')}</Button>
             </div>
           </form>
         </Form>

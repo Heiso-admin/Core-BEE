@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import { useEffect, useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { ActionButton } from "@/components/primitives";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
+import { useEffect, useState, useTransition } from 'react';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { ActionButton } from '@/components/primitives';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,16 +16,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+} from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -33,8 +33,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -42,13 +42,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Textarea } from "@/components/ui/textarea";
-import type { TMenu } from "@/lib/db/schema";
-import type { Role } from "../_server/role.service";
-import { createRole, deleteRole, updateRole } from "../_server/role.service";
-import { MenuAccess } from "./role-menu-access";
-import { PermissionAccess } from "./role-permission-access";
+} from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
+import type { TMenu } from '@/lib/db/schema';
+import type { Role } from '../_server/role.service';
+import { createRole, deleteRole, updateRole } from '../_server/role.service';
+import { MenuAccess } from './role-menu-access';
+import { PermissionAccess } from './role-permission-access';
+import { useAccount } from '@/providers/account';
+import { usePathname } from 'next/navigation';
 
 export function RoleList({
   data,
@@ -59,9 +61,11 @@ export function RoleList({
   menus: TMenu[];
   permissions: any;
 }) {
-  const t = useTranslations("dashboard.permission.role.list");
+  const t = useTranslations('role.list');
   const [open, setOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Role | null>(null);
+  const { isDeveloper } = useAccount();
+  const pathname = usePathname();
 
   return (
     <div className="space-y-3">
@@ -74,26 +78,28 @@ export function RoleList({
         data={selectedItem}
       />
 
-      <div className="flex justify-end">
-        <Button onClick={() => setOpen(true)}>{t("add_new")}</Button>
-      </div>
+      {isDeveloper && pathname.indexOf('/dev-center') !== -1 && (
+        <div className="flex justify-end">
+          <Button onClick={() => setOpen(true)}>{t('add_new')}</Button>
+        </div>
+      )}
 
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>{t("table.role_name")}</TableHead>
-            <TableHead>{t("table.description")}</TableHead>
-            <TableHead className="text-right">{t("table.actions")}</TableHead>
+            <TableHead>{t('table.role_name')}</TableHead>
+            <TableHead>{t('table.description')}</TableHead>
+            <TableHead className="text-right">{t('table.actions')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {data.map((role) => (
             <TableRow key={role.id}>
               <TableCell>
-                {role.name}{" "}
+                {role.name}{' '}
                 {role.fullAccess && (
                   <Badge className="ml-1" variant="outline">
-                    {t("full_access")}
+                    {t('full_access')}
                   </Badge>
                 )}
               </TableCell>
@@ -107,25 +113,25 @@ export function RoleList({
                     setOpen(true);
                   }}
                 >
-                  {t("actions.edit")}
+                  {t('actions.edit')}
                 </Button>
                 {!role.fullAccess && (
                   <>
                     <MenuAccess data={role} menus={menus}>
                       <Button size="sm" variant="secondary">
-                        {t("actions.menu_access")}
+                        {t('actions.menu_access')}
                       </Button>
                     </MenuAccess>
                     <PermissionAccess data={role} permissions={permissions}>
                       <Button size="sm" variant="secondary">
-                        {t("actions.permission")}
+                        {t('actions.permission')}
                       </Button>
                     </PermissionAccess>
                   </>
                 )}
                 <DeleteConfirm id={role.id}>
                   <Button size="sm" variant="destructive">
-                    {t("actions.delete")}
+                    {t('actions.delete')}
                   </Button>
                 </DeleteConfirm>
               </TableCell>
@@ -146,11 +152,11 @@ function CreateOrUpdateRole({
   onClose: () => void;
   data: Role | null;
 }) {
-  const t = useTranslations("dashboard.permission.role.form");
+  const t = useTranslations('role.form');
   const [isPending, startTransition] = useTransition();
 
   const formSchema = z.object({
-    name: z.string().min(1, { message: t("validation.name_required") }),
+    name: z.string().min(1, { message: t('validation.name_required') }),
     description: z.string().optional(),
     fullAccess: z.boolean().optional(),
   });
@@ -164,9 +170,9 @@ function CreateOrUpdateRole({
 
   useEffect(() => {
     if (data) {
-      form.setValue("name", data.name);
-      form.setValue("description", data.description ?? "");
-      form.setValue("fullAccess", data.fullAccess ?? false);
+      form.setValue('name', data.name);
+      form.setValue('description', data.description ?? '');
+      form.setValue('fullAccess', data.fullAccess ?? false);
     }
   }, [data, form]);
 
@@ -190,7 +196,7 @@ function CreateOrUpdateRole({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {data ? t("update_title") : t("create_title")}
+            {data ? t('update_title') : t('create_title')}
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -201,9 +207,9 @@ function CreateOrUpdateRole({
               defaultValue=""
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("name")}</FormLabel>
+                  <FormLabel>{t('name')}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("name")} {...field} />
+                    <Input placeholder={t('name')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -215,9 +221,9 @@ function CreateOrUpdateRole({
               defaultValue=""
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("description")}</FormLabel>
+                  <FormLabel>{t('description')}</FormLabel>
                   <FormControl>
-                    <Textarea placeholder={t("description")} {...field} />
+                    <Textarea placeholder={t('description')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -234,7 +240,7 @@ function CreateOrUpdateRole({
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <FormLabel>{t("full_access")}</FormLabel>
+                  <FormLabel>{t('full_access')}</FormLabel>
                   <FormMessage />
                 </FormItem>
               )}
@@ -245,7 +251,7 @@ function CreateOrUpdateRole({
                 loading={isPending}
                 disabled={isPending}
               >
-                {t("save")}
+                {t('save')}
               </ActionButton>
             </div>
           </form>
@@ -262,7 +268,7 @@ function DeleteConfirm({
   children: React.ReactNode;
   id: string;
 }) {
-  const t = useTranslations("dashboard.permission.role");
+  const t = useTranslations('role');
   const [isDeletePending, startDeleteTransition] = useTransition();
 
   const handleDelete = async () => {
@@ -276,20 +282,20 @@ function DeleteConfirm({
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t("delete_title")}</AlertDialogTitle>
+          <AlertDialogTitle>{t('delete_title')}</AlertDialogTitle>
           <AlertDialogDescription>
-            {t("delete_description")}
+            {t('delete_description')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+          <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
           <AlertDialogAction asChild>
             <ActionButton
               onClick={handleDelete}
               loading={isDeletePending}
               disabled={isDeletePending}
             >
-              {t("delete")}
+              {t('delete')}
             </ActionButton>
           </AlertDialogAction>
         </AlertDialogFooter>
