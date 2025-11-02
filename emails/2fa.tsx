@@ -6,6 +6,7 @@ import {
   Heading,
   Hr,
   Html,
+  Img,
   Preview,
   Section,
   Tailwind,
@@ -13,12 +14,14 @@ import {
 } from "@react-email/components";
 
 interface TwoFactorEmailProps {
+  logoUrl: string;
   code: string;
   username?: string;
   expiresInMinutes?: number;
 }
 
 export default function TwoFactorEmail({
+  logoUrl="https://cdn.heisoo.com/smartsight/MWcIZjeOLK.svg",
   code,
   username = "",
   expiresInMinutes = 10,
@@ -28,49 +31,32 @@ export default function TwoFactorEmail({
       <Head />
       <Preview>Your Login Verification Code</Preview>
       <Tailwind>
-        <Body className="bg-gray-50 font-sans">
-          <Container className="mx-auto py-8 px-4">
+        <Body className="mx-auto my-auto bg-[#f6f9fc] font-sans p-2">
+          <Container className="mx-auto my-[40px] max-w-[500px] rounded border border-solid border-[#f0f0f0] bg-white p-[45px]">
             <Section className="bg-white rounded-lg shadow-lg p-8 max-w-lg mx-auto">
-              <Heading className="text-2xl font-bold text-gray-900 text-center mb-6">
-                Login Verification Code
+              <Section className="mt-[32px]">
+                <Img
+                  src={logoUrl}
+                  width="40"
+                  height="40"
+                  alt="Logo"
+                  className="mx-auto my-0"
+                />
+              </Section>
+              <Heading className="text-2xl text-gray-900 text-center mb-3">
+                Your verification code is
               </Heading>
-
-              {username && (
-                <Text className="text-gray-700 mb-4">Hello {username},</Text>
-              )}
-
-              <Text className="text-gray-700 mb-6">
-                You are attempting to log in to your account. Please use the
-                following verification code to complete the login:
-              </Text>
-
-              <Section className="bg-gray-100 rounded-lg p-6 text-center mb-6">
-                <Text className="font-mono text-3xl font-bold tracking-widest text-gray-900">
-                  {code}
+              <Section className="rounded-lg p-6 text-center mb-6">
+                <Text className="font-mono text-3xl tracking-[10px] text-gray-900">
+                  {/* {code} */}
+                  794270
                 </Text>
               </Section>
 
-              <Text className="text-gray-700 mb-2">
-                This verification code will expire in {expiresInMinutes}{" "}
-                minutes.
-              </Text>
-
               <Hr className="border-gray-200 my-6" />
 
-              <Text className="text-sm text-gray-600">Security Tips:</Text>
-              <Text className="text-sm text-gray-600 mb-2">
-                • Do not share this verification code with others
-              </Text>
-              <Text className="text-sm text-gray-600 mb-2">
-                • Our staff will never ask for your verification code
-              </Text>
-              <Text className="text-sm text-gray-600 mb-6">
-                • If you did not initiate this action, please change your
-                password immediately
-              </Text>
-
               <Text className="text-xs text-gray-500 text-center">
-                This is an automated message, please do not reply
+                This code will expire in 5 minutes. If you didn’t request this, you can safely ignore this email
               </Text>
             </Section>
           </Container>

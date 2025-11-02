@@ -3,110 +3,82 @@ import {
   Button,
   Container,
   Head,
+  Heading,
   Hr,
   Html,
+  Img,
+  Link,
   Preview,
   Section,
+  Tailwind,
   Text,
 } from "@react-email/components";
-import * as React from "react";
 
 interface ForgotPasswordEmailProps {
   resetLink: string;
-  username?: string;
+  logoUrl?: string;
+  orgName?: string;
 }
 
-export function ForgotPasswordEmail({
+export const ForgotPasswordEmail = ({
   resetLink,
-  username = "",
-}: ForgotPasswordEmailProps) {
+  logoUrl = "https://cdn.heisoo.com/smartsight/MWcIZjeOLK.svg",
+  orgName = "Heiso",
+}: ForgotPasswordEmailProps) => {
+
   return (
     <Html>
       <Head />
-      <Preview>Reset your password for Mini CMS</Preview>
-      <Body style={main}>
-        <Container style={container}>
-          <Text style={title}>Password Reset Request</Text>
-          <Text style={paragraph}>
-            {username ? `Hello ${username},` : "Hello,"}
-          </Text>
-          <Text style={paragraph}>
-            We received a request to reset your password for your Mini CMS
-            account. If you didn't make this request, you can safely ignore this
-            email.
-          </Text>
-          <Section style={buttonContainer}>
-            <Button style={button} href={resetLink}>
-              Reset Password
-            </Button>
-          </Section>
-          <Text style={paragraph}>
-            This password reset link will expire in 1 hour for security reasons.
-          </Text>
-          <Hr style={hr} />
-          <Text style={footer}>
-            If you're having trouble clicking the button, copy and paste this
-            URL into your browser:
-            <br />
-            {resetLink}
-          </Text>
-        </Container>
-      </Body>
+      <Preview>Reset your {orgName} password</Preview> 
+      <Tailwind>
+        <Body className="mx-auto my-auto bg-[#f6f9fc] font-sans p-2">
+          <Container className="mx-auto my-[40px] max-w-[500px] rounded border border-solid border-[#f0f0f0] bg-white p-[45px]">
+            <Section className="mt-[32px] text-center">
+              <Img
+                src={logoUrl}
+                width="40"
+                height="40"
+                alt={`${orgName} Logo`}
+                className="mx-auto my-0"
+              />
+            </Section>
+            <Heading className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal text-black">
+              Reset your <strong>{orgName}</strong> password
+            </Heading>
+            <Text className="text-[16px] leading-[26px] text-[#404040] text-center">
+              We received a request to reset the password for your account. Click the button below to choose a new password.
+            </Text>
+            <Section className="my-[30px] text-center">
+              <Button
+                className="rounded bg-[#FBBF24] my-6 px-5 py-3 text-center text-[16px] font-semibold text-black no-underline"
+                href={resetLink}
+              >
+                Reset Password
+              </Button>
+            </Section>
+
+             <Text className="text-[14px] leading-[24px] text-black text-center">
+              Or copy and paste this URL into your browser:<br/>
+              <Link href={resetLink} className="text-blue-600 no-underline">
+                {resetLink}
+              </Link>
+            </Text>
+            
+            <Hr className="mx-0 my-[20px] w-full border border-solid border-[#e6ebf1]" />
+            <Text className="text-[14px] leading-[24px] text-[#666666]">
+              If you did not request this change, you can safely ignore this email. Your password will remain the same. This link will expire in 30 minutes due to security concerns.
+            </Text>
+          </Container>
+        </Body>
+      </Tailwind>
     </Html>
   );
-}
-
-const main = {
-  backgroundColor: "#f6f9fc",
-  padding: "10px 0",
 };
 
-const container = {
-  backgroundColor: "#ffffff",
-  border: "1px solid #f0f0f0",
-  borderRadius: "5px",
-  margin: "0 auto",
-  padding: "45px",
-  maxWidth: "600px",
-};
+ForgotPasswordEmail.PreviewProps = {
+  resetLink: "https://example.com/reset-password?token=xxxx",
+  logoUrl: "https://cdn.heisoo.com/smartsight/MWcIZjeOLK.svg",
+  orgName: "Heiso",
+} as ForgotPasswordEmailProps;
 
-const title = {
-  fontSize: "24px",
-  fontWeight: "600",
-  color: "#000",
-  marginBottom: "24px",
-};
-
-const paragraph = {
-  fontSize: "16px",
-  lineHeight: "26px",
-  color: "#404040",
-};
-
-const buttonContainer = {
-  textAlign: "center" as const,
-  margin: "30px 0",
-};
-
-const button = {
-  backgroundColor: "#000000",
-  borderRadius: "5px",
-  color: "#fff",
-  fontSize: "16px",
-  fontWeight: "bold",
-  textDecoration: "none",
-  textAlign: "center" as const,
-  display: "inline-block",
-  padding: "12px 24px",
-};
-
-const hr = {
-  borderColor: "#e6ebf1",
-  margin: "20px 0",
-};
-
-const footer = {
-  color: "#666666",
-  fontSize: "14px",
-  lineHeight: "24px",
-};
+export default ForgotPasswordEmail;

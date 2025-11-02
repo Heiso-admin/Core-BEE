@@ -17,12 +17,14 @@ import {
 } from "@react-email/components";
 
 interface InviteUserEmailProps {
+  logoUrl: string;
   orgName: string;
   orgOwner: string;
   inviteLink: string;
 }
 
 export const InviteUserEmail = ({
+  logoUrl,
   orgName,
   orgOwner,
   inviteLink,
@@ -32,34 +34,36 @@ export const InviteUserEmail = ({
       <Head />
       <Preview>You have been invited to join {orgName} organization</Preview>
       <Tailwind>
-        <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
+        <Body className="mx-auto my-auto bg-[#f6f9fc] font-sans p-2">
+          <Container className="mx-auto my-[40px] max-w-[500px] rounded border border-solid border-[#f0f0f0] bg-white p-[45px]">
             <Section className="mt-[32px]">
               <Img
-                src="/logo.svg"
+                src={logoUrl}
                 width="40"
                 height="40"
                 alt="Logo"
                 className="mx-auto my-0"
               />
             </Section>
-            <Heading className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal text-black">
-              You have been invited to join <strong>{orgName}</strong>{" "}
-              organization
+            <Heading className="mx-0 mt-[30px] mb-0 p-0 text-center text-[24px] font-normal text-black">
+              Welcome to <strong>{orgName}</strong> !
             </Heading>
-            <Text className="text-[14px] leading-[24px] text-black">
-              {orgName} is an organization owned by {orgOwner}.
+            <Text className="mt-[8px] text-[14px] text-center font-bold text-black">
+              You’re the first member and owner of this admin portal.
+            </Text>
+            <Text className="text-[14px] text-center text-black mt-[30px]">
+              Once you set up your account, you’ll be able to invite other team members and start managing your workspace.
             </Text>
             <Section className="mt-[32px] mb-[32px] text-center">
               <Button
-                className="rounded bg-[#000000] px-5 py-3 text-center text-[12px] font-semibold text-white no-underline"
+                className="rounded bg-[#FBBF24] px-5 py-3 text-center text-[16px] font-semibold text-black no-underline"
                 href={inviteLink}
               >
-                Join Organization
+                Join {orgName}
               </Button>
             </Section>
-            <Text className="text-[14px] leading-[24px] text-black">
-              Or copy and paste this URL into your browser:{" "}
+            <Text className="text-[14px] leading-[24px] text-black text-center">
+              URL into your browser:<br/>
               <Link href={inviteLink} className="text-blue-600 no-underline">
                 {inviteLink}
               </Link>
@@ -78,8 +82,9 @@ export const InviteUserEmail = ({
 };
 
 InviteUserEmail.PreviewProps = {
-  orgName: "winrabbit",
-  orgOwner: "winrabbit",
+  logoUrl: "https://cdn.heisoo.com/smartsight/MWcIZjeOLK.svg",
+  orgName: "Heiso",
+  orgOwner: "Heiso",
   inviteLink: "https://example.com/invite/xxx",
 } as InviteUserEmailProps;
 
