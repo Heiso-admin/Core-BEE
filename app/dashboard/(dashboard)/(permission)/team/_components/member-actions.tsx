@@ -54,6 +54,66 @@ export function MemberActions({
   const currentUserMember = currentMembers.find(m => m.user?.id === session?.user?.id);
   const isCurrentUserOwner = currentUserMember?.isOwner;
   const canTransferTo = member.status === MemberStatus.Joined && member.user?.id !== session?.user?.id;
+  const isUserNotReview = member.status !== MemberStatus.Review;
+
+  const actionItems = [
+    {
+      // 編輯權限
+      key: "edit" as const,
+      label: t("edit.title"),
+      Icon: Edit2,
+      visible: isUserNotReview,
+      onClick: () => setOpenEditConfirm(true),
+    },
+    {
+      // 只有當前用戶是擁有者且目標用戶是啟用狀態時才顯示轉移選項 
+      key: "transfer" as const,
+      label: t("transfer.title"),
+      Icon: Crown,
+      visible: isCurrentUserOwner && canTransferTo && isUserNotReview,
+      onClick: () => setOpenTransferConfirm(true),
+    },
+    {
+      // 審查用戶狀態，僅擁有者可操作
+      key: "review" as const,
+      label: t("review.action"),
+      Icon: BadgeCheck,
+      visible: isCurrentUserOwner && member.status === MemberStatus.Review,
+      onClick: () => setOpenReviewConfirm(true),
+    },
+    {
+      // 協助啟用的用戶重設密碼，僅擁有者可操作
+      key: "resetPassword" as const,
+      label: t("resetPassword.action"),
+      Icon: RotateCcwKey,
+      visible: isCurrentUserOwner && member.status === MemberStatus.Joined && isUserNotReview,
+      onClick: () => setOpenResetPassword(true),
+    },
+    {
+      // 刪除成員，僅未驗證者，已驗證者僅只能停用
+      key: "remove" as const,
+      label: t("remove.action"),
+      Icon: Trash2,
+      visible: member.status === MemberStatus.Invited && isUserNotReview,
+      onClick: () => setOpenRemoveConfirm(true),
+    },
+    // {
+    //   // 重新計算邀請郵件，目前拔掉，請使用者再次申請
+    //   key: "resend" as const,
+    //   label: "Resend invitation",
+    //   Icon: Send,
+    //   visible: member.status === MemberStatus.Invited,
+    //   onClick: () => setOpenResendConfirm(true),
+    // },
+    // {
+    //   // 踢出擁有者權限，但最後一個擁有者不能踢出
+    //   key: "leaveTeam" as const,
+    //   label: "Leave team",
+    //   Icon: DoorOpen,
+    //   visible: member.isOwner && member.status === MemberStatus.Joined,
+    //   onClick: () => setOpenRemoveConfirm(true),
+    // },
+  ];
   
   const handleRemove = () => {
     startRemoveTransition(async () => {
@@ -157,81 +217,18 @@ export function MemberActions({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {/* 編輯用戶權限 */}
-          <DropdownMenuItem
-            className="text-xs cursor-pointer"
-            onClick={() => setOpenEditConfirm(true)}
-          >
-            <Edit2 className="h-4 w-4" />
-            {t("edit.title")}
-          </DropdownMenuItem>
-
-          {/* 只有當前用戶是擁有者且目標用戶是啟用狀態時才顯示轉移選項 */}
-          {isCurrentUserOwner && canTransferTo && (
-            <DropdownMenuItem
-              className="text-xs cursor-pointer"
-              onClick={() => setOpenTransferConfirm(true)}
-            >
-              <Crown className="h-4 w-4" />
-              {t("transfer.title")}
-            </DropdownMenuItem>
-          )}
-
-          {/* 審查用戶狀態，僅擁有者可操作 */}
-          {isCurrentUserOwner && member.status === MemberStatus.Review && (
-            <DropdownMenuItem
-              className="text-xs"
-              onClick={() => setOpenReviewConfirm(true)}
-            >
-              <BadgeCheck className="h-4 w-4" />
-              {t("review.action")}
-            </DropdownMenuItem>
-          )}
-
-          {/* 重新計算邀請郵件，目前拔掉，請使用者再次申請 */}
-          {/* {member.status === MemberStatus.Invited && (
-            <DropdownMenuItem
-              className="text-xs"
-              onClick={() => setOpenResendConfirm(true)}
-            >
-              <Send className="h-4 w-4" />
-              Resend invitation
-            </DropdownMenuItem>
-          )} */}
-
-          {/* 踢出擁有者權限，但最後一個擁有者不能踢出 */}
-          {/* {member.isOwner && member.status === MemberStatus.Joined && (
-            <DropdownMenuItem
-              className="text-xs"
-              disabled={lastOwner}
-              onClick={() => setOpenRemoveConfirm(true)}
-            >
-              <DoorOpen className="h-4 w-4" />
-              Leave team
-            </DropdownMenuItem>
-          )} */}
-
-          {/* 協助啟用的用戶重設密碼，僅擁有者可操作 */}
-          {isCurrentUserOwner && member.status === MemberStatus.Joined && (
-            <DropdownMenuItem
-              className="text-xs"
-              onClick={() => setOpenResetPassword(true)}
-            >
-              <RotateCcwKey className="h-4 w-4" />
-              {t("resetPassword.action")}
-            </DropdownMenuItem>
-          )}
-
-          {/* 刪除成員，僅未驗證者，已驗證者僅只能停用 */}
-          {member.status === "invited" && (
-            <DropdownMenuItem
-              className="text-xs"
-              onClick={() => setOpenRemoveConfirm(true)}
-            >
-              <Trash2 className="h-4 w-4" />
-              {t("remove.action")}
-            </DropdownMenuItem>
-          )}
+          {actionItems
+            .filter((a) => a.visible)
+            .map(({ key, label, Icon, onClick }) => (
+              <DropdownMenuItem
+                key={key}
+                className="text-xs cursor-pointer"
+                onClick={onClick}
+              >
+                <Icon className="h-4 w-4" />
+                {label}
+              </DropdownMenuItem>
+            ))}
         </DropdownMenuContent>
       </DropdownMenu>
 
