@@ -294,6 +294,60 @@ async function transferOwnership({
   return { success: true };
 }
 
+async function resetMemberPassword({
+  actorMemberId,
+  targetMemberId,
+  newPassword,
+}: {
+  actorMemberId: string;
+  targetMemberId: string;
+  newPassword: string;
+}) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("UNAUTHORIZED");
+  }
+
+  // 以成員ID驗證操作者身份與權限
+  const actor = await db
+    .select()
+    .from(members)
+    .where(eq(members.id, actorMemberId))
+    .limit(1);
+
+  if (!actor[0]) {
+    return { success: false, error: "ACTOR_MEMBER_NOT_FOUND" };
+  }
+  if (actor[0].userId !== session.user.id) {
+    return { success: false, error: "UNAUTHORIZED" };
+  }
+  if (!actor[0].isOwner) {
+    return { success: false, error: "PERMISSION_DENIED" };
+  }
+
+  // 重設密碼的成員
+  const target = await db
+    .select()
+    .from(members)
+    .where(eq(members.id, targetMemberId))
+    .limit(1);
+
+  if (!target[0]) {
+    return { success: false, error: "MEMBER_NOT_FOUND" };
+  }
+  if (!target[0].userId) {
+    return { success: false, error: "USER_NOT_ACTIVATED" };
+  }
+
+  const hashedPassword = await hashPassword(newPassword);
+
+  await db
+    .update(users)
+    .set({ password: hashedPassword, mustChangePassword: true })
+    .where(eq(users.id, target[0].userId));
+  return { success: true };
+}
+
 export {
   getTeamMembers,
   invite,
@@ -303,4 +357,5 @@ export {
   leaveTeam,
   addMember,
   transferOwnership,
+  resetMemberPassword,
 };

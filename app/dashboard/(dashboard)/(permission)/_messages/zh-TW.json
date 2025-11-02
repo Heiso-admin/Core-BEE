@@ -176,6 +176,32 @@
       "confirm": "確定",
       "successfully": "成功轉移所有權",
       "failed": "未能完成所有權轉移"
+    },
+    "resetPassword":{
+      "action": "協助重設密碼",
+      "confirm":{
+        "title":"確認重設密碼",
+        "description":"您即將重設 {userName} 的密碼。\n 警告：重設後，用戶將需要使用新密碼登入系統。",
+        "cancel":"取消",
+        "generate":"產生新密碼"
+      },
+      "result":{
+        "title":"新密碼已自動生成",
+        "content":"自動設定密碼",
+        "remark":"系統已為帳號自動生成一組安全密碼，請立即複製並妥善保管此密碼",
+        "copy":"複製密碼",
+        "close":"關閉"
+      },
+      "message":{
+        "successfully": "成功重設密碼",
+        "failed": "重設密碼失敗"
+      }
+    },
+    "review":{
+      "title":"審查成員",
+      "description":"請為此新成員指定初始角色。\n 點擊「批准」後，成員將獲得系統存取權；點擊「拒絕」則將停用該帳號。",
+      "cancel":"拒絕",
+      "confirm":" 批准"
     }
   }
 

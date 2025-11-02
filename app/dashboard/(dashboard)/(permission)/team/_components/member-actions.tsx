@@ -1,4 +1,4 @@
-import { Trash2, Edit2, Crown } from "lucide-react";
+import { Trash2, Edit2, Crown, RotateCcwKey } from "lucide-react";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
@@ -9,11 +9,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import type { Member } from "../_server/team.service";
-import { leaveTeam, resendInvite, transferOwnership } from "../_server/team.service";
+import { leaveTeam, resendInvite, transferOwnership, resetMemberPassword } from "../_server/team.service";
 import { ConfirmRemoveMember } from "./confirm-remove-member";
 import { ConfirmResendInvitation } from "./confirm-resend-invitation";
 import { ConfirmTransferOwner } from "./confirm-transfer-owner";
+import { ConfirmResetPassword } from "./confirm-reset-password";
 import { useTranslations } from "next-intl";
 import { EditMember } from "./edit-member";
 import { MemberStatus, Role } from "./member-list";
@@ -34,10 +36,12 @@ export function MemberActions({
   const [isRemovePending, startRemoveTransition] = useTransition();
   const [isResendPending, startResendTransition] = useTransition();
   const [isTransferPending, startTransferTransition] = useTransition();
+  const [isResetPasswordPending, startResetPasswordTransition] = useTransition();
   const [openEditConfirm, setOpenEditConfirm] = useState<boolean>(false);
   const [openResendConfirm, setOpenResendConfirm] = useState<boolean>(false);
   const [openRemoveConfirm, setOpenRemoveConfirm] = useState<boolean>(false);
   const [openTransferConfirm, setOpenTransferConfirm] = useState<boolean>(false);
+  const [openResetPassword, setOpenResetPassword] = useState<boolean>(false);
 
   const lastOwner = (currentMembers.filter(
     (m) => m.isOwner && m.status === MemberStatus.Joined,
@@ -74,17 +78,42 @@ export function MemberActions({
         toast.success(t("transfer.successfully"));
         setOpenTransferConfirm(false);
         
-        // 轉移完成後登出當前用戶
         setTimeout(() => {
           signOut({
-            callbackUrl: "/login",
+            callbackUrl: "/login", // 轉移完成後登出當前用戶
             redirect: true,
           });
-        }, 1500); // 給用戶1.5秒時間看到成功消息
+        }, 1500); 
       } catch (error) {
         toast.error(t("transfer.failed"));
         console.error("Transfer ownership error:", error);
       }
+    });
+  };
+
+  const handleResetPassword = (newPassword: string) => {
+    return new Promise<void>((resolve, reject) => {
+      startResetPasswordTransition(async () => {
+        try {
+          const result = await resetMemberPassword({
+            actorMemberId: currentUserMember?.id || "",
+            targetMemberId: member.id,
+            newPassword,
+          });
+          if (result?.success) {
+            toast.success(t("resetPassword.message.successfully"));
+            resolve();
+            return;
+          }
+          const code = result?.error ?? "RESET_FAILED";
+          throw new Error(code);
+        } catch (error) {
+          const code = (error as Error)?.message ?? "RESET_FAILED";
+          toast.error(`${t("resetPassword.message.failed")} (${code})`);
+          console.error("Reset password error:", error);
+          reject(error);
+        }
+      });
     });
   };
 
@@ -93,6 +122,7 @@ export function MemberActions({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          {/* 編輯用戶權限 */}
           <DropdownMenuItem
             className="text-xs cursor-pointer"
             onClick={() => setOpenEditConfirm(true)}
@@ -135,6 +165,17 @@ export function MemberActions({
             </DropdownMenuItem>
           )} */}
 
+          {/* 協助啟用的用戶重設密碼，僅擁有者可操作 */}
+          {isCurrentUserOwner && member.status === MemberStatus.Joined && (
+            <DropdownMenuItem
+              className="text-xs"
+              onClick={() => setOpenResetPassword(true)}
+            >
+              <RotateCcwKey className="h-4 w-4" />
+              {t("resetPassword.action")}
+            </DropdownMenuItem>
+          )}
+
           {/* 刪除成員，僅未驗證者，已驗證者僅只能停用 */}
           {member.status === "invited" && (
             <DropdownMenuItem
@@ -163,7 +204,7 @@ export function MemberActions({
         title="Confirm to resend invitation"
         description={
           <>
-            An invitation will be sent to{" "}
+            An invitation will be sent to
             <span className="font-medium">{member.email}</span>
           </>
         }
@@ -190,6 +231,15 @@ export function MemberActions({
         }}
         pending={isTransferPending}
         onConfirm={handleTransfer}
+      />
+
+      <ConfirmResetPassword
+        open={openResetPassword}
+        member={member}
+        sessionUserId={session?.user?.id}
+        pending={isResetPasswordPending}
+        onClose={() => setOpenResetPassword(false)}
+        onConfirm={handleResetPassword}
       />
     </div>
   );
