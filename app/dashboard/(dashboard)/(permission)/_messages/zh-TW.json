@@ -103,6 +103,8 @@
       "title": "邀請成員",
       "description": "邀請新成員加入您的團隊。",
       "form": {
+        "name":"名稱",
+        "namePlaceholder": "請輸入用戶名稱",
         "email": "電子郵件",
         "emailPlaceholder": "請輸入電子郵件地址",
         "role": "角色",
@@ -110,8 +112,10 @@
         "owner": "擁有者",
         "validation": {
           "emailInvalid": "請輸入有效的電子郵件地址",
-          "roleInvalid": "請輸入有效的角色名稱"
-        }
+          "roleInvalid": "請輸入有效的角色名稱",
+          "emailRepeat":"您嘗試新增的 Email 已在註冊。請檢查此 Email 是否屬於現有成員，或使用不同的電子郵件地址。"
+        },
+        "success":"成員 {email} 已成功邀請"
       },
       "actions": {
         "cancel": "取消",

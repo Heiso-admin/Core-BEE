@@ -104,14 +104,18 @@
       "description": "Invite a new member to join your team.",
       "form": {
         "email": "Email",
-        "emailPlaceholder": "Enter email address",
+        "emailPlaceholder": "Please Enter email address",
+        "name": "Name",
+        "namePlaceholder": "Please enter user name",
         "role": "Role",
         "rolePlaceholder": "Select a role",
         "owner": "Owner",
         "validation": {
           "emailInvalid": "Please enter a valid email address",
-          "roleInvalid": "Please enter a valid role name"
-        }
+          "roleInvalid": "Please enter a valid role name",
+          "emailRepeat": "Email address already exists. Please use a different email address."
+        },
+        "success":"Member {email} has been invited successfully."
       },
       "actions": {
         "cancel": "Cancel",

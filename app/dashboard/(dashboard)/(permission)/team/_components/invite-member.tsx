@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { ActionButton } from "@/components/primitives";
@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/select";
 import { invite } from "../_server/team.service";
 import type { Role } from "./member-list";
+import { toast } from "sonner";
 
 export function InviteMember({
   userName,
@@ -43,8 +44,9 @@ export function InviteMember({
   roles: Role[];
   children: React.ReactNode;
 }) {
-  const [isInviting, startTransition] = useTransition();
   const t = useTranslations("dashboard.permission.team.invite");
+  const [isInviting, startTransition] = useTransition();
+  const [open, setOpen] = useState(false);
 
   const inviteFormSchema = z.object({
     email: z.email().min(1, t("form.validation.emailInvalid")),
@@ -64,19 +66,42 @@ export function InviteMember({
   });
 
   const onSubmit = async (data: InviteFormValues) => {
+    form.clearErrors('root.serverError');
+
     startTransition(async () => {
-      await invite({
-        email: data.email,
-        orgOwner: userName,
-        role: data.role,
-      });
-      // setOpen(false);
-      form.reset();
+      try {
+        await invite({
+          email: data.email,
+          orgOwner: userName,
+          role: data.role,
+        });
+        toast.success(t("form.success", { email: data.email }));
+        form.reset();
+        setOpen(false);
+      } catch (error) {
+        let errorMessage: string = "";
+        
+        const isEmailRepeatError = 
+            error instanceof Error && 
+            error.message.includes("EMAIL_REPEAT"); 
+
+        if (isEmailRepeatError) {
+            errorMessage = t("form.validation.emailRepeat");
+        } else {
+            console.error(error);
+        }
+        
+        form.setError('email', {
+          type: 'server', 
+          message: errorMessage,
+        });
+      }
     });
   };
 
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -90,7 +115,7 @@ export function InviteMember({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("form.email")}</FormLabel>
+                  <FormLabel required>{t("form.email")}</FormLabel>
                   <FormControl>
                     <Input
                       placeholder={t("form.emailPlaceholder")}
@@ -106,20 +131,20 @@ export function InviteMember({
               name="role"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("form.role")}</FormLabel>
+                  <FormLabel required>{t("form.role")}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder={t("form.rolePlaceholder")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="owner">{t("form.owner")}</SelectItem>
-                      {roles.map((e, i) => (
-                        <SelectItem key={i} value={e.id}>
+                      {roles.map((e) => (
+                        <SelectItem key={e.id} value={e.id}>
                           {e.name}
                         </SelectItem>
                       ))}

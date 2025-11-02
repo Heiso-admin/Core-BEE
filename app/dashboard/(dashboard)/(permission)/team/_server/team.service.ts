@@ -38,6 +38,17 @@ async function invite({
   orgOwner: string;
   role?: string;
 }) {
+  // 檢查是否已存在相同 email 的成員
+  const existingMember = await db
+    .select()
+    .from(members)
+    .where(eq(members.email, email))
+    .limit(1);
+
+  if (existingMember.length > 0) {
+    throw new Error("EMAIL_REPEAT");
+  }
+
   const inviteToken = generateInviteToken();
   const inviteTokenExpiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7); // 7 days
 
