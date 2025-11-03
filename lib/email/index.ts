@@ -1,7 +1,10 @@
 import { Resend } from "resend";
+import config from "@/config";
 import { settings } from "@/config";
 import { ForgotPasswordEmail } from "@/emails/forgot-password";
 import { InviteUserEmail } from "@/emails/invite-user";
+import { getSiteSettings } from "@/server/services/system/setting";
+import InviteOwnerEmail from "@/emails/invite-owner";
 
 const { RESEND_API_KEY } = await settings();
 const resend = new Resend(RESEND_API_KEY as string);
@@ -31,21 +34,29 @@ export async function sendInviteUserEmail({
   to,
   subject,
   orgName,
-  orgOwner,
   inviteLink,
+  owner = false
 }: {
   from: string;
   to: string[];
   subject: string;
   orgName: string;
-  orgOwner: string;
   inviteLink: string;
+  owner?: boolean;
 }) {
-  const email = InviteUserEmail({
+  const site = await getSiteSettings();
+  const { BASE_HOST } = await settings();
+  const siteLogo = (site as any)?.assets?.logo || "/images/logo.png";
+  const derivedLogoUrl = (typeof siteLogo === "string" && siteLogo.startsWith("http")
+    ? siteLogo
+    : `${BASE_HOST}${siteLogo}`);
+  const emailType ={
+    logoUrl: derivedLogoUrl,
     orgName,
-    orgOwner,
     inviteLink,
-  });
+  }
+
+  const email = owner? InviteOwnerEmail(emailType) : InviteUserEmail(emailType);
   return await sendEmail({ from, to, subject, body: email });
 }
 
@@ -59,12 +70,20 @@ export async function sendForgotPasswordEmail({
   from: string;
   to: string[];
   subject: string;
-  name: string;
+  name?: string;
   resetLink: string;
 }) {
+  const site = await getSiteSettings();
+  const { BASE_HOST } = await settings();
+  const siteLogo = (site as any)?.assets?.logo || config?.site?.logo?.url || "/images/logo.png";
+  const derivedLogoUrl = (typeof siteLogo === "string" && siteLogo.startsWith("http"))
+    ? siteLogo
+    : `${BASE_HOST}${siteLogo}`;
+
   const email = ForgotPasswordEmail({
     resetLink,
-    username: name,
+    orgName: name || (config?.site?.name as string) || "Heiso",
+    logoUrl: derivedLogoUrl,
   });
 
   return await sendEmail({

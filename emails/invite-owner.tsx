@@ -16,17 +16,17 @@ import {
   Text,
 } from "@react-email/components";
 
-interface InviteUserEmailProps {
+interface InviteOwnerEmailProps {
   logoUrl: string;
   orgName: string;
   inviteLink: string;
 }
 
-export const InviteUserEmail = ({
+export const InviteOwnerEmail = ({
   logoUrl,
   orgName,
   inviteLink,
-}: InviteUserEmailProps) => {
+}: InviteOwnerEmailProps) => {
   return (
     <Html>
       <Head />
@@ -47,10 +47,10 @@ export const InviteUserEmail = ({
               Welcome to <strong>{orgName}</strong> !
             </Heading>
             <Text className="mt-[8px] text-[14px] text-center font-bold text-black">
-              You've received a collaboration invitation to the {orgName} organization.
+              You’re the first member and owner of this admin portal.
             </Text>
             <Text className="text-[14px] text-center text-black mt-[30px]">
-              Click the button below to accept the invitation, set up your account, and start collaborating.
+              Once you set up your account, you’ll be able to invite other team members and start managing your workspace.
             </Text>
             <Section className="mt-[32px] mb-[32px] text-center">
               <Button
@@ -79,10 +79,10 @@ export const InviteUserEmail = ({
   );
 };
 
-InviteUserEmail.PreviewProps = {
+InviteOwnerEmail.PreviewProps = {
   logoUrl: "https://cdn.heisoo.com/smartsight/MWcIZjeOLK.svg",
   orgName: "Heiso",
   inviteLink: "https://example.com/invite/xxx",
-} as InviteUserEmailProps;
+} as InviteOwnerEmailProps;
 
-export default InviteUserEmail;
+export default InviteOwnerEmail;

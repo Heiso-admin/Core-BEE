@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/modules/auth/auth.config";
 import { settings } from "@/config/settings";
+import config from "@/config";
+import { getSiteSettings } from "@/server/services/system/setting";
 import { db } from "@/lib/db";
 import type { TMember, TRole, TUser } from "@/lib/db/schema";
 import { members, roles } from "@/lib/db/schema";
@@ -64,9 +66,11 @@ async function invite({
     .returning();
 
   if (inviteId) {
+    const site: any = await getSiteSettings();
+    const orgName = site?.branding?.organization || config?.site?.organization;
     const result = await sendInvite({
       email,
-      orgOwner,
+      orgName,
       inviteToken,
     });
 
@@ -94,20 +98,19 @@ async function updateMember({
 
 async function sendInvite({
   email,
-  orgOwner,
+  orgName,
   inviteToken,
 }: {
   email: string;
-  orgOwner: string;
+  orgName: string;
   inviteToken: string;
 }) {
   const { NOTIFY_EMAIL, BASE_HOST } = await settings();
   const result = await sendInviteUserEmail({
     from: NOTIFY_EMAIL as string,
     to: [email],
-    subject: `${orgOwner} has invited you to join`, // TODO: replace orgName to site name
-    orgName: "",
-    orgOwner,
+    subject: `Verify Your Email Address for ${orgName}`,
+    orgName,
     inviteLink: `${BASE_HOST}/dashboard/join?token=${inviteToken}`,
   });
   return result;
@@ -135,10 +138,11 @@ async function resendInvite(id: string) {
     .returning();
 
   const { email } = member;
+  const site: any = await getSiteSettings();
+  const orgName = site?.branding?.organization || config?.site?.organization || "Heiso";
   const result = await sendInvite({
     email,
-    // orgName: organization.name,
-    orgOwner: "TODO: replace with owner",
+    orgName,
     inviteToken,
   });
 
