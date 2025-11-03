@@ -93,6 +93,7 @@ export function InviteMember({
             errorMessage = t("form.validation.emailRepeat");
         } else {
             console.error(error);
+            errorMessage = t("form.error");
         }
         
         form.setError('email', {

@@ -54,7 +54,6 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
   const te = useTranslations("dashboard.permission.team");
   const t = useTranslations("dashboard.permission.team.members");
   const [sorting, setSorting] = useState<SortingState>([]);
-  console.log("roles--",data, roles);
 
   const AllRoles: Role[]= [{id: MemberStatus.Owner, name: MemberStatus.Owner},...roles]
 

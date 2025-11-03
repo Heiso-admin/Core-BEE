@@ -115,7 +115,8 @@
           "roleInvalid": "Please enter a valid role name",
           "emailRepeat": "Email address already exists. Please use a different email address."
         },
-        "success":"Member {email} has been invited successfully."
+        "success":"Member {email} has been invited successfully.",
+        "error":"Failed to invite member. Please try again."
       },
       "actions": {
         "cancel": "Cancel",

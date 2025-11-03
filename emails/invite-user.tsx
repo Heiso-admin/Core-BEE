@@ -19,14 +19,12 @@ import {
 interface InviteUserEmailProps {
   logoUrl: string;
   orgName: string;
-  orgOwner: string;
   inviteLink: string;
 }
 
 export const InviteUserEmail = ({
   logoUrl,
   orgName,
-  orgOwner,
   inviteLink,
 }: InviteUserEmailProps) => {
   return (
@@ -84,7 +82,6 @@ export const InviteUserEmail = ({
 InviteUserEmail.PreviewProps = {
   logoUrl: "https://cdn.heisoo.com/smartsight/MWcIZjeOLK.svg",
   orgName: "Heiso",
-  orgOwner: "Heiso",
   inviteLink: "https://example.com/invite/xxx",
 } as InviteUserEmailProps;
 

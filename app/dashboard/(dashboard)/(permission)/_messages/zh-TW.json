@@ -115,7 +115,8 @@
           "roleInvalid": "請輸入有效的角色名稱",
           "emailRepeat":"您嘗試新增的 Email 已在註冊。請檢查此 Email 是否屬於現有成員，或使用不同的電子郵件地址。"
         },
-        "success":"成員 {email} 已成功邀請"
+        "success":"成員 {email} 已成功邀請",
+        "error":"邀請成員失敗。請稍後再試。"
       },
       "actions": {
         "cancel": "取消",
