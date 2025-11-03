@@ -13,7 +13,7 @@ const config = {
     },
     ogImage: '/assets/svg/og-image.svg',
     domain: 'sunlife.heiso.io',
-    copyright: '© 2024 Heiso. All rights reserved.',
+    copyright: '© 2024 Heiso. All rights reserved.',
   },
 
   settings: {
