@@ -44,6 +44,7 @@ html{
   --color-card: var(--card);
   --color-brand: var(--brand);
   --color-highlight: var(--highlight);
+  --color-sub-highlight: var(--sub-highlight);
   --color-neutral: var(--text-Neutral);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -121,6 +122,7 @@ html{
   --sidebar-ring: oklch(0.708 0 0);
   --brand: oklch(0.623 0.214 259.815);
   --highlight: oklch(0.852 0.199 91.936);
+  --sub-highlight: var(--amber-600);
   --amber-600: #D97706;
   --amber-500: #F59E0B;
   --amber-400: #FBBF24;
@@ -181,6 +183,7 @@ html{
   --sidebar-ring: oklch(0.556 0 0);
   --brand: oklch(0.707 0.165 254.624);
   --highlight: oklch(0.852 0.199 91.936);
+  --sub-highlight: var(--amber-400);
 }
 
 @layer base {

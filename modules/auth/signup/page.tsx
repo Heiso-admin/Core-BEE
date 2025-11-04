@@ -14,15 +14,10 @@ export default async function Page({
       <Header
         title="Create a new account"
         description={
-          <>
-            Already have an account?{" "}
-            <Link
-              href="/login"
-              className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
-            >
-              Login
-            </Link>
-          </>
+         <div className="text-center mt-5">
+          <p className="text-sm text-neutral">You have successfully verified your email </p>
+          <p className="text-sm text-sub-highlight"> {email}</p>
+         </div>
         }
       />
       <SignUp email={email} />
