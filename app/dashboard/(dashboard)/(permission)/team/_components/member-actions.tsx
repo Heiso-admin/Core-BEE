@@ -118,7 +118,7 @@ export function MemberActions({
   const handleRemove = () => {
     startRemoveTransition(async () => {
       await leaveTeam(member.id);
-      toast.success("Member removed");
+      toast.success(t("remove.success"));
     });
   };
 

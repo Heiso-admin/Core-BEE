@@ -32,24 +32,25 @@ export async function sendEmail({
 export async function sendInviteUserEmail({
   from,
   to,
-  subject,
-  orgName,
-  inviteLink,
-  owner = false
+  owner = false,
+  inviteToken,
 }: {
   from: string;
   to: string[];
-  subject: string;
-  orgName: string;
-  inviteLink: string;
   owner?: boolean;
+  inviteToken: string;
 }) {
-  const site = await getSiteSettings();
+  const site: any = await getSiteSettings();
   const { BASE_HOST } = await settings();
-  const siteLogo = (site as any)?.assets?.logo || "/images/logo.png";
+
+  const siteLogo = site?.assets?.logo || "/images/logo.png";
   const derivedLogoUrl = (typeof siteLogo === "string" && siteLogo.startsWith("http")
     ? siteLogo
     : `${BASE_HOST}${siteLogo}`);
+  const orgName = site?.branding?.organization || config?.site?.organization;
+  const subject= `Verify Your Email Address for ${orgName}`
+  const inviteLink= `${BASE_HOST}/dashboard/join?token=${inviteToken}`
+
   const emailType ={
     logoUrl: derivedLogoUrl,
     orgName,

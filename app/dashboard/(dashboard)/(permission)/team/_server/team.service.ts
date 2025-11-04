@@ -33,11 +33,9 @@ async function getTeamMembers(): Promise<Member[]> {
 
 async function invite({
   email,
-  orgOwner,
   role,
 }: {
   email: string;
-  orgOwner: string;
   role?: string;
 }) {
   // 檢查是否已存在相同 email 的成員
@@ -66,12 +64,10 @@ async function invite({
     .returning();
 
   if (inviteId) {
-    const site: any = await getSiteSettings();
-    const orgName = site?.branding?.organization || config?.site?.organization;
     const result = await sendInvite({
       email,
-      orgName,
       inviteToken,
+      isOwner: role === "owner",
     });
 
     revalidatePath("./team", "page");
@@ -98,20 +94,19 @@ async function updateMember({
 
 async function sendInvite({
   email,
-  orgName,
   inviteToken,
+  isOwner
 }: {
   email: string;
-  orgName: string;
   inviteToken: string;
+  isOwner: boolean;
 }) {
-  const { NOTIFY_EMAIL, BASE_HOST } = await settings();
+  const { NOTIFY_EMAIL } = await settings();
   const result = await sendInviteUserEmail({
     from: NOTIFY_EMAIL as string,
     to: [email],
-    subject: `Verify Your Email Address for ${orgName}`,
-    orgName,
-    inviteLink: `${BASE_HOST}/dashboard/join?token=${inviteToken}`,
+    inviteToken,
+    owner: isOwner,
   });
   return result;
 }
@@ -138,12 +133,10 @@ async function resendInvite(id: string) {
     .returning();
 
   const { email } = member;
-  const site: any = await getSiteSettings();
-  const orgName = site?.branding?.organization || config?.site?.organization || "Heiso";
   const result = await sendInvite({
     email,
-    orgName,
     inviteToken,
+    isOwner: member.isOwner,
   });
 
   return result;
@@ -356,6 +349,7 @@ export {
   getTeamMembers,
   invite,
   updateMember,
+  sendInvite,
   resendInvite,
   revokeInvite,
   leaveTeam,

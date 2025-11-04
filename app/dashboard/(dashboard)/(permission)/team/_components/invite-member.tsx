@@ -76,7 +76,6 @@ export function InviteMember({
       try {
         await invite({
           email: data.email,
-          orgOwner: userName,
           role: data.role,
         });
         toast.success(t("form.success", { email: data.email }));
