@@ -167,7 +167,9 @@
       "title": "確認移除成員",
       "content": "您確定要移除 {email} 嗎",
       "cancel": "取消",
-      "remove": "移除"
+      "remove": "移除",
+      "success": "成功移除成員",
+      "failed": "移除成員失敗"
     },
     "transfer":{
       "title":"轉移擁有者",

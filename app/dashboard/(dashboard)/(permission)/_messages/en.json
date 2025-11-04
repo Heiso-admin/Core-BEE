@@ -167,7 +167,9 @@
       "title": "Confirm to remove member",
       "content": "Are you sure you want to remove {email} ?",
       "cancel": "Cancel",
-      "remove": "Remove"
+      "remove": "Remove",
+      "success": "Successfully removed member",
+      "failed": "Failed to remove member"
     },
     "transfer":{
       "title": "Transfer Organization Owner",

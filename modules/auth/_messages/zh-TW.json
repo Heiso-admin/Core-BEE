@@ -65,7 +65,8 @@
   },
   "emailVerification": {
     "title": "驗證您的電子郵件",
-    "description": "我們已發送驗證碼至 {email}",
+    "emailDescription": "我們已向您發送一封登入郵件。\n 請檢查您的收件箱 {email}。",
+    "codeDescription": "我們已發送驗證碼至 {email}",
     "input": {
       "placeholder": "請輸入驗證碼"
     },
@@ -79,10 +80,15 @@
     },
     "actions": {
       "resending": "重新發送中...",
-      "resend": "重新發送驗證碼",
-      "change": "更改電子郵件"
+      "codeResend": "重新發送驗證碼",
+      "emailResend": "重新發送驗證郵件",
+      "change": "更改電子郵件",
+      "emailResendSuccess": "驗證郵件已重新發送，請查收郵件。",
+      "emailResendError": "發送驗證郵件失敗，請重試。",
+      "codeResendSuccess": "驗證碼已重新發送，請查收郵件。",
+      "codeResendError": "發送驗證碼失敗，請重試。"
     },
-    "spamNotice": "如果沒有收到郵件，請檢查垃圾郵件資料夾",
+    "spamNotice": "沒有收到郵件？請檢查您的垃圾郵件資料夾，或確認郵件地址是否正確。",
     "success": {
       "title": "電子郵件驗證成功！",
       "description": "您的電子郵件已成功驗證。現在可以進入您的帳戶。",
@@ -185,7 +191,12 @@
       "forgot": "忘記密碼？"
     },
     "submit": "登入",
-    "error": "電子郵件或密碼錯誤"
+    "error":{
+      "errorPassword": "密碼錯誤",
+      "userNotFound": "找不到您的電子郵件帳號。 請確認 Email 地址無誤，或聯繫您的組織管理員。",
+      "review":"您的帳號仍在審核中。 請耐心等候組織管理員的最終批准。",
+      "general": "發生錯誤，請重試或聯繫您的組織管理員。"
+    }
   },
   "forgotPassword": {
     "title": "忘記密碼",
@@ -208,7 +219,7 @@
       "description": "我們已將重設密碼連結發送至 {email}。請查看您的收件匣並按照指示重設密碼。"
     },
     "backToLogin": "返回登入",
-    "returnToLogin": "返回登入頁面"
+    "userNotFound": "找不到使用此電子郵件的帳號"
   },
   "otp": {
     "title": "使用驗證碼登入",
