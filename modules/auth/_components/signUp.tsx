@@ -17,33 +17,54 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { signup } from "@/server/services/auth";
+import Link from "next/link";
+import { Progress } from "@/components/ui/progress";
+import AuthRedirectHint from "./authRedirectHint";
 
 export default function SignUp({ email }: { email?: string | null }) {
-  const t = useTranslations("auth.signup");
+  const t = useTranslations('auth.signup');
+  const p = useTranslations('auth.resetPassword.password.strength');
   const [error, setError] = useState("");
 
-  const signupSchema = z.object({
-    name: z.string().min(3, { message: t("name.error") }),
-    email: z.string().email(t("email.error")),
-    password: z.string().min(6, t("password.error")),
-    // agreedToTerms: z.boolean().refine((val) => val === true, {
-    //   message: 'You must agree to the terms of service and privacy policy',
-    // }),
-  });
+  const calcStrength = (pwd: string) => {
+    let s = 0;
+    if (pwd.length >= 8) s += 25;
+    if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) s += 25;
+    if (/\d/.test(pwd)) s += 25;
+    if (/[^a-zA-Z\d]/.test(pwd)) s += 25;
+    return s;
+  };
+
+  const signupSchema = z
+        .object({
+            name: z.string().min(3, { message: t('name.error') }),
+            password: z.string().min(8, t('password.error')),
+        })
+        .refine((v) => calcStrength(v.password) >= 50, {
+            message: p('error'),
+            path: ['password'],
+        });
 
   const form = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
       name: email ? email.split("@")[0] : "",
-      email: email ?? "",
       password: "",
     },
   });
 
+  const pwd = form.watch('password');
+  const strength = calcStrength(pwd ?? '');
+
   type SignupFormValues = z.infer<typeof signupSchema>;
 
   const onSubmit = async (data: SignupFormValues) => {
-    const user = await signup(data);
+    const signupEmail = email ?? "";
+    if (!signupEmail) {
+      setError(t("email.missing"));
+      return;
+    }
+    const user = await signup({ name: data.name, email: signupEmail, password: data.password });
     if (!user) {
       setError(t("error"));
       return;
@@ -56,8 +77,8 @@ export default function SignUp({ email }: { email?: string | null }) {
     <>
       {error && <p className="w-full text-center text-destructive">{error}</p>}
       <Form {...form}>
-        <form className="mt-8 space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="space-y-4">
+        <form className="mt-6 mb-4 space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="space-y-4 mb-8">
             <div className="flex flex-col space-y-1">
               <FormField
                 control={form.control}
@@ -85,31 +106,6 @@ export default function SignUp({ email }: { email?: string | null }) {
             <div className="flex flex-col space-y-1">
               <FormField
                 control={form.control}
-                name="email"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium leading-relaxed peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                        {t("email.label")}
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          id="email-address"
-                          type="email"
-                          autoComplete="email"
-                          placeholder={t("email.placeholder")}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-            </div>
-            <div className="flex flex-col space-y-1">
-              <FormField
-                control={form.control}
                 name="password"
                 render={({ field }) => {
                   return (
@@ -120,51 +116,54 @@ export default function SignUp({ email }: { email?: string | null }) {
                       <FormControl>
                         <PasswordInput
                           id="password"
-                          autoComplete="current-password"
-                          // required
+                          autoComplete="new-password"
                           placeholder={t("password.placeholder")}
                           {...field}
                         />
                       </FormControl>
                       <FormMessage />
+                       <div className="mt-2">
+                        <Progress value={strength} className="w-full" />
+                        <div className="mt-1 text-sm text-muted-foreground">
+                            {p('label')}
+                            <span className="font-medium">
+                                {strength === 100
+                                    ? p('strong')
+                                    : strength >= 75
+                                        ? p('good')
+                                        : strength >= 50
+                                            ? p('fair')
+                                            : p('weak')}
+                            </span>
+                        </div>
+                    </div>
                     </FormItem>
                   );
                 }}
               />
             </div>
           </div>
-
-          <div>
-            <ActionButton
+          <ActionButton
               type="submit"
               className="w-full bg-primary hover:-400"
               loading={form.formState.isSubmitting}
             >
               {t("submit")}
             </ActionButton>
-          </div>
         </form>
       </Form>
-
-      {/* <div className="mt-6">
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-background text-foreground/40">
-              or with
-            </span>
-          </div>
-        </div>
-
-        <div className="mt-6">
-          <Button variant="outline" className="w-full">
-            <GitHubLogoIcon className="mr-2 h-4 w-4" />
-            GitHub
-          </Button>
-        </div>
-      </div> */}
+      <AuthRedirectHint>
+          {t.rich('haveAccount', {
+            link: (chunks) => (
+              <Link 
+                href="/login" 
+                className="underline ml-2"
+              >
+                {chunks}
+              </Link>
+            ),
+          })}
+      </AuthRedirectHint>
     </>
   );
 }

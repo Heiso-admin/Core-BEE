@@ -30,7 +30,7 @@ function LoginForm({ email, anyUser, orgName }: { email?: string | null; anyUser
 
   const [loginMethod, setLoginMethod] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState('');
-  const [step, setStep] = useState<LoginStep>(LoginStepEnum.Password);
+  const [step, setStep] = useState<LoginStep>(LoginStepEnum.Email);
   const [error, setError] = useState<string>("");
 
   // 如果已登录，重定向到仪表板
