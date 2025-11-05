@@ -3,6 +3,9 @@ import { redirect } from "next/navigation";
 import { auth } from '@/modules/auth/auth.config';
 import { getInvitation } from "@/server/user.service";
 import { Login } from "../_components";
+import { hasAnyUser } from "@/server/services/auth";
+import { getSiteSettings } from "@/server/services/system/setting";
+import config from "@/config";
 
 export default async function Page() {
   const joinToken = (await cookies()).get("join-token");
@@ -22,9 +25,13 @@ export default async function Page() {
   const session = await auth();
   if (session) redirect("/dashboard");
 
+  const anyUser = await hasAnyUser();
+  const site = await getSiteSettings();
+  const orgName = (site as any)?.branding?.organization || config?.site?.organization;
+
   return (
     <div className="w-full max-w-md space-y-10">
-      <Login email={email} />
+      <Login email={email} anyUser={anyUser} orgName={orgName} />
     </div>
   );
 }

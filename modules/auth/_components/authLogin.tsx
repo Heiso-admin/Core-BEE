@@ -1,0 +1,190 @@
+import { ActionButton } from '@/components/primitives/action-button';
+import { useState, useTransition } from 'react'
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from '@/components/ui/input';
+import { useTranslations } from 'next-intl';
+import { getLoginMethod, getMemberStatus } from '../_server/user.service';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { type LoginStep, LoginStepEnum } from './loginForm';
+import Image from "next/image"
+import MicrosoftLogo from "../../../public/Microsoft_logo.webp"
+import { Button } from "@/components/ui/button";
+import { invite } from '@/app/dashboard/(dashboard)/(permission)/team/_server/team.service';
+import Header from './header';
+import config from "@/config";
+import { MemberStatus } from '@/app/dashboard/(dashboard)/(permission)/team/_components/member-list';
+
+interface AuthLoginProps {
+  error: string;
+  setError: (error: string) => void; 
+  setLoginMethod: (loginMethod: string | null) => void;
+  setStep: (step: LoginStep) => void; 
+  setUserEmail: (email: string) => void;
+  anyUser: boolean;
+  orgName?: string;
+}
+
+const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, anyUser, orgName }: AuthLoginProps) => {
+  const t = useTranslations("auth.login");
+
+  const usedOrgName = orgName || config?.site?.organization;
+  const [isLoading, startTransition] = useTransition();
+  const [info, setInfo] = useState<string>("");
+
+    const emailSchema = z.object({
+    email: z.email({ message: t('email.error') }),
+  });
+
+  const emailForm = useForm<z.infer<typeof emailSchema>>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: {
+      email: '',
+    },
+  });
+
+  // 处理邮箱提交
+  const handleEmailSubmit = async (values: z.infer<typeof emailSchema>) => {
+    setUserEmail(values.email);
+    // 僅當系統「完全沒有任何使用者」時，才寄送登入連結
+    if (!anyUser) {
+      try {
+        await invite({ email: values.email, role: 'owner' });
+        setError("");
+      } catch (e) {
+        console.error("Failed to send login link email", e);
+        setError(t('error.general'));
+      } finally {
+        setStep(LoginStepEnum.Invite);
+      }
+      return;
+    }
+
+    startTransition(async () => {
+      try {
+        const loginMethod = await getLoginMethod(values.email);
+        const memberStatus = await getMemberStatus(values.email);
+        console.log('loginMethod: ', loginMethod, memberStatus);
+
+        if (!loginMethod) {
+          setError(t('error.userNotFound'));
+          return;
+        }
+        if (memberStatus === MemberStatus.Review) {
+          setError(t('error.review'));
+          return;
+        }
+
+        if( memberStatus !== MemberStatus.Joined) {
+          throw new Error('USER_NOT_ACTIVATED');
+        }
+
+        //  以下只有狀態是加入(啟用)狀態才可以處理
+        if (loginMethod !== '') {
+          setLoginMethod(loginMethod);
+          // 根据登录方法决定下一步
+          if (loginMethod === LoginStepEnum.Otp) {
+            setStep(LoginStepEnum.Otp);
+          } else {
+            // 默认使用密码登录
+            setStep(LoginStepEnum.Password);
+          }
+        } else {
+          // 如果用户不存在或没有设置登录方法，默认使用密码登录
+          setLoginMethod(LoginStepEnum.Password);
+          setStep(LoginStepEnum.Password);
+        }
+      } catch (err) {
+        console.error('Error getting login method:', err);
+        setError(t('error.general'));
+      }
+    });
+  };
+
+  return (
+    <>
+      <Header title={anyUser ? t("title") : t("titleInvite", { organization: usedOrgName })} />
+      <div className="mt-6">
+        {/* Microsoft Login */}
+        <div className="my-6">
+          <Button asChild variant="outline" className="w-full rounded-4xl">
+            <a
+              href="/api/auth/signin/azure-ad?callbackUrl=/dashboard"
+              className="flex items-center gap-2"
+            >
+              <Image
+                src={MicrosoftLogo}
+                alt="Microsoft"
+                width={20}
+                height={20}
+                loading="lazy"
+                decoding="async"
+              />
+              <span>Sign in with Microsoft</span>
+            </a>
+          </Button>
+        </div>
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-background text-foreground/40">Or</span>
+          </div>
+        </div>
+      </div>
+      <Form {...emailForm}>
+          <form className="mt-8 space-y-6" onSubmit={emailForm.handleSubmit(handleEmailSubmit)}>
+            <div className="space-y-4">
+              <div className="flex flex-col space-y-1">
+                <FormField
+                  control={emailForm.control}
+                  name="email"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>{t("email.label")}</FormLabel>
+                        <FormControl>
+                          <Input
+                            id="email-address"
+                            type="email"
+                            autoComplete="email"
+                            placeholder={t("email.placeholder")}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                        {info && (
+                          <p className="w-full text-sm text-primary whitespace-pre-line">{info}</p>
+                        )}
+                        {error && <p className="w-full text-destructive text-sm">{error}</p>}    
+                      </FormItem>
+                    );
+                  }}
+                />
+              </div>
+            </div>   
+            <div>
+              <ActionButton
+                type="submit"
+                className="w-full bg-primary hover:bg-primary/80"
+                loading={isLoading}
+              >
+                {t("submit")}
+              </ActionButton>
+            </div>
+          </form>
+      </Form>
+    </>
+  )
+}
+
+export default AuthLogin
