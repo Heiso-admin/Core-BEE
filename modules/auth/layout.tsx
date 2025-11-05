@@ -5,7 +5,10 @@ import Link from "next/link";
 import { Logo, ThemeSwitcher } from "@/components/primitives";
 import { useSite } from "@/providers/site";
 
+import { useTranslations } from "next-intl";
+
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const t = useTranslations("auth.login");
   const { site } = useSite();
 
   return (
@@ -14,7 +17,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         href="/"
         className="absolute top-4 left-4 flex items-center text-sm text-muted-foreground hover:text-primary"
       >
-        <ArrowLeftIcon className="h-4 w-4 mr-2" /> Back to home
+        <ArrowLeftIcon className="h-4 w-4 mr-2" /> {t("back")}
       </Link>
 
       <main className="w-full max-w-lg bg-background py-16 px-12 rounded-[12px] shadow-[1px_1px_4px_0_rgba(0,0,0,0.1)] shadow-primary/70 relative">

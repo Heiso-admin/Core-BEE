@@ -137,6 +137,7 @@
       "placeholder":"please enter your password",
       "confirmPlaceholder":"please enter your password again",
       "strength": {
+        "error": "Password is too weak.",
         "label": "Password strength: ",
         "weak": "Weak",
         "fair": "Fair",
@@ -164,8 +165,10 @@
     "backToLogin":"Back to Login"
   },
   "signup": {
-    "title": "Create an account",
+    "title": "Create a new account",
+    "description": "You have successfully verified your email {email}.",
     "hint":"Password should be at least 15 characters OR at least 8 characters including a number and a lowercase letter.",
+    "haveAccount":"Already have an account? <link>Login</link>",
     "name": {
       "label": "Name",
       "placeholder": "please enter your name",
@@ -174,7 +177,8 @@
     "email": {
       "label": "Email Address",
       "placeholder": "please enter your email address",
-      "error": "Please enter a valid email address"
+      "error": "Please enter a valid email address",
+      "missing":"Missing email"
     },
     "password": {
       "label": "Password",
@@ -182,14 +186,16 @@
       "error": "Password must be at least 6 characters",
       "strength" :{
         "label":"Password strength: ",
-        "weak" : "Weak"
+        "weak" : "Password is too weak."
       }
     },
     "submit": "Create an account",
     "error": "Something went wrong"
   },
   "login": {
-    "title": "Sign In",
+    "title": "Sign into your account",
+    "titleInvite": "Welcome to {organization}",
+    "titlePassword": "Enter your password",
     "email": {
       "label": "Email address",
       "placeholder": "please enter your email address",
@@ -198,7 +204,7 @@
     "password": {
       "label": "Password",
       "placeholder": "please enter your password",
-      "error": "Password must be at least 6 characters",
+      "error": "Password must be at least 8 characters",
       "forgot": "Forgot Password?"
     },
     "submit": "Sign In",
@@ -208,7 +214,12 @@
       "userNotFound": "Account not found with that email address. Please verify the email or contact your organization administrator.",
       "review":"Account is currently under review. Please wait for final approval from your organization administrator.",
       "general": "An error occurred. Please try again or contact your organization administrator."
-    }
+    },
+    "notFound":{
+      "password":"Don't want a password? <Link>Use code</Link>",
+      "code":"Can’t find your code? <Link>Use password</Link>"
+    },
+    "back":"Back to home"
   },
   "forgotPassword": {
     "title": "Forgot Password",

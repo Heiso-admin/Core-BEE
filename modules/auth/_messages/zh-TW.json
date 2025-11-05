@@ -133,6 +133,7 @@
       "label": "新密碼",
       "confirm": "確認新密碼",
       "strength": {
+        "error": "密碼強度不足",
         "label": "密碼強度：",
         "weak": "弱",
         "fair": "一般",
@@ -158,7 +159,10 @@
     "cancel": "取消並返回登入"
   },
   "signup": {
-    "title": "建立帳號",
+    "title": "建立新帳號",
+    "description": "您的電子郵件 {email} 已成功驗證。",
+    "hint":"密碼長度至少為 15 個字元，或至少 8 個字元包含數字和小寫字母。",
+    "haveAccount":"已經有帳號嗎？<link>登入</link>",
     "name": {
       "label": "姓名",
       "placeholder": "請輸入您的姓名",
@@ -167,18 +171,22 @@
     "email": {
       "label": "電子郵件地址",
       "placeholder": "請輸入您的電子郵件地址",
-      "error": "請輸入有效的電子郵件地址"
+      "error": "請輸入有效的電子郵件地址",
+      "missing":"遺失電子郵件"
     },
     "password": {
       "label": "密碼",
       "placeholder": "請輸入您的密碼",
-      "error": "密碼長度必須至少為 6 個字元"
+      "error": "密碼長度必須至少為 8 個字元",
+      "weak": "密碼強度不足"
     },
     "submit": "建立帳號",
     "error": "發生錯誤，請稍後再試"
   },
   "login": {
-    "title": "登入",
+    "title": "登入您的帳號",
+    "titleInvite": "歡迎加入 {organization}",
+    "titlePassword": "輸入您的密碼",
     "email": {
       "label": "電子郵件地址",
       "placeholder": "請輸入電子郵件地址",
@@ -196,7 +204,12 @@
       "userNotFound": "找不到您的電子郵件帳號。 請確認 Email 地址無誤，或聯繫您的組織管理員。",
       "review":"您的帳號仍在審核中。 請耐心等候組織管理員的最終批准。",
       "general": "發生錯誤，請重試或聯繫您的組織管理員。"
-    }
+    },
+    "notFound":{
+      "password":"不想使用密碼？ <Link>驗證碼登入</Link>",
+      "code":"找不到驗證碼？ <Link>密碼登入</Link>"
+    },
+    "back":"返回首頁"
   },
   "forgotPassword": {
     "title": "忘記密碼",
