@@ -18,38 +18,54 @@ import {
 import { Input } from "@/components/ui/input";
 import { signup } from "@/server/services/auth";
 import Link from "next/link";
-import { Progress } from "@/components/ui/progress";
+import { calcStrength, Progress, ProgressLabel } from "@/components/ui/progress";
 import AuthRedirectHint from "./authRedirectHint";
+import { motion } from 'framer-motion';
+import Header from './header';
 
 export default function SignUp({ email }: { email?: string | null }) {
   const t = useTranslations('auth.signup');
   const p = useTranslations('auth.resetPassword.password.strength');
   const [error, setError] = useState("");
 
-  const calcStrength = (pwd: string) => {
-    let s = 0;
-    if (pwd.length >= 8) s += 25;
-    if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) s += 25;
-    if (/\d/.test(pwd)) s += 25;
-    if (/[^a-zA-Z\d]/.test(pwd)) s += 25;
-    return s;
-  };
-
   const signupSchema = z
-        .object({
-            name: z.string().min(3, { message: t('name.error') }),
-            password: z.string().min(8, t('password.error')),
-        })
-        .refine((v) => calcStrength(v.password) >= 50, {
-            message: p('error'),
-            path: ['password'],
-        });
+    .object({
+      name: z.string().min(3, { message: t('name.error') }),
+      password: z.string().min(8, t('password.error')).or(z.literal('')),
+      confirmPassword: z.string(),
+    })
+    .refine(
+      (v) => {
+        // 只有在 password 不是空的時候，才檢查
+        if (v.password) {
+          return v.password === v.confirmPassword;
+        }
+        return true;
+      },
+      {
+        message: t('mismatch'),
+        path: ['confirmPassword'],
+      }
+    )
+    .refine(
+      (v) => {
+        if (v.password) {
+          return calcStrength(v.password) >= 50;
+        }
+        return true;
+      },
+      {
+        message: p('error'),
+        path: ['password'],
+      }
+    );
 
   const form = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
       name: email ? email.split("@")[0] : "",
       password: "",
+      confirmPassword: "",
     },
   });
 
@@ -75,6 +91,14 @@ export default function SignUp({ email }: { email?: string | null }) {
 
   return (
     <>
+      <Header
+        title={t('title')}
+        description={
+          <div className="text-center mt-5">
+            <p className="text-sm text-neutral">{t('description', { email: email || "email" })}</p>
+          </div>
+        }
+      />
       {error && <p className="w-full text-center text-destructive">{error}</p>}
       <Form {...form}>
         <form className="mt-6 mb-4 space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
@@ -122,47 +146,68 @@ export default function SignUp({ email }: { email?: string | null }) {
                         />
                       </FormControl>
                       <FormMessage />
-                       <div className="mt-2">
-                        <Progress value={strength} className="w-full" />
-                        <div className="mt-1 text-sm text-muted-foreground">
-                            {p('label')}
-                            <span className="font-medium">
-                                {strength === 100
-                                    ? p('strong')
-                                    : strength >= 75
-                                        ? p('good')
-                                        : strength >= 50
-                                            ? p('fair')
-                                            : p('weak')}
-                            </span>
-                        </div>
-                    </div>
+                      {pwd !== "" &&
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="space-y-2"
+                        >
+                          <Progress value={strength} className="w-full" />
+                          <ProgressLabel passwordStrength={strength} className="text-sm text-neutral" />
+
+                        </motion.div>
+                      }
                     </FormItem>
                   );
                 }}
               />
+              <p className="text-destructive text-sm">{error}</p>
+            </div>
+            <div className="flex flex-col space-y-1">
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium leading-relaxed peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        {t("password.confirm")}
+                      </FormLabel>
+                      <FormControl>
+                        <PasswordInput
+                          id="confirmPassword"
+                          placeholder={t("password.placeholder")}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <p className="text-destructive text-sm">{error}</p>
             </div>
           </div>
           <ActionButton
-              type="submit"
-              className="w-full bg-primary hover:-400"
-              loading={form.formState.isSubmitting}
-            >
-              {t("submit")}
-            </ActionButton>
+            type="submit"
+            className="w-full bg-primary hover:-400"
+            loading={form.formState.isSubmitting}
+          >
+            {t("submit")}
+          </ActionButton>
         </form>
-      </Form>
+      </Form >
       <AuthRedirectHint>
-          {t.rich('haveAccount', {
-            link: (chunks) => (
-              <Link 
-                href="/login" 
-                className="underline ml-2"
-              >
-                {chunks}
-              </Link>
-            ),
-          })}
+        {t.rich('haveAccount', {
+          link: (chunks) => (
+            <Link
+              href="/login"
+              className="underline ml-2"
+            >
+              {chunks}
+            </Link>
+          ),
+        })}
       </AuthRedirectHint>
     </>
   );

@@ -4,6 +4,7 @@ import * as React from "react"
 import * as ProgressPrimitive from "@radix-ui/react-progress"
 
 import { cn } from "@/lib/utils"
+import { useTranslations } from 'next-intl'
 
 function Progress({
   className,
@@ -28,4 +29,34 @@ function Progress({
   )
 }
 
-export { Progress }
+function ProgressLabel({
+  className,
+  passwordStrength,
+  ...props
+}: React.ComponentProps<"p"> & { passwordStrength: number }) {
+  const t = useTranslations("auth.resetPassword");
+  return (
+    <p className="text-xs text-foreground flex items-center justify-between" {...props}>
+      <span>{t("password.strength.label")}</span>
+      <span>
+        {passwordStrength === 100
+          ? t("password.strength.strong")
+          : passwordStrength >= 75
+            ? t("password.strength.good")
+            : passwordStrength >= 50
+              ? t("password.strength.fair")
+              : t("password.strength.weak")}
+      </span>
+    </p>
+  )
+}
+export const calcStrength = (pwd: string) => {
+  let s = 0;
+  if (pwd.length >= 8) s += 25;
+  if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) s += 25;
+  if (/\d/.test(pwd)) s += 25;
+  if (/[^a-zA-Z\d]/.test(pwd)) s += 25;
+  return s;
+};
+
+export { Progress, ProgressLabel }
