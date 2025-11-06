@@ -106,7 +106,7 @@ export default function LoginPassword({ email, loginMethod, setStep } : LoginPas
                         {t("password.label")}
                         <a
                           className="ml-auto inline-block text-sm text-sub-highlight hover:text-sub-highlight/60"
-                          href="/auth/forgot-password"
+                          href={`/auth/forgot-password?email=${encodeURIComponent(email || form.watch("email") || "")}`}
                           tabIndex={-1}
                         >
                           {t("password.forgot")}

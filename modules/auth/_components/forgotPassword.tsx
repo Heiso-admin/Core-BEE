@@ -1,102 +1,92 @@
 "use client";
 
-import { AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { requestPasswordReset } from "../_server/password.service";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import Header from "./header";
+import AuthRedirectHint from "./authRedirectHint";
 
-export default function ForgotPasswordPage() {
+export default function ForgotPasswordPage({ email }: { email?: string | null }) {
   const t = useTranslations("auth.forgotPassword");
-  const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const forgotSchema = z
+    .object({
+      email: z.string().email({ message: t('error.invalidEmail') }),
+    })
+
+  const form = useForm<z.infer<typeof forgotSchema>>({
+    resolver: zodResolver(forgotSchema),
+    defaultValues: {
+      email: email || "",
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof forgotSchema>) => {
     setIsLoading(true);
-    setError(null);
+    const { email } = values;
+    form.clearErrors("email");
 
     // Basic email validation
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
-      setError(t("error.invalidEmail"));
+      form.setError("email", { message: t("error.invalidEmail") });
       setIsLoading(false);
       return;
     }
 
     try {
       const data = await requestPasswordReset(email);
+      console.log(data);
+
       if (!data?.ok) {
         throw new Error("Request failed");
       }
       setIsSubmitted(true);
     } catch (err: any) {
-      setError(err?.message || t("error.generic"));
+      form.setError("email", { message: err?.message || t("error.generic") });
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (isSubmitted) {
-    return (
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>{t("success.title")}</CardTitle>
-          <CardDescription>
-            {t("success.description", { email })}
-          </CardDescription>
-        </CardHeader>
-        <CardFooter>
-          <Button onClick={() => router.push("/login")} className="w-full">
-            {t("returnToLogin")}
-          </Button>
-        </CardFooter>
-      </Card>
-    );
-  }
-
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-        <CardDescription>{t("description")}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit}>
+    <>
+      <Header title={t("title")} description={isSubmitted ? t("success.description", { email: email || "email" }) : t("description")} />
+      <Form {...form}>
+        <form className="mt-8 space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">{t("email.label")}</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder={t("email.placeholder")}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
+            <div className="flex flex-col space-y-1">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>{t("email.label")}</FormLabel>
+                      <FormControl>
+                        <Input
+                          id="email-address"
+                          type="email"
+                          autoComplete="email"
+                          placeholder={t("email.placeholder")}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
             </div>
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>{t("error.title")}</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (
                 <>
@@ -109,15 +99,15 @@ export default function ForgotPasswordPage() {
             </Button>
           </div>
         </form>
-      </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button variant="ghost" asChild>
-          <Link href="/login">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            {t("backToLogin")}
-          </Link>
-        </Button>
-      </CardFooter>
-    </Card>
+      </Form>
+      <AuthRedirectHint>
+        <Link
+          href={`/login?email=${encodeURIComponent(email || form.watch("email") || "")}`}
+          className="underline ml-2"
+        >
+          {t("backToLogin")}
+        </Link>
+      </AuthRedirectHint>
+    </>
   );
 }

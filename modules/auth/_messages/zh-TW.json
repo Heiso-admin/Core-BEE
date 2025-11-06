@@ -229,7 +229,7 @@
     },
     "success": {
       "title": "請查看您的電子郵件",
-      "description": "我們已將重設密碼連結發送至 {email}。請查看您的收件匣並按照指示重設密碼。"
+      "description": "我們已將重設密碼連結發送至 {email}，請查看您的收件匣並按照指示重設密碼。"
     },
     "backToLogin": "返回登入",
     "userNotFound": "找不到使用此電子郵件的帳號"
