@@ -1,0 +1,75 @@
+diff --git a/dist/index.mjs b/dist/index.mjs
+index 0a04e3d50837552dff228b0c7b15f97e0b49e693..5f48af04e14e328fea28d1ee0d37e1faf8accf68 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -453,42 +453,39 @@ var swagger = ({
+   };
+   const relativePath = specPath.startsWith("/") ? specPath.slice(1) : specPath;
+   const app = new Elysia({ name: "@elysiajs/swagger" });
+-  const page = new Response(
+-    provider === "swagger-ui" ? SwaggerUIRender(
+-      info,
+-      version,
+-      theme,
+-      JSON.stringify(
+-        {
+-          url: relativePath,
+-          dom_id: "#swagger-ui",
+-          ...swaggerOptions
+-        },
+-        (_, value) => typeof value === "function" ? void 0 : value
+-      ),
+-      autoDarkMode
+-    ) : ScalarRender(
+-      info,
+-      scalarVersion,
++  const page = provider === "swagger-ui" ? SwaggerUIRender(
++    info,
++    version,
++    theme,
++    JSON.stringify(
+       {
+-        spec: {
+-          url: relativePath,
+-          ...scalarConfig.spec
+-        },
+-        ...scalarConfig,
+-        // so we can showcase the elysia theme
+-        // @ts-expect-error
+-        _integration: "elysiajs"
++        url: relativePath,
++        dom_id: "#swagger-ui",
++        ...swaggerOptions
+       },
+-      scalarCDN
++      (_, value) => typeof value === "function" ? void 0 : value
+     ),
++    autoDarkMode
++  ) : ScalarRender(
++    info,
++    scalarVersion,
+     {
+-      headers: {
+-        "content-type": "text/html; charset=utf8"
+-      }
+-    }
++      spec: {
++        url: relativePath,
++        ...scalarConfig.spec
++      },
++      ...scalarConfig,
++      // so we can showcase the elysia theme
++      // @ts-expect-error
++      _integration: "elysiajs"
++    },
++    scalarCDN
+   );
+-  app.get(path, page, {
++	app.get(path, () => new Response(page, {
++    headers: {
++      "content-type": "text/html; charset=utf8"
++    }
++  }), {
+     detail: {
+       hide: true
+     }
