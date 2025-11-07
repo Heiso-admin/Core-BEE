@@ -4,12 +4,6 @@ export async function getDashboardMessages(locale: Locale) {
   const dashboard = (await import(`../(dashboard)/_messages/${locale}.json`))
     .default;
 
-  const navigation = (
-    await import(
-      `../(dashboard)/(features)/navigation/_messages/${locale}.json`
-    )
-  ).default;
-
   const permission = (
     await import(`../(dashboard)/(permission)/_messages/${locale}.json`)
   ).default;
@@ -20,7 +14,6 @@ export async function getDashboardMessages(locale: Locale) {
 
   return {
     ...dashboard,
-    navigation,
     permission,
     settings,
   };
