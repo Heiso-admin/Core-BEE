@@ -1,214 +1,213 @@
 {
-  "role": {
-    "title": "角色管理",
-    "description": "管理您組織的角色和權限",
-    "list": {
-      "add_new": "新增角色",
-      "table": {
-        "role_name": "角色名稱",
-        "description": "描述",
-        "actions": "操作"
-      },
-      "full_access": "完全存取",
-      "actions": {
-        "edit": "編輯",
-        "menu_access": "選單存取",
-        "permission": "權限",
-        "delete": "刪除"
-      }
-    },
-    "form": {
-      "create_title": "建立新角色",
-      "update_title": "更新角色",
-      "name": "角色名稱",
-      "description": "描述",
-      "full_access": "完全存取",
-      "save": "儲存",
-      "validation": {
-        "name_required": "角色名稱為必填項目"
-      }
-    },
-    "delete_confirm": {
-      "title": "刪除角色",
-      "description": "您確定要刪除此角色嗎？此操作無法復原。",
-      "cancel": "取消",
-      "delete": "刪除"
-    },
-    "menuAccess": {
-      "title": "選單存取",
-      "description": "設定角色選單權限：{name}",
-      "success": "選單權限更新成功",
-      "actions": {
-        "cancel": "取消",
-        "save": "儲存"
-      }
-    }
-  },
-  "team": {
-    "title": "團隊成員",
-    "members": {
-      "user": "使用者",
-      "you": "您",
-      "status": "狀態",
-      "invited": "已邀請",
-      "declined": "已拒絕",
-      "createdDate": "加日日期",
-      "updatedDate": "最後登入",
-      "role": "角色",
-      "actions": "操作",
-      "roleInfo": "角色資訊",
-      "owner": "擁有者",
-      "edit": "編輯",
-      "more": "更多操作",
-      "invite": "新增成員",
-      "searchMembers": "搜尋成員...",
-      "usersCount": "{count, plural, =0 {無使用者} other {# 位使用者}}",
-      "statuses": {
-        "invited": "待驗證",
-        "declined": "停用",
-        "joined": "啟動",
-        "review": "待審核"
-      }
-    },
-    "addMember": {
-      "title": "新增成員",
-      "description": "直接新增成員到您的團隊。",
-      "form": {
-        "email": "電子郵件",
-        "emailPlaceholder": "輸入電子郵件地址",
-        "role": "角色",
-        "rolePlaceholder": "選擇角色",
-        "initialPassword": "初始密碼",
-        "initialPasswordPlaceholder": "輸入初始密碼",
-        "showPassword": "顯示密碼",
-        "hidePassword": "隱藏密碼",
-        "validation": {
-          "emailInvalid": "請輸入有效的電子郵件地址",
-          "roleRequired": "請選擇角色",
-          "passwordRequired": "密碼為必填項目",
-          "passwordMinLength": "密碼至少需要8個字符"
-        }
-      },
-      "actions": {
-        "cancel": "取消",
-        "add": "新增成員",
-        "adding": "新增中..."
-      },
-      "success": {
-        "title": "成員已新增",
-        "description": "成員已成功新增。他們需要在首次登入時更改密碼。"
-      }
-    },
-    "invite": {
-      "title": "新增成員",
-      "description": "邀請新成員加入您的團隊。",
-      "form": {
-        "name":"名稱",
-        "namePlaceholder": "請輸入用戶名稱",
-        "email": "電子郵件",
-        "emailPlaceholder": "請輸入電子郵件地址",
-        "role": "角色",
-        "rolePlaceholder": "選擇角色",
-        "owner": "擁有者",
-        "validation": {
-          "emailInvalid": "請輸入有效的電子郵件地址",
-          "roleInvalid": "請輸入有效的角色名稱",
-          "emailRepeat":"您嘗試新增的 Email 已在註冊。請檢查此 Email 是否屬於現有成員，或使用不同的電子郵件地址。"
-        },
-        "success":"成員 {email} 已成功邀請",
-        "error":"邀請成員失敗。請稍後再試。"
-      },
-      "actions": {
-        "cancel": "取消",
-        "send": "發送邀請",
-        "sending": "發送中..."
-      }
-    },
-    "edit": {
-      "title": "編輯成員",
-      "description": "更新 {email} 的成員資訊",
-      "form": {
-        "role": "角色",
-        "rolePlaceholder": "選擇角色",
-        "owner": "擁有者"
-      },
-      "actions": {
-        "cancel": "取消",
-        "save": "儲存變更"
-      },
-      "success": {
-        "title": "成員已更新",
-        "description": "成員資訊已成功更新。"
-      }
-    }
-  },
-  "message":{
-    "edit":{
-      "title": "詳情與管理",
-      "description": "更新 {email} 的成員資訊",
-      "lastLogin": "最後登入時間",
-      "role": "角色",
-      "selectRole": "請選擇角色",
-      "status": "成員存取權限",
-      "cancel": "取消",
-      "save": "儲存",
-      "saving": "儲存中...",
-      "statuses": {
-        "activate": "啟動",
-        "deactivate": "停用"
-      },
-      "successfully": "已更新成員存取權限",
-      "failed": "更新成員存取權限失敗",
-      "invitedDescription": "此用戶尚未完成認證（邀請中），請確認該使用者是否已收到認證郵件。",
-      "lastOwnerDescription": "此用戶為最後一位擁有者，無法更改其權限。"
-    },
-    "remove":{
-      "action": "移除",
-      "title": "確認移除成員",
-      "content": "您確定要移除 {email} 嗎",
-      "cancel": "取消",
-      "remove": "移除",
-      "success": "成功移除成員",
-      "failed": "移除成員失敗"
-    },
-    "transfer":{
-      "title":"轉移擁有者",
-      "content": "您即將將組織的「擁有者 (Owner)」最高權限轉移給 {name}。\n 警告：轉移後，您將喪失所有擁有者權限，且無法自行復原。新擁有者將擁有刪除組織及管理所有成員的權力。",
-      "logoutWarning": "轉移完成後，您將自動登出系統。",
-      "cancel": "取消",
-      "confirm": "確定",
-      "successfully": "成功轉移所有權",
-      "failed": "未能完成所有權轉移"
-    },
-    "resetPassword":{
-      "action": "協助重設密碼",
-      "confirm":{
-        "title":"確認重設密碼",
-        "description":"您即將重設 {userName} 的密碼。\n 警告：重設後，用戶將需要使用新密碼登入系統。",
-        "cancel":"取消",
-        "generate":"產生新密碼"
-      },
-      "result":{
-        "title":"新密碼已自動生成",
-        "content":"自動設定密碼",
-        "remark":"系統已為帳號自動生成一組安全密碼，請立即複製並妥善保管此密碼",
-        "copy":"複製密碼",
-        "close":"關閉"
-      },
-      "message":{
-        "successfully": "成功重設密碼",
-        "failed": "重設密碼失敗"
-      }
-    },
-    "review":{
-      "action":"批准",
-      "title":"審查成員",
-      "description":"請為此新成員指定初始角色。\n * 批准: 授予系統存取權，並將帳號狀態轉為「啟動」。 \n * 拒絕: 將停用該帳號並永久禁止登入",
-      "reject":"拒絕",
-      "approve":" 批准",
-      "success":"成員存取權限已更新",
-      "failed":"未能更新成員存取權限"
-    }
-  }
-
+	"role": {
+		"title": "角色管理",
+		"description": "管理您組織的角色和權限",
+		"list": {
+			"add_new": "新增角色",
+			"table": {
+				"role_name": "角色名稱",
+				"description": "描述",
+				"actions": "操作"
+			},
+			"full_access": "完全存取",
+			"actions": {
+				"edit": "編輯",
+				"menu_access": "選單存取",
+				"permission": "權限",
+				"delete": "刪除"
+			}
+		},
+		"form": {
+			"create_title": "建立新角色",
+			"update_title": "更新角色",
+			"name": "角色名稱",
+			"description": "描述",
+			"full_access": "完全存取",
+			"save": "儲存",
+			"validation": {
+				"name_required": "角色名稱為必填項目"
+			}
+		},
+		"delete_confirm": {
+			"title": "刪除角色",
+			"description": "您確定要刪除此角色嗎？此操作無法復原。",
+			"cancel": "取消",
+			"delete": "刪除"
+		},
+		"menuAccess": {
+			"title": "選單存取",
+			"description": "設定角色選單權限：{name}",
+			"success": "選單權限更新成功",
+			"actions": {
+				"cancel": "取消",
+				"save": "儲存"
+			}
+		}
+	},
+	"team": {
+		"title": "團隊成員",
+		"members": {
+			"user": "使用者",
+			"you": "您",
+			"status": "狀態",
+			"invited": "已邀請",
+			"declined": "已拒絕",
+			"createdDate": "加日日期",
+			"updatedDate": "最後登入",
+			"role": "角色",
+			"actions": "操作",
+			"roleInfo": "角色資訊",
+			"owner": "擁有者",
+			"edit": "編輯",
+			"more": "更多操作",
+			"invite": "新增成員",
+			"searchMembers": "搜尋成員...",
+			"usersCount": "{count, plural, =0 {無使用者} other {# 位使用者}}",
+			"statuses": {
+				"invited": "待驗證",
+				"declined": "停用",
+				"joined": "啟動",
+				"review": "待審核"
+			}
+		},
+		"addMember": {
+			"title": "新增成員",
+			"description": "直接新增成員到您的團隊。",
+			"form": {
+				"email": "電子郵件",
+				"emailPlaceholder": "輸入電子郵件地址",
+				"role": "角色",
+				"rolePlaceholder": "選擇角色",
+				"initialPassword": "初始密碼",
+				"initialPasswordPlaceholder": "輸入初始密碼",
+				"showPassword": "顯示密碼",
+				"hidePassword": "隱藏密碼",
+				"validation": {
+					"emailInvalid": "請輸入有效的電子郵件地址",
+					"roleRequired": "請選擇角色",
+					"passwordRequired": "密碼為必填項目",
+					"passwordMinLength": "密碼至少需要8個字符"
+				}
+			},
+			"actions": {
+				"cancel": "取消",
+				"add": "新增成員",
+				"adding": "新增中..."
+			},
+			"success": {
+				"title": "成員已新增",
+				"description": "成員已成功新增。他們需要在首次登入時更改密碼。"
+			}
+		},
+		"invite": {
+			"title": "新增成員",
+			"description": "邀請新成員加入您的團隊。",
+			"form": {
+				"name": "名稱",
+				"namePlaceholder": "請輸入用戶名稱",
+				"email": "電子郵件",
+				"emailPlaceholder": "請輸入電子郵件地址",
+				"role": "角色",
+				"rolePlaceholder": "選擇角色",
+				"owner": "擁有者",
+				"validation": {
+					"emailInvalid": "請輸入有效的電子郵件地址",
+					"roleInvalid": "請輸入有效的角色名稱",
+					"emailRepeat": "您嘗試新增的 Email 已在註冊。請檢查此 Email 是否屬於現有成員，或使用不同的電子郵件地址。"
+				},
+				"success": "成員 {email} 已成功邀請",
+				"error": "邀請成員失敗。請稍後再試，"
+			},
+			"actions": {
+				"cancel": "取消",
+				"send": "發送邀請",
+				"sending": "發送中..."
+			}
+		},
+		"edit": {
+			"title": "編輯成員",
+			"description": "更新 {email} 的成員資訊",
+			"form": {
+				"role": "角色",
+				"rolePlaceholder": "選擇角色",
+				"owner": "擁有者"
+			},
+			"actions": {
+				"cancel": "取消",
+				"save": "儲存變更"
+			},
+			"success": {
+				"title": "成員已更新",
+				"description": "成員資訊已成功更新。"
+			}
+		}
+	},
+	"message": {
+		"edit": {
+			"title": "詳情與管理",
+			"description": "更新 {email} 的成員資訊",
+			"lastLogin": "最後登入時間",
+			"role": "角色",
+			"selectRole": "請選擇角色",
+			"status": "成員存取權限",
+			"cancel": "取消",
+			"save": "儲存",
+			"saving": "儲存中...",
+			"statuses": {
+				"activate": "啟動",
+				"deactivate": "停用"
+			},
+			"successfully": "已更新成員存取權限",
+			"failed": "更新成員存取權限失敗",
+			"invitedDescription": "此用戶尚未完成認證（邀請中），請確認該使用者是否已收到認證郵件。",
+			"lastOwnerDescription": "此用戶為最後一位擁有者，無法更改其權限。"
+		},
+		"remove": {
+			"action": "移除",
+			"title": "確認移除成員",
+			"content": "您確定要移除 {email} 嗎",
+			"cancel": "取消",
+			"remove": "移除",
+			"success": "成功移除成員",
+			"failed": "移除成員失敗"
+		},
+		"transfer": {
+			"title": "轉移擁有者",
+			"content": "您即將將組織的「擁有者 (Owner)」最高權限轉移給 {name}。\n 警告：轉移後，您將喪失所有擁有者權限，且無法自行復原。新擁有者將擁有刪除組織及管理所有成員的權力。",
+			"logoutWarning": "轉移完成後，您將自動登出系統。",
+			"cancel": "取消",
+			"confirm": "確定",
+			"successfully": "成功轉移所有權",
+			"failed": "未能完成所有權轉移"
+		},
+		"resetPassword": {
+			"action": "協助重設密碼",
+			"confirm": {
+				"title": "確認重設密碼",
+				"description": "您即將重設 {userName} 的密碼。\n 警告：重設後，用戶將需要使用新密碼登入系統。",
+				"cancel": "取消",
+				"generate": "產生新密碼"
+			},
+			"result": {
+				"title": "新密碼已自動生成",
+				"content": "自動設定密碼",
+				"remark": "系統已為帳號自動生成一組安全密碼，請立即複製並妥善保管此密碼",
+				"copy": "複製密碼",
+				"close": "關閉"
+			},
+			"message": {
+				"successfully": "成功重設密碼",
+				"failed": "重設密碼失敗"
+			}
+		},
+		"review": {
+			"action": "批准",
+			"title": "審查成員",
+			"description": "請為此新成員指定初始角色。\n * 批准: 授予系統存取權，並將帳號狀態轉為「啟動」。 \n * 拒絕: 將停用該帳號並永久禁止登入",
+			"reject": "拒絕",
+			"approve": " 批准",
+			"success": "成員存取權限已更新",
+			"failed": "未能更新成員存取權限"
+		}
+	}
 }

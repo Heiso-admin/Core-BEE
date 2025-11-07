@@ -217,11 +217,12 @@
 			"errorPassword": "Password is incorrect",
 			"userNotFound": "Account not found with that email address. Please verify the email or contact your organization administrator.",
 			"review": "Account is currently under review. Please wait for final approval from your organization administrator.",
+			"invited": "Account Already Invited. Please check your inbox.",
 			"general": "An error occurred. Please try again or contact your organization administrator."
 		},
 		"notFound": {
 			"password": "Don't want a password? <Link>Use code</Link>",
-			"code": "Can’t find your code? <Link>Use password</Link>"
+			"code": "Can't find your code? <Link>Use password</Link>"
 		},
 		"back": "Back to home"
 	},
@@ -250,8 +251,8 @@
 		"returnToLogin": "Return to Login"
 	},
 	"otp": {
-		"title": "Sign in with OTP",
-		"description": "Enter your email address to receive a one-time password",
+		"title": "Check your email",
+		"description": "We've sent you a passcode.\n Please check your inbox at {email}.",
 		"email": {
 			"label": "Email address",
 			"placeholder": "Enter your email address",
@@ -289,7 +290,12 @@
 			"sendFailed": "Failed to send verification code",
 			"verifyFailed": "Failed to verify code",
 			"login": "Login failed, please try again",
-			"general": "Something went wrong. Please try again"
+			"general": "Something went wrong. Please try again",
+			"missing": "Missing email"
+		},
+		"notFound": {
+			"password": "Don't want a password? <Link>Use code</Link>",
+			"code": "Can't find your code? <Link>Use password</Link>"
 		},
 		"backToPassword": "Sign in with password instead",
 		"back": "Back",

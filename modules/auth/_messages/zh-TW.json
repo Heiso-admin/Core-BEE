@@ -65,7 +65,7 @@
 	},
 	"emailVerification": {
 		"title": "驗證您的電子郵件",
-		"emailDescription": "我們已向您發送一封登入郵件。\n 請檢查您的收件箱 {email}。",
+		"emailDescription": "我們已向您發送一封登入郵件，\n 請檢查您的收件箱 {email}。",
 		"codeDescription": "我們已發送驗證碼至 {email}",
 		"input": {
 			"placeholder": "請輸入驗證碼"
@@ -206,7 +206,8 @@
 		"error": {
 			"errorPassword": "密碼錯誤",
 			"userNotFound": "找不到您的電子郵件帳號。 請確認 Email 地址無誤，或聯繫您的組織管理員。",
-			"review": "您的帳號仍在審核中。 請耐心等候組織管理員的最終批准。",
+			"review": "您的帳號仍在審核中，請耐心等候組織管理員的最終批准。",
+			"invited": "您的電子郵件已收到邀請信，請檢查您的收件箱。",
 			"general": "發生錯誤，請重試或聯繫您的組織管理員。"
 		},
 		"notFound": {
@@ -239,8 +240,8 @@
 		"userNotFound": "找不到使用此電子郵件的帳號"
 	},
 	"otp": {
-		"title": "使用驗證碼登入",
-		"description": "請輸入您的電子郵件地址以接收一次性密碼",
+		"title": "請檢查您的電子郵件",
+		"description": "我們已向您發送一組驗證碼，\n 請至 {email} 的收件箱查收。",
 		"email": {
 			"label": "電子郵件地址",
 			"placeholder": "請輸入您的電子郵件地址",
@@ -253,7 +254,7 @@
 		},
 		"submit": {
 			"sendCode": "發送驗證碼",
-			"verify": "驗證並登入",
+			"verify": "驗證",
 			"loading": {
 				"sendCode": "正在發送驗證碼...",
 				"verify": "正在驗證..."
@@ -276,7 +277,12 @@
 			"sendFailed": "發送驗證碼失敗",
 			"verifyFailed": "驗證碼驗證失敗",
 			"login": "登入失敗，請重試",
-			"general": "發生錯誤，請稍後再試"
+			"general": "發生錯誤，請稍後再試",
+			"missing": "遺失電子郵件"
+		},
+		"notFound": {
+			"password": "不想使用密碼？ <Link>使用驗證碼登入</Link>",
+			"code": "找不到驗證碼？ <Link>使用密碼登入</Link>"
 		},
 		"backToPassword": "改用密碼登入",
 		"back": "返回",
