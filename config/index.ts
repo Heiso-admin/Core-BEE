@@ -1,18 +1,18 @@
 const config = {
   site: {
-    name: 'Sunlife',
-    title: 'Sunlife',
+    name: 'Core-Bee',
+    title: 'Core-Bee',
     base_url: '/',
     favicon: '/assets/svg/favicon.svg',
-    slogan: 'Sunlife',
-    description: 'Sunlife',
+    slogan: 'Core-Bee',
+    description: 'Core-Bee',
     organization: 'Heiso',
     logo: {
       url: '/images/logo.png',
-      title: 'Sunlife',
+      title: 'Core-Bee',
     },
     ogImage: '/assets/svg/og-image.svg',
-    domain: 'sunlife.heiso.io',
+    domain: 'core-bee.heiso.io',
     copyright: '© 2024 Heiso. All rights reserved.',
   },
 

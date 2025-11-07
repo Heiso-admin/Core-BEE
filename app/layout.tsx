@@ -20,8 +20,8 @@ const ptSans = PT_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Sunlife',
-  description: 'Sunlife dashboard.',
+  title: 'Core-Bee',
+  description: 'Core-Bee dashboard.',
 };
 
 export default async function RootLayout({

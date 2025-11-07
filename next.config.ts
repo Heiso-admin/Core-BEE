@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
         hostname: 'cdn.heisoo.com',
         port: '',
 
-        pathname: '/sunlife/**',
+        pathname: '/core-bee/**',
       },
     ],
   },
