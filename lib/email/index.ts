@@ -48,16 +48,16 @@ export async function sendInviteUserEmail({
     ? siteLogo
     : `${BASE_HOST}${siteLogo}`);
   const orgName = site?.branding?.organization || config?.site?.organization;
-  const subject= `Verify Your Email Address for ${orgName}`
-  const inviteLink= `${BASE_HOST}/dashboard/join?token=${inviteToken}`
+  const subject = `Verify Your Email Address for ${orgName}`
+  const inviteLink = `${BASE_HOST}/dashboard/join?token=${inviteToken}`
 
-  const emailType ={
+  const emailType = {
     logoUrl: derivedLogoUrl,
     orgName,
     inviteLink,
   }
 
-  const email = owner? InviteOwnerEmail(emailType) : InviteUserEmail(emailType);
+  const email = owner ? InviteOwnerEmail(emailType) : InviteUserEmail(emailType);
   return await sendEmail({ from, to, subject, body: email });
 }
 

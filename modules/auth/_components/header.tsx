@@ -7,10 +7,8 @@ export default function Header({
 }) {
   return (
     <div className="flex flex-col items-center space-y-4 font-lato">
-      <span>
-        <h1 className="text-3xl font-bold text-center">{title}</h1>
-        <p className="mt-2 text-center text-sm text-neutral">{description}</p>
-      </span>
+      <h1 className="text-3xl font-bold text-center">{title}</h1>
+      <p className="mt-2 text-center text-sm text-neutral">{description}</p>
     </div>
   );
 }

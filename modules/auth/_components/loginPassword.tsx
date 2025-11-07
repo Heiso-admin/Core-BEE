@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { ActionButton, PasswordInput } from "@/components/primitives";
@@ -31,10 +31,9 @@ interface LoginPasswordProps {
   setStep: (step: LoginStep) => void;
 }
 
-export default function LoginPassword({ email, loginMethod, setStep } : LoginPasswordProps) {
+export default function LoginPassword({ email, loginMethod, setStep }: LoginPasswordProps) {
   const t = useTranslations("auth.login");
   const [error, setError] = useState("");
-  const router = useRouter();
   const { update } = useSession();
 
   const formSchema = z.object({
@@ -62,8 +61,7 @@ export default function LoginPassword({ email, loginMethod, setStep } : LoginPas
     }
 
     await update();
-    router.replace("/dashboard");
-    router.refresh();
+    window.location.replace('/dashboard');
   };
 
   return (
@@ -121,7 +119,7 @@ export default function LoginPassword({ email, loginMethod, setStep } : LoginPas
                         />
                       </FormControl>
                       <FormMessage />
-                      {error && <p className="w-full text-center text-destructive">{error}</p>}
+                      {error && <p className="w-full text-center text-destructive/80">{error}</p>}
                     </FormItem>
                   );
                 }}
@@ -129,11 +127,11 @@ export default function LoginPassword({ email, loginMethod, setStep } : LoginPas
             </div>
           </div>
           <ActionButton
-              type="submit"
-              className="w-full bg-primary hover:bg-primary/80"
-              loading={form.formState.isSubmitting}
+            type="submit"
+            className="w-full bg-primary hover:bg-primary/80"
+            loading={form.formState.isSubmitting}
           >
-              {t("submit")}
+            {t("submit")}
           </ActionButton>
           {loginMethod !== LoginMethodEnum.Email && (
             <AuthRedirectHint>

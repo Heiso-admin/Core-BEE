@@ -81,6 +81,8 @@ export default function SignUp({ email }: { email?: string | null }) {
       return;
     }
     const user = await signup({ name: data.name, email: signupEmail, password: data.password });
+    console.log(user);
+
     if (!user) {
       setError(t("error"));
       return;
@@ -93,13 +95,9 @@ export default function SignUp({ email }: { email?: string | null }) {
     <>
       <Header
         title={t('title')}
-        description={
-          <div className="text-center mt-5">
-            <p className="text-sm text-neutral">{t('description', { email: email || "email" })}</p>
-          </div>
-        }
+        description={t('description', { email: email || "email" })}
       />
-      {error && <p className="w-full text-center text-destructive">{error}</p>}
+      <p className="text-destructive text-sm w-full text-center">{error}</p>
       <Form {...form}>
         <form className="mt-6 mb-4 space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
           <div className="space-y-4 mb-8">
@@ -161,7 +159,6 @@ export default function SignUp({ email }: { email?: string | null }) {
                   );
                 }}
               />
-              <p className="text-destructive text-sm">{error}</p>
             </div>
             <div className="flex flex-col space-y-1">
               <FormField
@@ -185,7 +182,6 @@ export default function SignUp({ email }: { email?: string | null }) {
                   );
                 }}
               />
-              <p className="text-destructive text-sm">{error}</p>
             </div>
           </div>
           <ActionButton
