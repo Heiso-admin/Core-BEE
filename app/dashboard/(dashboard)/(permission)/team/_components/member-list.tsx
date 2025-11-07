@@ -55,7 +55,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
   const t = useTranslations("dashboard.permission.team.members");
   const [sorting, setSorting] = useState<SortingState>([]);
 
-  const AllRoles: Role[]= [{id: MemberStatus.Owner, name: MemberStatus.Owner},...roles]
+  const AllRoles: Role[] = [{ id: MemberStatus.Owner, name: MemberStatus.Owner }, ...roles]
 
   const showStatus = useCallback((member: string | null) => {
     switch (member) {
@@ -72,7 +72,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
         return member;
     }
   }, [t]);
-  
+
   const columns: ColumnDef<Member>[] = [
     {
       header: t("user"),
@@ -91,7 +91,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
     {
       accessorFn: (row) => {
         if (row.isOwner) {
-          return MemberStatus.Owner; 
+          return MemberStatus.Owner;
         }
         return row.role?.name || "No Role";
       },
@@ -104,28 +104,30 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
       cell: ({ row }) => {
         const isOwner = row.original.isOwner;
         const nullOwner = row.original.role === null && !row.original.isOwner
-        return (!nullOwner&&<Badge variant="tag">{isOwner? MemberStatus.Owner: row.original.role?.name}</Badge>);
+        return (!nullOwner && <Badge variant="tag" onClick={() => console.log(row.original)}>{isOwner ? MemberStatus.Owner : row.original.role?.name}</Badge>);
       },
     },
     {
       header: t("status"),
       accessorKey: "status",
-      sortingFn:"basic",
+      sortingFn: "basic",
       cell: ({ row }) => showStatus(row.original.status)
     },
     {
       header: t("createdDate"),
       accessorKey: "createdAt",
-      sortingFn:"datetime",
+      sortingFn: "datetime",
       cell: ({ row }) => (readableDate(row.original.createdAt)),
     },
     {
       header: t("updatedDate"),
       accessorKey: "updatedAt",
-      sortingFn:"datetime",
+      sortingFn: "datetime",
       cell: ({ row }) => {
-        const updateDate = row.original.updatedAt
-        return(updateDate && row.original.status !== MemberStatus.Invited ? readableDate(updateDate) : "-")},
+        const { user } = row.original;
+        const updateDate = user?.updatedAt
+        return (updateDate ? readableDate(updateDate) : "-")
+      },
     },
     {
       header: t("actions"),
@@ -193,20 +195,20 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
                 {headerGroup.headers.map((header) => {
                   const isSortable = header.column.getCanSort();
                   const sorted = header.column.getIsSorted(); // false | 'asc' | 'desc'
-                  return( 
-                    <TableHead 
-                      key={header.id} 
-                      isSortable={isSortable} 
-                      sorted={sorted} 
+                  return (
+                    <TableHead
+                      key={header.id}
+                      isSortable={isSortable}
+                      sorted={sorted}
                       onClick={isSortable ? header.column.getToggleSortingHandler() : undefined}
                       isCenter={header.column.id === "actions"}
                     >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                      )}
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                     </TableHead>)
                 })}
               </TableRow>
@@ -227,13 +229,13 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
             ))}
           </TableBody>
         </Table>
-        
+
       </div>
     </div>
   );
 }
 
-export const MemberUser = ({member, isYou}: {member: Member, isYou: boolean})=>{
+export const MemberUser = ({ member, isYou }: { member: Member, isYou: boolean }) => {
   const t = useTranslations("dashboard.permission.team.members");
   const { email, user } = member;
   const userName = user?.name || email.split("@")[0];

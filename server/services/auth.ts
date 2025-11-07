@@ -14,6 +14,11 @@ export async function login(username: string, password: string) {
       redirect: false, // Prevent automatic redirection after successful login
     });
 
+    await db
+      .update(usersTable)
+      .set({ lastLoginAt: new Date(), updatedAt: new Date() })
+      .where(eq(usersTable.email, username));
+
     return true;
   } catch (error) {
     console.error("Error during login:", error);
