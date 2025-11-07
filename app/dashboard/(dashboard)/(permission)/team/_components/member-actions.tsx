@@ -45,7 +45,7 @@ export function MemberActions({
   const [openTransferConfirm, setOpenTransferConfirm] = useState<boolean>(false);
   const [openResetPassword, setOpenResetPassword] = useState<boolean>(false);
   const [openReviewConfirm, setOpenReviewConfirm] = useState<boolean>(false);
-  
+
   const lastOwner = (currentMembers.filter(
     (m) => m.isOwner && m.status === MemberStatus.Joined,
   ).length) === 1;
@@ -114,7 +114,7 @@ export function MemberActions({
     //   onClick: () => setOpenRemoveConfirm(true),
     // },
   ];
-  
+
   const handleRemove = () => {
     startRemoveTransition(async () => {
       await leaveTeam(member.id);
@@ -122,12 +122,12 @@ export function MemberActions({
     });
   };
 
-  const handleApproveReview = (roleId: string) => {
+  const handleApproveReview = (roleId: string | null, isOwner: boolean) => {
     startReviewTransition(async () => {
       try {
         await updateMember({
           id: member.id,
-          data: { status: MemberStatus.Joined, roleId },
+          data: { isOwner: isOwner, roleId: roleId, status: MemberStatus.Joined, },
         });
         toast.success(t("review.success"));
         setOpenReviewConfirm(false);
@@ -143,7 +143,7 @@ export function MemberActions({
       try {
         await updateMember({
           id: member.id,
-          data: { status: MemberStatus.Disabled, roleId: null },
+          data: { status: MemberStatus.Disabled },
         });
         toast.success(t("review.success"));
         setOpenReviewConfirm(false);
@@ -163,7 +163,7 @@ export function MemberActions({
 
   const handleTransfer = () => {
     if (!currentUserMember) return;
-    
+
     startTransferTransition(async () => {
       try {
         await transferOwnership({
@@ -172,13 +172,13 @@ export function MemberActions({
         });
         toast.success(t("transfer.successfully"));
         setOpenTransferConfirm(false);
-        
+
         setTimeout(() => {
           signOut({
             callbackUrl: "/login", // 轉移完成後登出當前用戶
             redirect: true,
           });
-        }, 1500); 
+        }, 1500);
       } catch (error) {
         toast.error(t("transfer.failed"));
         console.error("Transfer ownership error:", error);
@@ -284,7 +284,7 @@ export function MemberActions({
         onClose={() => setOpenResetPassword(false)}
         onConfirm={handleResetPassword}
       />
-      
+
       <ConfirmReviewMember
         open={openReviewConfirm}
         member={member}

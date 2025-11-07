@@ -15,7 +15,6 @@ import type { Member } from "../_server/team.service";
 import type { Role } from "./member-list";
 import { MemberStatus, MemberUser } from "./member-list";
 import { useTranslations } from "next-intl";
-import { useForm } from "react-hook-form";
 
 type Props = {
   open: boolean;
@@ -23,7 +22,7 @@ type Props = {
   roles: Role[];
   pending?: boolean;
   onClose: () => void;
-  onApprove: (roleId: string) => void;
+  onApprove: (roleId: string | null, isOwner: boolean) => void;
   onReject: () => void;
 };
 
@@ -38,11 +37,13 @@ export const ConfirmReviewMember = ({
 }: Props) => {
   const t = useTranslations("dashboard.permission.message.review");
   const labelT = useTranslations("dashboard.permission.team.invite");
-  const [selectedRoleId, setSelectedRoleId] = useState<string>("");
+  const [selectedRoleId, setSelectedRoleId] = useState<string>(member.isOwner ? MemberStatus.Owner : member.role?.id || "");
 
   const handleApprove = () => {
     if (!selectedRoleId) return;
-    onApprove(selectedRoleId);
+    const isOwner = selectedRoleId === MemberStatus.Owner;
+    const roleId = selectedRoleId === MemberStatus.Owner ? null : roles.find((r) => r.id === selectedRoleId)?.id || null;
+    onApprove(roleId, isOwner);
   };
 
   return (
@@ -60,9 +61,9 @@ export const ConfirmReviewMember = ({
 
           <div className="space-y-2">
             <div className="text-sm font-medium">{labelT("form.role")}</div>
-            <Select 
-              value={member.isOwner ? MemberStatus.Owner : member.role?.id} 
-              onValueChange={setSelectedRoleId} 
+            <Select
+              value={selectedRoleId}
+              onValueChange={setSelectedRoleId}
               disabled={pending}
             >
               <SelectTrigger className="w-full">
