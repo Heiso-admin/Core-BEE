@@ -8,7 +8,6 @@ Production-ready admin dashboard built with Next.js 16, featuring authentication
 
 - NextAuth v5 with 2FA
 - Resource-based RBAC permissions
-- Plate.js editor with AI
 - PostgreSQL + Drizzle ORM
 - Multi-language (en, zh-TW)
 - S3 file uploads
@@ -47,7 +46,6 @@ Visit `http://localhost:3000/signup` to create an account.
 **Database**: PostgreSQL, Drizzle ORM  
 **Auth**: NextAuth 5.0  
 **UI**: Tailwind v4, Radix UI, Shadcn UI  
-**Editor**: Plate.js 49, AI SDK  
 **Tools**: Biome, pnpm, dotenv-flow
 
 
