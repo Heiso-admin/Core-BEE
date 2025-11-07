@@ -69,11 +69,6 @@ components/
 ├── permission/          # RBAC components
 │   ├── protected-area.tsx
 │   └── protected-button.tsx
-├── editor/              # Rich text editor (Plate.js)
-│   ├── plate-editor.tsx
-│   ├── editor-kit.tsx
-│   ├── use-chat.ts
-│   └── plugins/
 ├── skeleton/            # Loading skeletons
 └── hooks/               # Shared React hooks
 ```
