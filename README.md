@@ -1,6 +1,6 @@
 # Core-BEE
 
-Production-ready admin dashboard built with Next.js 16, featuring authentication, RBAC permissions, rich text editing, and modular architecture.
+Production-ready admin dashboard built with Next.js 16, featuring authentication, RBAC permissions and modular architecture.
 
 > **Note**: Customize branding in `config/index.ts`.
 
