@@ -59,8 +59,7 @@ modules/[feature]/
 components/
 ├── ui/           # Button、Card、Dialog...
 ├── primitives/   # 自訂元件
-├── permission/   # RBAC 包裝器
-└── editor/       # Plate.js 編輯器
+└── permission/   # RBAC 包裝器
 ```
 
 ### Libraries 層

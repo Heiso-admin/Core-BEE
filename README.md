@@ -172,7 +172,6 @@ Core-BEE 遵循四層模組化架構：
 
 - NextAuth v5 雙重驗證（2FA）
 - 基於資源的 RBAC 權限
-- Plate.js 編輯器與 AI
 - PostgreSQL + Drizzle ORM
 - 多語系（en、zh-TW）
 - S3 檔案上傳
@@ -215,7 +214,6 @@ pnpm dev
 **資料庫**：PostgreSQL、Drizzle ORM  
 **認證**：NextAuth 5.0  
 **介面**：Tailwind v4、Radix UI、Shadcn UI  
-**編輯器**：Plate.js 49、AI SDK  
 **工具**：Biome、pnpm、dotenv-flow
 
 ### 指令

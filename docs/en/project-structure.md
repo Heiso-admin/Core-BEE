@@ -73,7 +73,6 @@ components/
 ├── ui/                  # Shadcn/ui (Button, Card, Dialog...)
 ├── primitives/          # Custom components
 ├── permission/          # RBAC wrappers
-├── editor/              # Plate.js editor
 ├── skeleton/
 └── hooks/
 ```

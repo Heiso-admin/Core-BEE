@@ -59,8 +59,7 @@ Reusable UI (shadcn/ui based).
 components/
 ├── ui/           # Button, Card, Dialog...
 ├── primitives/   # Custom components
-├── permission/   # RBAC wrappers
-└── editor/       # Plate.js editor
+└── permission/   # RBAC wrappers
 ```
 
 ### Libraries Layer
