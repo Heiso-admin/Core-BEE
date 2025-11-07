@@ -20,6 +20,41 @@ pnpm format       # Auto-format
 pnpm email:dev    # Preview emails
 ```
 
+## Dev Center
+
+```bash
+# Access URLs
+http://localhost:3000/dev-center           # Main dashboard
+http://localhost:3000/dev-center/menu      # Menu management
+http://localhost:3000/dev-center/permission # Permissions
+http://localhost:3000/dev-center/api-keys  # API key management
+http://localhost:3000/api/docs             # API documentation
+```
+
+## API Keys
+
+**Create Key**:
+```typescript
+// Via Dev Center UI or programmatically
+const apiKey = await createApiKey({
+  name: 'Service Name',
+  scopes: ['users.read', 'reports.write'],
+  expiresAt: new Date('2025-12-31')
+});
+```
+
+**Use Key**:
+```bash
+curl -H "Authorization: Bearer sk_xxx" \
+  http://localhost:3000/api/users
+```
+
+**Rotate Key**:
+```bash
+# Via Dev Center → API Keys → Rotate button
+# Or programmatically:
+const newKey = await rotateApiKey(keyId);
+```
 
 
 ## Permissions
