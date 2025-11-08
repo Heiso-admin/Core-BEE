@@ -58,8 +58,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         username: { label: 'Username' },
         password: { label: 'Password', type: 'password' },
+        email: { label: 'Email' },
+        otpVerified: { label: 'OTP Verified' },
+        userId: { label: 'User ID' },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
+        // 支援兩種授權路徑：1) 密碼登入、2) OTP 已驗證登入
+        // 2) OTP 流程：前端已 verifyOTP 並提供 email + userId + otpVerified=true
+        if (credentials?.otpVerified === 'true') {
+          const email = String(credentials?.email || '');
+          const userId = String(credentials?.userId || '');
+          if (!email || !userId) {
+            throw new InvalidLoginError();
+          }
+
+          const user = await getUser(email);
+          if (!user || user.id !== userId) {
+            throw new InvalidLoginError();
+          }
+
+          const isDeveloper = !!user?.developer;
+          const isAdmin = false;
+          return { id: user.id, name: user.name, email: user.email, isDeveloper, isAdmin };
+        }
+
+        // 1) 密碼登入：維持原本的 username/password 流程
         if (!credentials?.username || !credentials?.password) {
           throw new InvalidLoginError();
         }
@@ -79,7 +102,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         const isDeveloper = !!user?.developer;
-        return { id: user.id, name: user.name, email: user.email, isDeveloper };
+        const isAdmin = false;
+        return { id: user.id, name: user.name, email: user.email, isDeveloper, isAdmin };
       },
     }),
   ],
