@@ -214,7 +214,7 @@
 		"submit": "Sign In",
 		"request_otp": "Request One-Times Access",
 		"error": {
-			"errorPassword": "Password is incorrect",
+			"errorPassword": "We couldn’t find an account matching the email and password you entered. Please check your email and password and try again.",
 			"userNotFound": "Account not found with that email address. Please verify the email or contact your organization administrator.",
 			"review": "Account is currently under review. Please wait for final approval from your organization administrator.",
 			"invited": "Account Already Invited. Please check your inbox.",

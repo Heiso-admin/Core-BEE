@@ -204,11 +204,12 @@
 		},
 		"submit": "登入",
 		"error": {
-			"errorPassword": "密碼錯誤",
-			"userNotFound": "找不到您的電子郵件帳號。 請確認 Email 地址無誤，或聯繫您的組織管理員。",
+			"errorPassword": "我們找不到與您輸入的電子郵件和密碼匹配的帳戶，請檢查您的電子郵件和密碼。",
+			"userNotFound": "找不到您的電子郵件帳號，請確認 Email 地址無誤，或聯繫您的組織管理員。",
 			"review": "您的帳號仍在審核中，請耐心等候組織管理員的最終批准。",
 			"invited": "您的電子郵件已收到邀請信，請檢查您的收件箱。",
-			"general": "發生錯誤，請重試或聯繫您的組織管理員。"
+			"general": "發生錯誤，請重試或聯繫您的組織管理員。",
+			"notActive": "您的帳號目前無法登入，請聯繫您的組織管理員尋求協助。"
 		},
 		"notFound": {
 			"password": "不想使用密碼？ <Link>驗證碼登入</Link>",
@@ -271,7 +272,7 @@
 			"verified": "驗證碼驗證成功"
 		},
 		"error": {
-			"invalidEmail": "找不到使用此電子郵件的帳號",
+			"userNotFound": "找不到您的電子郵件帳號。 請確認 Email 地址無誤，或聯繫您的組織管理員。",
 			"invalidCode": "驗證碼無效或已過期",
 			"tooManyAttempts": "嘗試次數過多，請稍後再試",
 			"sendFailed": "發送驗證碼失敗",

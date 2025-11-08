@@ -29,9 +29,10 @@ interface LoginPasswordProps {
   email?: string | null;
   loginMethod?: string | null;
   setStep: (step: LoginStep) => void;
+  handleLoginSuccess: () => void;
 }
 
-export default function LoginPassword({ email, loginMethod, setStep }: LoginPasswordProps) {
+export default function LoginPassword({ email, loginMethod, setStep, handleLoginSuccess }: LoginPasswordProps) {
   const t = useTranslations("auth.login");
   const [error, setError] = useState("");
   const { update } = useSession();
@@ -56,12 +57,12 @@ export default function LoginPassword({ email, loginMethod, setStep }: LoginPass
     const result = await login(email, password);
     console.log("result: ", result);
     if (!result) {
-      setError(t("error"));
+      setError(t("error.errorPassword"));
       return;
     }
 
     await update();
-    window.location.replace('/dashboard');
+    handleLoginSuccess();
   };
 
   return (

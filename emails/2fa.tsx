@@ -48,15 +48,14 @@ export default function TwoFactorEmail({
               </Heading>
               <Section className="rounded-lg p-6 text-center mb-6">
                 <Text className="font-mono text-3xl tracking-[10px] text-gray-900">
-                  {/* {code} */}
-                  794270
+                  {code}
                 </Text>
               </Section>
 
               <Hr className="border-gray-200 my-6" />
 
               <Text className="text-xs text-gray-500 text-center">
-                This code will expire in 5 minutes. If you didn’t request this, you can safely ignore this email
+                This code will expire in {expiresInMinutes} minutes. If you didn’t request this, you can safely ignore this email.
               </Text>
             </Section>
           </Container>

@@ -25,22 +25,23 @@ import { MemberStatus } from '@/app/dashboard/(dashboard)/(permission)/team/_com
 
 interface AuthLoginProps {
   error: string;
-  setError: (error: string) => void; 
+  setError: (error: string) => void;
   setLoginMethod: (loginMethod: string | null) => void;
-  setStep: (step: LoginStep) => void; 
+  setStep: (step: LoginStep) => void;
   setUserEmail: (email: string) => void;
   anyUser: boolean;
   orgName?: string;
+  handleAuthMethod: (method: string, email: string) => void;
 }
 
-const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, anyUser, orgName }: AuthLoginProps) => {
+const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, anyUser, orgName, handleAuthMethod }: AuthLoginProps) => {
   const t = useTranslations("auth.login");
 
   const usedOrgName = orgName || config?.site?.organization;
   const [isLoading, startTransition] = useTransition();
   const [info, setInfo] = useState<string>("");
 
-    const emailSchema = z.object({
+  const emailSchema = z.object({
     email: z.email({ message: t('email.error') }),
   });
 
@@ -66,47 +67,48 @@ const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, any
         setStep(LoginStepEnum.Invite);
       }
       return;
-    }
+    } else {
+      startTransition(async () => {
+        try {
+          const loginMethod = await getLoginMethod(values.email); // 登入方式
+          const memberStatus = await getMemberStatus(values.email); // 成員狀態
+          console.log('loginMethod: ', loginMethod, memberStatus);
 
-    startTransition(async () => {
-      try {
-        const loginMethod = await getLoginMethod(values.email);
-        const memberStatus = await getMemberStatus(values.email);
-        console.log('loginMethod: ', loginMethod, memberStatus);
+          if (!loginMethod) {
+            setError(t('error.userNotFound'));
+            return;
+          }
+          if (memberStatus === MemberStatus.Invited) {
+            setError(t('error.invited'));
+            return;
+          }
 
-        if (!loginMethod) {
-          setError(t('error.userNotFound'));
-          return;
-        }
-        if (memberStatus === MemberStatus.Review) {
-          setError(t('error.review'));
-          return;
-        }
+          if (memberStatus === MemberStatus.Review) {
+            setError(t('error.review'));
+            return;
+          }
 
-        if( memberStatus !== MemberStatus.Joined) {
-          throw new Error('USER_NOT_ACTIVATED');
-        }
+          if (memberStatus !== MemberStatus.Joined) {
+            throw new Error('USER_NOT_ACTIVATED');
+          }
 
-        //  以下只有狀態是加入(啟用)狀態才可以處理
-        if (loginMethod !== '') {
-          setLoginMethod(loginMethod);
-          // 根据登录方法决定下一步
-          if (loginMethod === LoginStepEnum.Otp) {
-            setStep(LoginStepEnum.Otp);
+          if (loginMethod !== '') {
+            //  以下只有狀態是加入(啟用)狀態才可以處理
+            setLoginMethod(loginMethod);
+            handleAuthMethod(loginMethod, values.email);
           } else {
-            // 默认使用密码登录
+            // 如果用户不存在或没有设置登录方法，默认使用密码登录
+            setLoginMethod(LoginStepEnum.Password);
             setStep(LoginStepEnum.Password);
           }
-        } else {
-          // 如果用户不存在或没有设置登录方法，默认使用密码登录
-          setLoginMethod(LoginStepEnum.Password);
-          setStep(LoginStepEnum.Password);
+        } catch (err) {
+          console.error('Error getting login method:', err);
+          setError(t('error.general'));
         }
-      } catch (err) {
-        console.error('Error getting login method:', err);
-        setError(t('error.general'));
-      }
-    });
+      });
+    }
+
+
   };
 
   return (
@@ -142,46 +144,46 @@ const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, any
         </div>
       </div>
       <Form {...emailForm}>
-          <form className="mt-8 space-y-6" onSubmit={emailForm.handleSubmit(handleEmailSubmit)}>
-            <div className="space-y-4">
-              <div className="flex flex-col space-y-1">
-                <FormField
-                  control={emailForm.control}
-                  name="email"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>{t("email.label")}</FormLabel>
-                        <FormControl>
-                          <Input
-                            id="email-address"
-                            type="email"
-                            autoComplete="email"
-                            placeholder={t("email.placeholder")}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                        {info && (
-                          <p className="w-full text-sm text-primary whitespace-pre-line">{info}</p>
-                        )}
-                        {error && <p className="w-full text-destructive text-sm">{error}</p>}    
-                      </FormItem>
-                    );
-                  }}
-                />
-              </div>
-            </div>   
-            <div>
-              <ActionButton
-                type="submit"
-                className="w-full bg-primary hover:bg-primary/80"
-                loading={isLoading}
-              >
-                {t("submit")}
-              </ActionButton>
+        <form className="mt-8 space-y-6" onSubmit={emailForm.handleSubmit(handleEmailSubmit)}>
+          <div className="space-y-4">
+            <div className="flex flex-col space-y-1">
+              <FormField
+                control={emailForm.control}
+                name="email"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>{t("email.label")}</FormLabel>
+                      <FormControl>
+                        <Input
+                          id="email-address"
+                          type="email"
+                          autoComplete="email"
+                          placeholder={t("email.placeholder")}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                      {info && (
+                        <p className="w-full text-sm text-primary whitespace-pre-line">{info}</p>
+                      )}
+                      {error && <p className="w-full text-destructive text-sm">{error}</p>}
+                    </FormItem>
+                  );
+                }}
+              />
             </div>
-          </form>
+          </div>
+          <div>
+            <ActionButton
+              type="submit"
+              className="w-full bg-primary hover:bg-primary/80"
+              loading={isLoading}
+            >
+              {t("submit")}
+            </ActionButton>
+          </div>
+        </form>
       </Form>
     </>
   )
