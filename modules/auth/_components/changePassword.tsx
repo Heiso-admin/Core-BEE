@@ -1,25 +1,19 @@
 "use client";
 
-import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
-import Link from "next/link";
-import { redirect, useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
+import { calcStrength, Progress, ProgressLabel } from "@/components/ui/progress";
 import { changePassword } from "../_server/user.service";
+import AuthRedirectHint from './authRedirectHint';
+import Header from './header';
+import { PasswordInput } from '@/components/primitives/password-input';
+import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 export default function ChangePasswordPage() {
   const { data: session } = useSession();
@@ -30,26 +24,17 @@ export default function ChangePasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const router = useRouter();
 
   if (!userId) return null;
 
-  const calculatePasswordStrength = (password: string): number => {
-    let strength = 0;
-    if (password.length >= 8) strength += 25;
-    if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength += 25;
-    if (password.match(/\d/)) strength += 25;
-    if (password.match(/[^a-zA-Z\d]/)) strength += 25;
-    return strength;
-  };
-
-  const passwordStrength = calculatePasswordStrength(password);
+  const passwordStrength = calcStrength(password);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+
 
     if (password !== confirmPassword) {
       setError(t("error.mismatch"));
@@ -57,7 +42,13 @@ export default function ChangePasswordPage() {
       return;
     }
 
-    if (passwordStrength < 75) {
+    if (password.length < 8) {
+      setError(t("error.short"));
+      setIsLoading(false);
+      return;
+    }
+
+    if (passwordStrength < 50) {
       setError(t("error.weak"));
       setIsLoading(false);
       return;
@@ -66,8 +57,8 @@ export default function ChangePasswordPage() {
     try {
       await changePassword(userId, password);
 
-      // If successful, set submitted state to true
-      setIsSubmitted(true);
+      router.push("/dashboard")
+      toast.success(t("success.action"));
     } catch {
       setError(t("error.generic"));
     } finally {
@@ -75,90 +66,67 @@ export default function ChangePasswordPage() {
     }
   };
 
-  if (isSubmitted) {
-    return (
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <CheckCircle2 className="mr-2 h-5 w-5" />
-            {t("success.title")}
-          </CardTitle>
-          <CardDescription>{t("success.description")}</CardDescription>
-        </CardHeader>
-        <CardFooter>
-          <Button onClick={() => router.push("/dashboard")} className="w-full">
-            {t("success.action")}
-          </Button>
-        </CardFooter>
-      </Card>
-    );
-  }
+  const handleCancelPasswordChange = () => {
+    signOut({
+      callbackUrl: '/',
+    });
+  };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-        <CardDescription>{t("description")}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="password">{t("password.label")}</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <Progress value={passwordStrength} className="w-full" />
-              <p className="text-sm text-foreground/0">
-                {t("password.strength.label")}
-                {passwordStrength === 100
-                  ? t("password.strength.strong")
-                  : passwordStrength >= 75
-                    ? t("password.strength.good")
-                    : passwordStrength >= 50
-                      ? t("password.strength.fair")
-                      : t("password.strength.weak")}
-              </p>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">{t("password.confirm")}</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-            </div>
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>{t("error.title")}</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {t("submit.loading")}
-                </>
-              ) : (
-                t("submit.default")
-              )}
-            </Button>
+    <>
+      <Header title={t("title")} description={t("description")} />
+      <form onSubmit={handleSubmit}>
+        <div className="space-y-4">
+          <div className="space-y-2 mb-8">
+            <Label htmlFor="password">{t("password.label")}</Label>
+            <PasswordInput
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            {password !== "" &&
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-2 mt-3"
+              >
+                <Progress value={passwordStrength} className="w-full" />
+                <ProgressLabel passwordStrength={passwordStrength} />
+              </motion.div>
+            }
           </div>
-        </form>
-      </CardContent>
-      <CardFooter className="flex justify-center">
-        <Button variant="link" asChild>
-          <Link href="/login">{t("cancel")}</Link>
+          <div className="space-y-2 mb-8">
+            <Label htmlFor="confirmPassword">{t("password.confirm")}</Label>
+            <PasswordInput
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+            <p className="text-destructive text-sm">{error}</p>
+          </div>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {t("submit.loading")}
+              </>
+            ) : (
+              t("submit.default")
+            )}
+          </Button>
+        </div>
+      </form>
+      <AuthRedirectHint>
+        <Button
+          variant="link"
+          className="text-neutral font-normal p-0"
+          onClick={handleCancelPasswordChange}
+        >
+          {t("cancel")}
         </Button>
-      </CardFooter>
-    </Card>
+      </AuthRedirectHint>
+    </>
   );
 }

@@ -45,7 +45,6 @@ export default function ForgotPasswordPage({ email }: { email?: string | null })
 
     try {
       const data = await requestPasswordReset(email);
-      console.log(data);
 
       if (!data?.ok) {
         throw new Error("Request failed");
