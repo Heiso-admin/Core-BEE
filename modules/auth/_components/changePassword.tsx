@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import { signOut, signIn, useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,6 @@ import AuthRedirectHint from './authRedirectHint';
 import Header from './header';
 import { PasswordInput } from '@/components/primitives/password-input';
 import { motion } from 'framer-motion';
-import { toast } from 'sonner';
 
 export default function ChangePasswordPage() {
   const { data: session } = useSession();
@@ -56,12 +55,17 @@ export default function ChangePasswordPage() {
 
     try {
       await changePassword(userId, password);
-
-      router.push("/dashboard")
-      toast.success(t("success.action"));
+      // 保持 loading，執行重新登入並重定向至 /dashboard
+      await signOut({ redirect: false });
+      await signIn("credentials", {
+        username: session?.user?.email ?? "",
+        password,
+        redirect: true,
+        callbackUrl: "/dashboard",
+      });
+      // 以上為帶 redirect 的流程，頁面將被替換；不需要在此處結束 loading
     } catch {
       setError(t("error.generic"));
-    } finally {
       setIsLoading(false);
     }
   };
