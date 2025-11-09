@@ -62,19 +62,21 @@ export function EditMember({ open, onClose, member, roles, lastOwner }: EditMemb
     resolver: zodResolver(updateMemberFormSchema),
     defaultValues: {
       roleId: member.roleId || "",
-      isOwner: member.isOwner,
+      isOwner: member.isOwner, // 這個只是用來一開始的狀態
       status: member.status || "active", // 預設為啟用狀態
     },
   });
 
   const onSubmit = async (values: UpdateMemberFormValues) => {
     setIsLoading(true);
+    const isOwner = values.roleId === MemberStatus.Owner;
+
     try {
       await updateMember({
         id: member.id,
         data: {
-          roleId: values.isOwner ? null : values.roleId,
-          isOwner: values.isOwner,
+          roleId: isOwner ? null : values.roleId,
+          isOwner: isOwner,
           status: values.status,
         },
       });
@@ -88,7 +90,7 @@ export function EditMember({ open, onClose, member, roles, lastOwner }: EditMemb
     }
   };
 
-  const showDescription =()=>{
+  const showDescription = () => {
     switch (true) {
       case member.status === MemberStatus.Invited:
         return t("invitedDescription");
@@ -113,66 +115,66 @@ export function EditMember({ open, onClose, member, roles, lastOwner }: EditMemb
 
         {/* Role Edit Form */}
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className={cn("space-y-4", 
+          <form onSubmit={form.handleSubmit(onSubmit)} className={cn("space-y-4",
             lastOwner && "pointer-events-none opacity-60",
           )}>
-              <FormField
-                control={form.control}
-                name="roleId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("role")}</FormLabel>
-                    <Select
-                      onValueChange={(value) => {
-                        if (value === "owner") {
-                          form.setValue("isOwner", true);
-                          form.setValue("roleId", "");
-                        } else {
-                          form.setValue("isOwner", false);
-                          field.onChange(value);
-                        }
-                      }}
-                      value={form.watch("isOwner") ? MemberStatus.Owner : field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder={t("selectRole")} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="w-full">
-                        {roles.map((role) => (
-                          <SelectItem key={role.id} value={role.id}>
-                            {role.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-             
-             <FormField
+            <FormField
+              control={form.control}
+              name="roleId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("role")}</FormLabel>
+                  <Select
+                    onValueChange={(value) => {
+                      if (value === "owner") {
+                        form.setValue("isOwner", true);
+                        form.setValue("roleId", "");
+                      } else {
+                        form.setValue("isOwner", false);
+                        field.onChange(value);
+                      }
+                    }}
+                    value={form.watch("isOwner") ? MemberStatus.Owner : field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={t("selectRole")} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="w-full">
+                      {roles.map((role) => (
+                        <SelectItem key={role.id} value={role.id}>
+                          {role.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
               control={form.control}
               name="status"
               render={({ field }) => (
                 <FormItem className="flex flex-col items-start justify-between ">
-                   <FormLabel>
-                      {t("status")}
-                    </FormLabel>
+                  <FormLabel>
+                    {t("status")}
+                  </FormLabel>
                   <div className="space-y-0.5 rounded-lg border py-3 px-4 w-full flex items-center justify-between">
                     <div className="text-sm text-muted-foreground">
                       {field.value === MemberStatus.Joined ? t("statuses.activate") : t("statuses.deactivate")}
                     </div>
                     <FormControl>
-                    <Switch
-                      checked={field.value === MemberStatus.Joined}
-                      onCheckedChange={(checked) => {
-                        field.onChange(checked ? MemberStatus.Joined : MemberStatus.Disabled);
-                      }}
-                      disabled={member.status === MemberStatus.Invited}
-                    />
-                  </FormControl>
+                      <Switch
+                        checked={field.value === MemberStatus.Joined}
+                        onCheckedChange={(checked) => {
+                          field.onChange(checked ? MemberStatus.Joined : MemberStatus.Disabled);
+                        }}
+                        disabled={member.status === MemberStatus.Invited}
+                      />
+                    </FormControl>
                   </div>
                 </FormItem>
               )}
