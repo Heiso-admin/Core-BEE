@@ -15,13 +15,12 @@ import { getLoginMethod, getMemberStatus } from '../_server/user.service';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type LoginStep, LoginStepEnum } from './loginForm';
-import Image from "next/image"
-import MicrosoftLogo from "../../../public/Microsoft_logo.webp"
-import { Button } from "@/components/ui/button";
 import { invite } from '@/app/dashboard/(dashboard)/(permission)/team/_server/team.service';
 import Header from './header';
 import config from "@/config";
 import { MemberStatus } from '@/app/dashboard/(dashboard)/(permission)/team/_components/member-list';
+import OAuthLoginButtons from './oAuthLoginButtons';
+import { oAuthLogin } from '@/server/services/auth';
 
 interface AuthLoginProps {
   error: string;
@@ -39,7 +38,6 @@ const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, any
 
   const usedOrgName = orgName || config?.site?.organization;
   const [isLoading, startTransition] = useTransition();
-  const [info, setInfo] = useState<string>("");
 
   const emailSchema = z.object({
     email: z.email({ message: t('email.error') }),
@@ -116,23 +114,17 @@ const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, any
       <Header title={anyUser ? t("title") : t("titleInvite", { organization: usedOrgName })} />
       <div className="mt-6">
         {/* Microsoft Login */}
-        <div className="my-6">
-          <Button asChild variant="outline" className="w-full rounded-4xl">
-            <a
-              href="/api/auth/signin/azure-ad?callbackUrl=/dashboard"
-              className="flex items-center gap-2"
-            >
-              <Image
-                src={MicrosoftLogo}
-                alt="Microsoft"
-                width={20}
-                height={20}
-                loading="lazy"
-                decoding="async"
-              />
-              <span>Sign in with Microsoft</span>
-            </a>
-          </Button>
+        <div className="my-6 space-y-2" >
+          <OAuthLoginButtons
+            href="/api/auth/signin/azure-ad?callbackUrl=/dashboard"
+            icon='logos:microsoft-icon'
+            alt="Microsoft"
+          />
+          <OAuthLoginButtons
+            icon='akar-icons:github-fill'
+            alt="GitHub"
+            onClick={() => oAuthLogin("github")}
+          />
         </div>
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
@@ -164,9 +156,6 @@ const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, any
                         />
                       </FormControl>
                       <FormMessage />
-                      {info && (
-                        <p className="w-full text-sm text-primary whitespace-pre-line">{info}</p>
-                      )}
                       {error && <p className="w-full text-destructive text-sm">{error}</p>}
                     </FormItem>
                   );

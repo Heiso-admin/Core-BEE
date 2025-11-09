@@ -87,3 +87,12 @@ export async function hasAnyUser() {
   });
   return !!first;
 }
+
+export const oAuthLogin = async (provider: string) => {
+  // await signIn(provider, { callbackUrl: "/dashboard" });
+  await signIn(provider);
+}
+
+export const oAuthLogout = async () => {
+  await signOut({ redirectTo: "/" });
+}
