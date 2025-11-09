@@ -28,13 +28,13 @@ export enum LoginMethodEnum {
 
 export type LoginStep = `${LoginStepEnum}`;
 
-function LoginForm({ email, anyUser, orgName, oAuthData, initialStep }: { email?: string | null; anyUser: boolean; orgName?: string; oAuthData?: OAuthDataType; initialStep?: 'invite' }) {
+function LoginForm({ email, anyUser, orgName, oAuthData }: { email?: string | null; anyUser: boolean; orgName?: string; oAuthData?: OAuthDataType }) {
   const router = useRouter();
   const t = useTranslations('auth.login');
 
   const [loginMethod, setLoginMethod] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState('');
-  const [step, setStep] = useState<LoginStep>(initialStep === 'invite' ? LoginStepEnum.Invite : LoginStepEnum.Email);
+  const [step, setStep] = useState<LoginStep>(LoginStepEnum.Password);
   const [error, setError] = useState<string>("");
 
   // 針對已完成 OAuth 的使用者，根據 member 狀態顯示提示訊息
