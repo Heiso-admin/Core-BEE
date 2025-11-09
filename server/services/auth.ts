@@ -89,7 +89,6 @@ export async function hasAnyUser() {
 }
 
 export const oAuthLogin = async (provider: string) => {
-  // await signIn(provider, { callbackUrl: "/dashboard" });
   await signIn(provider);
 }
 

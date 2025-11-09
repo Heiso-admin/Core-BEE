@@ -6,7 +6,6 @@ export * from "./dashboard-sidebar";
 export * from "./editor";
 export * from "./icon-selector";
 export * from "./language-switcher";
-export * from "./layout";
 export * from "./logo";
 export * from "./lucideIcon";
 export * from "./menu";

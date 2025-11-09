@@ -72,7 +72,7 @@ const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, any
           const memberStatus = await getMemberStatus(values.email); // 成員狀態
           console.log('loginMethod: ', loginMethod, memberStatus);
 
-          if (!loginMethod) {
+          if (!loginMethod || !memberStatus) {
             setError(t('error.userNotFound'));
             return;
           }

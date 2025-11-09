@@ -179,6 +179,8 @@ export function UserAvatar({
                 </DropdownMenuItem>
               );
             }
+
+            return null
           })}
 
           {/* <DropdownMenuGroup>

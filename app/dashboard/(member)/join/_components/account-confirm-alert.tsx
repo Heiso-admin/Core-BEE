@@ -1,29 +1,21 @@
 "use client";
 
-import { AlertCircleIcon } from "lucide-react";
-import { signOut } from "next-auth/react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { signOut } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
 
 export function AccountConfirmAlert({ email }: { email: string }) {
+  const t = useTranslations('auth.join');
   return (
-    <Alert>
-      <AlertCircleIcon />
-      <AlertTitle>Email ({email}) does not match.</AlertTitle>
-      <AlertDescription>
-        Please verify if you are logged in with the correct account?
-        <Button
-          size="sm"
-          className="text-xs"
-          onClick={() => {
-            signOut({
-              callbackUrl: "/",
-            });
-          }}
-        >
-          Log out
-        </Button>
-      </AlertDescription>
-    </Alert>
+    <>
+      <p className="whitespace-pre-line text-center">{t('joinSuccess', { email })}</p>
+      <Button
+        onClick={() => {
+          signOut({ callbackUrl: "/login" })
+        }}
+      >
+        {t("action.reLogin")}
+      </Button>
+    </>
   );
 }

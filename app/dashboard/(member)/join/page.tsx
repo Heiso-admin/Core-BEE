@@ -1,48 +1,45 @@
-import { Suspense } from "react";
-import { auth } from '@/modules/auth/auth.config';
-import { Card } from "@/components/ui/card";
-import { AccountConfirmAlert } from "./_components/account-confirm-alert";
+// Server Component
 import { InvalidJoinToken } from "./_components/invalid-join-token";
-import { JoinOrDecline } from "./_components/member-join";
+import { MemberJoin } from "./_components/member-join";
 import { getInviteToken } from "./_server/member.service";
+import { auth } from '@/modules/auth/auth.config';
+import { redirect } from "next/navigation";
 
 export default async function JoinPage({
   searchParams,
 }: {
-  searchParams: Promise<{ token: string }>;
+  searchParams: { token?: string };
 }) {
-  const session = await auth();
-  const email = session?.user?.email;
-
-  const { token } = await searchParams;
-  if (!token) return null;
-
+  const token = (searchParams?.token ?? '').trim();
   const membership = await getInviteToken({ token });
-  if (!membership) return <InvalidJoinToken />;
+  const session = await auth();
+  const user = session?.user
+    ? {
+      id: session.user.id ?? '',
+      name: session.user.name ?? '',
+      email: session.user.email ?? '',
+      avatar: (session.user as any)?.image ?? '',
+    }
+    : null;
 
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center">
-      <Suspense fallback={<>Loading ...</>}>
-        <div className="w-[480px] flex flex-col gap-4">
-          {email && email !== membership.email && (
-            <AccountConfirmAlert email={email} />
-          )}
+  console.log("JoinPage membership:", membership);
 
-          <Card className="p-6 space-y-6">
-            <div className="space-y-2 text-center">
-              <h1 className="text-xl font-medium">
-                You have been invited to join
-              </h1>
-              <h2 className="text-base font-semibold">
-                {/* {membership.organization.name} */}
-                TODO: replace with site name
-              </h2>
-            </div>
+  const isMemberJoined = session?.member?.status === 'joined';
+  if (isMemberJoined) {
+    redirect('/dashboard');
+  }
 
-            <JoinOrDecline id={membership.id} />
-          </Card>
-        </div>
-      </Suspense>
-    </div>
-  );
+  if (!membership) {
+    return <InvalidJoinToken />;
+  }
+
+  if ((membership as any)?.status === 'joined' || (membership as any)?.userId) {
+    return <InvalidJoinToken />;
+  }
+
+  if (user && (membership as any)?.email && user.email && (membership as any).email !== user.email) {
+    return <InvalidJoinToken />;
+  }
+
+  return <MemberJoin user={user} />;
 }

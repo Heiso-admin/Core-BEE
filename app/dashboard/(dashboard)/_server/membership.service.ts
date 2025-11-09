@@ -42,6 +42,7 @@ async function getMyMembership() {
         id: true,
         roleId: true,
         isOwner: true,
+        status: true,
       },
       with: {
         role: {
