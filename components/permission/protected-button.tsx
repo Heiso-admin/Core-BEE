@@ -1,17 +1,18 @@
 import { Button } from "@/components/ui/button";
-import { usePermission } from "@/hooks/use-permission";
+import type { permissionsConfig } from '@/config/permissions';
+import { usePermission } from '@/hooks/use-permission';
 
 export const ProtectedButton = ({
   className,
   resource,
-  action = "click",
+  action = 'view',
   children,
   asChild = false,
   ...props
 }: {
   className?: string;
-  resource: string;
-  action?: string;
+  resource: (typeof permissionsConfig)[number]['resource'];
+  action?: (typeof permissionsConfig)[number]['action'];
   asChild?: boolean;
   children?: React.ReactNode;
 }) => {
