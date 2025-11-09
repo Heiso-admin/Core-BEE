@@ -6,7 +6,7 @@ if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not set');
 }
 
-const client = postgres(process.env.DATABASE_URL);
+export const client = postgres(process.env.DATABASE_URL);
 
 // class MyLogger implements Logger {
 //   logQuery(query: string, params: unknown[]): void {
@@ -16,5 +16,10 @@ const client = postgres(process.env.DATABASE_URL);
 
 const db = drizzle({ client, schema });
 db.execute("SET TIME ZONE 'Asia/Shanghai'");
+
+export async function closeDb() {
+  // Ensure all connections are closed so scripts can exit cleanly
+  await client.end({ timeout: 0 });
+}
 
 export { db };

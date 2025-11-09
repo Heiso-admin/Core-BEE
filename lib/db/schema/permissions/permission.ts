@@ -5,6 +5,7 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+import { relations } from 'drizzle-orm';
 import {
   createInsertSchema,
   createSelectSchema,
@@ -32,6 +33,13 @@ export const permissions = pgTable(
     index("permissions_resource_action_idx").on(table.resource, table.action),
   ],
 );
+
+export const PermissionsRelations = relations(permissions, ({ one }) => ({
+  menus: one(menus, {
+    fields: [permissions.menuId],
+    references: [menus.id],
+  }),
+}));
 
 export const permissionsSchema = createSelectSchema(permissions);
 export const permissionsInsertSchema = createInsertSchema(permissions);

@@ -1,14 +1,15 @@
 // import { Fragment } from 'react';
-import { usePermission } from "@/hooks/use-permission";
+import type { permissionsConfig } from '@/config/permissions';
+import { usePermission } from '@/hooks/use-permission';
 
 export const ProtectedArea = ({
   resource,
-  action = "view",
+  action = 'view',
   tips,
   children,
 }: {
-  resource: string;
-  action?: string;
+  resource: (typeof permissionsConfig)[number]['resource'];
+  action?: (typeof permissionsConfig)[number]['action'];
   // className?: string;
   tips?: React.ReactNode;
   children: React.ReactNode;

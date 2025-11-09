@@ -134,17 +134,23 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
       id: "actions",
       cell: ({ row }) => {
         const isYou = row.original.user?.id === session?.user.id;
-        return !isYou && (
-          <div className="w-full flex items-center justify-center gap-2">
-            <ProtectedArea resource="member" action="edit">
-              <MemberActions member={row.original} currentMembers={data} roles={AllRoles}>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">{t("more")}</span>
-                </Button>
-              </MemberActions>
-            </ProtectedArea>
-          </div>
+        return (
+          !isYou && (
+            <div className="w-full flex items-center justify-center gap-2">
+              <ProtectedArea resource="team" action="edit">
+                <MemberActions
+                  member={row.original}
+                  currentMembers={data}
+                  roles={AllRoles}
+                >
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <MoreHorizontal className="h-4 w-4" />
+                    <span className="sr-only">{t('more')}</span>
+                  </Button>
+                </MemberActions>
+              </ProtectedArea>
+            </div>
+          )
         );
       },
     },
