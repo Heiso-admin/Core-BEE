@@ -19,8 +19,8 @@ export const permissions = pgTable(
   "permissions",
   {
     id: varchar("id", { length: 20 })
-      .primaryKey()
-      .$default(() => generatePermissionId()),
+      .primaryKey(),
+    // .$default(() => generatePermissionId()),
     menuId: varchar("menu_id", { length: 20 }).references(() => menus.id),
     resource: varchar("resource", { length: 100 }).notNull(), // e.g., "user.add"
     action: varchar("action", { length: 20 }).notNull(), // e.g., "view", "click"

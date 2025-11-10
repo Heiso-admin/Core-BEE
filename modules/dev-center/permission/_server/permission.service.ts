@@ -3,7 +3,7 @@
 import { and, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { permissions, type TMenu, type TPermission } from "@/lib/db/schema";
+import { permissions } from "@/lib/db/schema";
 
 async function getPermissions() {
   const result = await db.query.permissions.findMany({
@@ -13,44 +13,76 @@ async function getPermissions() {
   return result;
 }
 
-async function groupPermissionsByMenu<T extends TMenu, P extends TPermission>(
-  menus: Pick<T, "id" | "title" | "icon" >[],
-  permissions: P[],
+type MinimalMenu = { id: string; title: string; icon: string | null };
+type MinimalPermission = {
+  id: string;
+  resource: string;
+  action: string;
+  menuId?: string | null;
+};
+
+async function groupPermissionsByMenu(
+  menus: MinimalMenu[],
+  permissions: MinimalPermission[],
 ) {
+  const dbPermissions = await getPermissions();
+
   return menus.map((menu) => {
     const menuPermissions = permissions.filter((permission) => {
       return permission.menuId === menu.id;
     });
 
+    const dbMenuPermission = dbPermissions.filter((dbPermission) => {
+      return dbPermission.menuId === menu.id;
+    })
+
     return {
       id: menu.id,
       title: menu.title,
       icon: menu.icon,
-      permissions: menuPermissions.map((p) => ({
-        id: p.id,
-        resource: p.resource,
-        action: p.action,
-      })),
+      permissions: menuPermissions.map((p) => {
+        const existing = dbMenuPermission.find(
+          (dbPermission) =>
+            dbPermission.id === p.id
+        );
+        return {
+          id: p.id,
+          resource: p.resource,
+          action: p.action,
+          checked: Boolean(existing),
+        };
+      }),
     };
   });
 }
 
 async function createPermission({
+  id,
   menuId,
   resource,
   action,
 }: {
+  id: string;
   menuId?: string;
   resource: string;
   action: string;
 }) {
-  const result = await db.insert(permissions).values({
-    menuId,
-    resource,
-    action,
-  });
+  // Upsert by id: if exists (even soft-deleted), restore and update fields
+  const result = await db
+    .insert(permissions)
+    .values({ id, menuId, resource, action })
+    .onConflictDoUpdate({
+      target: permissions.id,
+      set: {
+        menuId,
+        resource,
+        action,
+        deletedAt: null,
+        updatedAt: new Date(),
+      },
+    })
+    .returning({ id: permissions.id, menuId: permissions.menuId });
 
-  revalidatePath("./permission/organization", "page");
   return result;
 }
 
@@ -71,7 +103,7 @@ async function updatePermission({
     })
     .where(eq(permissions.id, id));
 
-  revalidatePath("./permission/organization", "page");
+  revalidatePath("/dev-center/permission", "page");
   return result;
 }
 
@@ -82,8 +114,28 @@ async function deletePermission({ id }: { id: string }) {
       deletedAt: new Date(),
     })
     .where(and(eq(permissions.id, id), isNull(permissions.deletedAt)));
+  return result;
+}
 
-  revalidatePath("./permission/organization", "page");
+async function deletePermissionByKey({ id }: { id: string }) {
+  const result = await db
+    .update(permissions)
+    .set({ deletedAt: new Date() })
+    .where(and(eq(permissions.id, id), isNull(permissions.deletedAt)));
+
+  // Optimistic UI removes the check immediately; skip page revalidation
+  return result;
+}
+
+// Soft delete all current permissions (set deletedAt)
+async function deleteAllPermissions() {
+  const result = await db
+    .update(permissions)
+    .set({ deletedAt: new Date() })
+    .where(isNull(permissions.deletedAt));
+
+  // Refresh the permission page to reflect all unchecked states
+  revalidatePath("/dev-center/permission", "page");
   return result;
 }
 
@@ -93,4 +145,6 @@ export {
   createPermission,
   updatePermission,
   deletePermission,
+  deletePermissionByKey,
+  deleteAllPermissions,
 };
