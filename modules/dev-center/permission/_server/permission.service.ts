@@ -19,70 +19,60 @@ type MinimalPermission = {
   resource: string;
   action: string;
   menuId?: string | null;
+  db?: boolean;
 };
 
 async function groupPermissionsByMenu(
   menus: MinimalMenu[],
   permissions: MinimalPermission[],
+  dbPermissions: MinimalPermission[],
 ) {
-  const dbPermissions = await getPermissions();
+  // 合併時以穩定 key（id）為主；DB 覆寫同 id 的 config
+  const map = new Map<string, MinimalPermission>();
+  for (const p of permissions) {
+    map.set(p.id, p);
+  }
+  for (const p of dbPermissions) {
+    map.set(p.id, p);
+  }
+  const uniquePermissions = Array.from(map.values());
 
   return menus.map((menu) => {
-    const menuPermissions = permissions.filter((permission) => {
-      return permission.menuId === menu.id;
-    });
-
-    const dbMenuPermission = dbPermissions.filter((dbPermission) => {
-      return dbPermission.menuId === menu.id;
-    })
+    const menuPermissions = uniquePermissions.filter((permission) => permission.menuId === menu.id);
 
     return {
       id: menu.id,
       title: menu.title,
       icon: menu.icon,
       permissions: menuPermissions.map((p) => {
-        const existing = dbMenuPermission.find(
-          (dbPermission) =>
-            dbPermission.id === p.id
-        );
-        return {
+        const dbPermission = dbPermissions.find((dbP) => dbP.id === p.id);
+        return ({
           id: p.id,
           resource: p.resource,
           action: p.action,
-          checked: Boolean(existing),
-        };
+          db: !!dbPermission
+        })
       }),
     };
   });
 }
 
 async function createPermission({
-  id,
   menuId,
   resource,
   action,
 }: {
-  id: string;
   menuId?: string;
   resource: string;
   action: string;
 }) {
-  // Upsert by id: if exists (even soft-deleted), restore and update fields
-  const result = await db
-    .insert(permissions)
-    .values({ id, menuId, resource, action })
-    .onConflictDoUpdate({
-      target: permissions.id,
-      set: {
-        menuId,
-        resource,
-        action,
-        deletedAt: null,
-        updatedAt: new Date(),
-      },
-    })
-    .returning({ id: permissions.id, menuId: permissions.menuId });
+  const result = await db.insert(permissions).values({
+    menuId,
+    resource,
+    action,
+  });
 
+  revalidatePath("/dev-center/permission", "page");
   return result;
 }
 
@@ -114,6 +104,8 @@ async function deletePermission({ id }: { id: string }) {
       deletedAt: new Date(),
     })
     .where(and(eq(permissions.id, id), isNull(permissions.deletedAt)));
+
+  revalidatePath("/dev-center/permission", "page");
   return result;
 }
 
@@ -123,7 +115,7 @@ async function deletePermissionByKey({ id }: { id: string }) {
     .set({ deletedAt: new Date() })
     .where(and(eq(permissions.id, id), isNull(permissions.deletedAt)));
 
-  // Optimistic UI removes the check immediately; skip page revalidation
+  revalidatePath("/dev-center/permission", "page");
   return result;
 }
 

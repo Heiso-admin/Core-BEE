@@ -41,16 +41,16 @@ import {
   updatePermission,
 } from '@/modules/dev-center/permission/_server/permission.service';
 import { DynamicIcon, type IconName } from "lucide-react/dynamic";
-import _ from 'lodash';
-import { generatePermissionId } from '@/lib/id-generator';
-import { Separator } from '../ui/separator';
 import { type CheckedState } from '@radix-ui/react-checkbox';
+import { Button } from '../ui/button';
+import { PencilIcon, SquarePlus, TrashIcon } from 'lucide-react';
 
 export interface Permission {
   id: string;
   resource: string;
   action: string;
   checked?: boolean;
+  db?: boolean;
 }
 
 export interface PermissionGroup {
@@ -62,7 +62,9 @@ export interface PermissionGroup {
 
 const permissionFormSchema = z.object({
   resource: z.string().min(1, 'Resource is required'),
-  action: z.string().min(1, 'Action is required'),
+  action: z.string()
+    .min(1, 'Action is required')
+    .max(20, { message: 'Action cannot exceed 20 characters.' }),
 });
 
 type PermissionFormValues = z.infer<typeof permissionFormSchema>;
@@ -100,14 +102,14 @@ export function PermissionCard({
     return false;
   }, []);
 
-  useEffect(() => {
-    setLocalPermissions(permissionGroup.permissions);
-    setIsAll(getOverallCheckboxState(permissionGroup.permissions));
-  }, [permissionGroup.permissions, getOverallCheckboxState]);
+  // useEffect(() => {
+  //   setLocalPermissions(permissionGroup.permissions);
+  //   setIsAll(getOverallCheckboxState(permissionGroup.permissions));
+  // }, [permissionGroup.permissions, getOverallCheckboxState]);
 
-  useEffect(() => {
-    setIsAll(getOverallCheckboxState(localPermissions));
-  }, [localPermissions, getOverallCheckboxState]);
+  // useEffect(() => {
+  //   setIsAll(getOverallCheckboxState(localPermissions));
+  // }, [localPermissions, getOverallCheckboxState]);
 
   const form = useForm<PermissionFormValues>({
     resolver: zodResolver(permissionFormSchema),
@@ -124,7 +126,6 @@ export function PermissionCard({
   const handleCreatePermission = async (data: PermissionFormValues) => {
     startCreateTransition(async () => {
       await createPermission({
-        id: generatePermissionId(),
         menuId: permissionGroup.id,
         resource: data.resource,
         action: data.action,
@@ -178,7 +179,6 @@ export function PermissionCard({
     if (checked) {
       startCreateTransition(async () => {
         const created = await createPermission({
-          id: permission.id,
           menuId: permissionGroup.id,
           resource,
           action,
@@ -204,7 +204,7 @@ export function PermissionCard({
       startCreateTransition(async () => {
         await Promise.all(
           toCreate.map((p) =>
-            createPermission({ id: p.id, menuId: permissionGroup.id, resource: p.resource, action: p.action }),
+            createPermission({ menuId: permissionGroup.id, resource: p.resource, action: p.action }),
           ),
         );
       });
@@ -238,31 +238,30 @@ export function PermissionCard({
         <CardHeader className="space-y-1">
           <div className="flex justify-between">
             <div className="flex items-center space-x-2">
-              <CardTitle className="text-md font-medium text-gray-400 flex items-center gap-2">
-                {permissionGroup.icon && <DynamicIcon name={permissionGroup.icon as IconName} size={20} />}
+              <CardTitle className="text-md font-medium text-gray-500 flex items-center gap-2">
+                {permissionGroup.icon && <DynamicIcon name={permissionGroup.icon as IconName} size={18} />}
                 {permissionGroup.title}
               </CardTitle>
             </div>
-            {/* 可自行新增按鈕（目前移除，要將權限自行寫進資料庫內） */}
-            {/* {editable && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  form.reset({
-                    resource: '',
-                    action: '',
-                  });
-                  setIsDialogOpen(true);
-                }}
-              >
-                Add new
-              </Button>
-            )} */}
+
+            <Button
+              className='text-gray-500'
+              variant="ghost"
+              size="icon_sm"
+              onClick={() => {
+                form.reset({
+                  resource: '',
+                  action: '',
+                });
+                setIsDialogOpen(true);
+              }}
+            >
+              <SquarePlus className='size-4' />
+            </Button>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
-          {localPermissions.length > 0 && (
+          {/* {localPermissions.length > 0 && (
             <>
               <div className="flex items-center space-x-2">
                 <Checkbox
@@ -281,9 +280,9 @@ export function PermissionCard({
               </div>
               <Separator className="my-4" />
             </>
-          )}
+          )} */}
           <div className="space-y-2">
-            {localPermissions.map((permission) => {
+            {permissionGroup.permissions.map((permission) => {
               const uiId = `${permission.resource}:${permission.action}:${permission.id}`;
               return (
                 <div
@@ -291,7 +290,7 @@ export function PermissionCard({
                   className="flex min-h-6 items-center justify-between mb-0"
                 >
                   <div className="flex items-center space-x-2">
-                    {(
+                    {/* {(
                       <Checkbox
                         id={uiId}
                         checked={permission?.checked}
@@ -299,7 +298,7 @@ export function PermissionCard({
                           handlePermissionChange(isChecked, permission);
                         }}
                       />
-                    )}
+                    )} */}
                     <label
                       htmlFor={uiId}
                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -307,28 +306,33 @@ export function PermissionCard({
                       {permission.resource}: {permission.action}
                     </label>
                   </div>
-                  {/* {editable && (
-                    <div className="flex items-center space-x-2">
+
+                  {permission.db && <div className="flex items-center">
+                    <Button
+                      className='text-gray-500 '
+                      variant="ghost"
+                      size="icon_sm"
+                      onClick={() =>
+                        openEditDialog({
+                          id: permission.id,
+                          resource: permission.resource,
+                          action: permission.action,
+                        })
+                      }
+                    >
+                      <PencilIcon className="size-4" />
+                    </Button>
+                    <DeleteConfirm id={permission.id}>
                       <Button
                         variant="ghost"
-                        size="sm"
-                        onClick={() =>
-                          openEditDialog({
-                            id: permission.id,
-                            resource: permission.resource,
-                            action: permission.action,
-                          })
-                        }
+                        size="icon_sm"
+                        className='text-gray-500'
                       >
-                        Edit
+                        <TrashIcon className="size-4" />
                       </Button>
-                      <DeleteConfirm id={permission.id}>
-                        <Button variant="ghost" size="sm">
-                          Delete
-                        </Button>
-                      </DeleteConfirm>
-                    </div>
-                  )} */}
+                    </DeleteConfirm>
+                  </div>}
+
                 </div>
               );
             })}
