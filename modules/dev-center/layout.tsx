@@ -117,12 +117,12 @@ export default async function DashboardLayout({
       id: 'separator2',
       type: 'Separator',
     },
-    {
-      id: 'homePage',
-      text: 'Home Page',
-      href: '/',
-      type: 'Link',
-    },
+    // {
+    //   id: 'homePage',
+    //   text: 'Home Page',
+    //   href: '/',
+    //   type: 'Link',
+    // },
     {
       id: 'logOut',
       text: 'Log out',
@@ -130,14 +130,14 @@ export default async function DashboardLayout({
     },
   ] satisfies UserAvatarMenuItem[];
 
-  if (isDeveloper) {
-    userAvatarMenu[0].group?.push({
-      id: 'dev-center',
-      text: 'Dev Center',
-      href: '/dev-center',
-      type: 'Link',
-    });
-  }
+  // if (isDeveloper) {
+  //   userAvatarMenu[0].group?.push({
+  //     id: 'dev-center',
+  //     text: 'Dev Center',
+  //     href: '/dev-center',
+  //     type: 'Link',
+  //   });
+  // }
 
   return (
     <Suspense
