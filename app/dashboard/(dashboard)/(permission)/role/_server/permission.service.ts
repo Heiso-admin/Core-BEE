@@ -4,13 +4,34 @@ import { and, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { permissions, type TMenu, type TPermission } from "@/lib/db/schema";
+import { permissionsConfig } from '@/config/permissions';
 
 async function getPermissions() {
+  // 合併 config 中的 permissions 與 db 中的 permissions
+  const map = new Map();
+  const permissions = permissionsConfig.map((p) => {
+    return ({
+      id: p.id,
+      resource: p.resource,
+      action: p.action,
+      menuId: p.menu?.id ?? null,
+    })
+  });
+
+  for (const p of permissions) {
+    map.set(p.id, p);
+  }
+
   const result = await db.query.permissions.findMany({
     where: (t, { and, isNull }) => and(isNull(t.deletedAt)),
   });
 
-  return result;
+  for (const p of result) {
+    map.set(p.id, p);
+  }
+
+  const uniquePermissions = Array.from(map.values());
+  return uniquePermissions;
 }
 
 async function groupPermissionsByMenu<T extends TMenu, P extends TPermission>(
