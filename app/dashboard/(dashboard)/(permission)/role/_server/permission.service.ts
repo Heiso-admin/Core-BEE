@@ -54,7 +54,7 @@ async function createPermission({
     // type,
   });
 
-  revalidatePath("./permission/organization", "page");
+  revalidatePath("/dashboard/role", "page");
   return result;
 }
 
@@ -75,7 +75,7 @@ async function updatePermission({
     })
     .where(eq(permissions.id, id));
 
-  revalidatePath("./permission/organization", "page");
+  revalidatePath("/dashboard/role", "page");
   return result;
 }
 
@@ -87,7 +87,7 @@ async function deletePermission({ id }: { id: string }) {
     })
     .where(and(eq(permissions.id, id), isNull(permissions.deletedAt)));
 
-  revalidatePath("./permission/organization", "page");
+  revalidatePath("/dashboard/role", "page");
   return result;
 }
 
