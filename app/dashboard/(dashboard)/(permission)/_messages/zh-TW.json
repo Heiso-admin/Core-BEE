@@ -19,14 +19,24 @@
 		},
 		"form": {
 			"create_title": "建立新角色",
-			"update_title": "更新角色",
+			"update_title": "已更新角色權限與選單",
 			"name": "角色名稱",
 			"description": "描述",
 			"full_access": "完全存取",
-			"save": "儲存",
+			"save": "變更",
+			"cancel": "取消",
 			"validation": {
 				"name_required": "角色名稱為必填項目"
-			}
+			},
+			"method": {
+				"title": "成員驗證類型",
+				"description": "請選擇成員驗證類型",
+				"otp": "OTP 驗證碼",
+				"email": "密碼",
+				"both": "OTP 驗證碼 / 密碼"
+			},
+			"menuTitle": "選單",
+			"permissionTitle": "最基本的權限"
 		},
 		"delete_confirm": {
 			"title": "刪除角色",
