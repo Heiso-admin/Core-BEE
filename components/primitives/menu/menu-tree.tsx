@@ -1,11 +1,7 @@
 "use client";
 
-import { GripVertical } from "lucide-react";
 import { DynamicIcon, type iconNames } from "lucide-react/dynamic";
-import { useRef, useState } from "react";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { Button } from "@/components/ui/button";
+import { useMemo, useRef } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import type { MenuItem } from ".";
@@ -13,278 +9,180 @@ import type { MenuItem } from ".";
 type IconName = (typeof iconNames)[number];
 
 interface MenuTreeProps {
-  className?: string;
+  style?: React.CSSProperties;
   items: MenuItem[];
   editable?: {
     allowIcon?: Array<number>;
-    maxLevel?: number; // Maximum allowed nesting level
     onAddItem: (item: MenuItem) => void;
     onEditItem: (item: MenuItem) => void;
     onDeleteItem: (itemId: string) => void;
-    onMoveItem: (
-      dragId: string,
-      hoverId: string,
-      position: "before" | "after" | "inside",
-    ) => void;
   };
   selectable?: {
     selectedItems: string[];
     onSelectionChange: (itemId: string, checked: boolean) => void;
+    disabled?: boolean;
   };
-  level?: number;
-  expands?: (item: MenuItem) => React.ReactNode;
+  renderRight?: (item: MenuItem) => React.ReactNode;
+  selectPermission?: {
+    selectedItems: string[]; // 已選中的 permission ids
+    onSelectionChange: (permissionId: string, checked: boolean) => void;
+    disabled?: boolean;
+  };
 }
 
 interface MenuTreeItemProps {
+  style?: React.CSSProperties;
   item: MenuItem;
   editable?: {
     allowIcon?: Array<number>;
-    maxLevel?: number;
     onAddItem: (item: MenuItem) => void;
     onEditItem: (item: MenuItem) => void;
     onDeleteItem: (itemId: string) => void;
-    onMoveItem: (
-      dragId: string,
-      hoverId: string,
-      position: "before" | "after" | "inside",
-    ) => void;
   };
   selectable?: {
     selectedItems: string[];
     onSelectionChange: (itemId: string, checked: boolean) => void;
+    disabled?: boolean;
   };
-  level: number;
-  expands?: (item: MenuItem) => React.ReactNode;
+  renderRight?: (item: MenuItem) => React.ReactNode;
+  selectPermission?: {
+    selectedItems: string[];
+    onSelectionChange: (itemId: string, checked: boolean) => void;
+  };
 }
 
-interface DragItem {
-  id: string;
-  type: string;
-  sourceLevel: number; // Track the source level of dragged item
-}
+
 
 export function MenuTree({
-  className,
+  style,
   items,
   editable,
   selectable,
-  level = 0,
-  expands,
+  selectPermission,
 }: MenuTreeProps) {
   return (
-    <DndProvider backend={HTML5Backend}>
-      <div className={cn(className)}>
-        {items.map((item) => (
-          <MenuTreeItem
-            key={item.id}
-            item={item}
-            editable={editable}
-            level={level}
-            expands={expands}
-            selectable={selectable}
-          />
-        ))}
-      </div>
-    </DndProvider>
+    <div>
+      {items.map((item) => (
+        <MenuTreeItem
+          style={style}
+          key={item.id}
+          item={item}
+          editable={editable}
+          selectable={selectable}
+          selectPermission={selectPermission}
+        />
+      ))}
+    </div>
   );
 }
 
 function MenuTreeItem({
+  style,
   item,
-  editable,
-  level,
-  expands,
   selectable,
+  selectPermission,
 }: MenuTreeItemProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [dragPosition, setDragPosition] = useState<
-    "before" | "after" | "inside" | null
-  >(null);
-
-  const maxLevel = editable?.maxLevel ?? 3;
-  const readonly = !editable;
-
-  const [{ isDragging }, drag, preview] = useDrag({
-    type: "NAVIGATION_ITEM",
-    item: {
-      id: item.id,
-      type: "NAVIGATION_ITEM",
-      sourceLevel: level,
-    } as DragItem,
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-    canDrag: !readonly,
-  });
-
-  const [{ isOver, canDrop }, drop] = useDrop({
-    accept: "NAVIGATION_ITEM",
-    drop: (dragItem: DragItem, monitor) => {
-      if (readonly) return;
-
-      const didDrop = monitor.didDrop();
-      if (didDrop) {
-        return;
-      }
-
-      const dragId = dragItem.id;
-      if (dragId !== item.id && dragPosition) {
-        // Only allow drop if it won't exceed maxLevel
-        if (dragPosition === "inside" && level >= maxLevel - 1) {
-          return;
-        }
-        editable?.onMoveItem(dragId, item.id, dragPosition);
-      }
-      setDragPosition(null);
-    },
-    hover: (dragItem: DragItem, monitor) => {
-      if (readonly || !ref.current) return;
-
-      const dragId = dragItem.id;
-      if (dragId === item.id) return;
-
-      const hoverBoundingRect = ref.current.getBoundingClientRect();
-      const hoverMiddleY =
-        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-      const clientOffset = monitor.getClientOffset();
-
-      if (!clientOffset) return;
-
-      const hoverClientY = clientOffset.y - hoverBoundingRect.top;
-
-      // Determine drop position
-      if (hoverClientY < hoverMiddleY * 0.3) {
-        setDragPosition("before");
-      } else if (hoverClientY > hoverMiddleY * 1.7) {
-        setDragPosition("after");
-      } else {
-        // Only allow 'inside' position if it won't exceed maxLevel
-        if (level < maxLevel - 1) {
-          setDragPosition("inside");
-        }
-      }
-    },
-    collect: (monitor) => ({
-      isOver: monitor.isOver({ shallow: true }),
-      canDrop:
-        monitor.canDrop() &&
-        !readonly &&
-        // Prevent dropping inside if it would exceed maxLevel
-        !(dragPosition === "inside" && level >= maxLevel - 1),
-    }),
-  });
-
-  // Connect drag and drop refs
-  const dragRef = readonly ? null : drag(ref);
-  const dropRef = readonly ? null : drop(ref);
-
-  const hasChildren = item.children && item.children.length > 0;
   const isSelected = selectable?.selectedItems.includes(item.id);
+  const isDisabled = !!selectable?.disabled;
 
   return (
     <div
-      className={cn(
-        "transition-all duration-200",
-        isDragging && "opacity-30 scale-95 rotate-1 shadow-lg",
-        isOver && canDrop && "bg-muted",
-      )}
+      ref={ref}
+      className={"grid items-start min-h-11 group transition-colors mb-4"} style={style}
     >
-      {/* Drop indicator lines */}
-      {isOver && canDrop && dragPosition === "before" && (
-        <div className="h-0.5 bg-blue-500 mx-4 -mb-0.5 relative z-10" />
-      )}
-
-      <div
-        ref={ref}
-        className={cn(
-          "flex items-center py-1 px-4 min-h-11 group transition-colors border",
-          level > 0 && "ml-8 border-l-1",
-          isOver &&
-            canDrop &&
-            dragPosition === "inside" &&
-            "bg-mute-200 border-mute-300",
-        )}
-        style={{ marginLeft: `${level * 32 + 16}px` }}
-      >
-        {/* Drag Handle */}
-        {!readonly && (
-          <div className="cursor-move mr-3">
-            <GripVertical className="text-muted-foreground h-4 w-4" />
-          </div>
-        )}
-
+      <div className="flex-1 min-w-0 flex items-center gap-2 text-muted-foreground">
         {/* Checkbox for selection */}
         {selectable && (
           <Checkbox
             checked={isSelected}
+            disabled={isDisabled}
             onCheckedChange={(checked) => {
               selectable?.onSelectionChange(item.id, checked as boolean);
             }}
             className="mr-2"
           />
         )}
-
-        {/* Content */}
-        <div className="flex-1 min-w-0 flex items-center gap-2">
-          {item.icon && <DynamicIcon name={item.icon as IconName} size={20} />}
-          <span className="text-sm font-medium truncate block">
-            {item.title}{" "}
-            <span className="text-xs text-muted-foreground">
-              {item.group ? `/ ${item.group}` : ""}
-            </span>
+        {/* Menu */}
+        {item.icon && <DynamicIcon name={item.icon as IconName} size={20} />}
+        <span className="text-sm font-medium truncate block">
+          {item.title}
+          <span className="text-xs text-muted-foreground/70">
+            {item.group ? ` / ${item.group}` : ""}
           </span>
-        </div>
-
-        {/* Actions */}
-        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <>{expands && expands(item)}</>
-
-          {!readonly && (
-            <>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => editable?.onAddItem(item)}
-                className="h-8 px-3 text-xs"
-              >
-                Add new
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => editable?.onEditItem(item)}
-                className="h-8 px-3 text-xs"
-              >
-                Edit
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => editable?.onDeleteItem(item.id)}
-                className="h-8 px-3 text-xs border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
-              >
-                Delete
-              </Button>
-            </>
-          )}
-        </div>
+        </span>
       </div>
 
-      {/* Drop indicator line after */}
-      {isOver && canDrop && dragPosition === "after" && (
-        <div className="h-0.5 bg-mute-500 mx-4 -mt-0.5 relative z-10" />
-      )}
+      {/* Right side custom renderer (e.g., permissions) */}
+      <MenuPermissionItem selectPermission={selectPermission} item={item} isSelected={isSelected} />
 
-      {/* Children */}
-      {hasChildren && item.children && (
-        <MenuTree
-          items={item.children}
-          selectable={selectable}
-          editable={editable}
-          level={level + 1}
-          expands={expands}
-        />
-      )}
+    </div>
+  );
+}
+
+function MenuPermissionItem({
+  item,
+  selectPermission,
+  isSelected,
+}: {
+  item: MenuItem & { permissions?: Array<{ id: string; resource: string; action: string }> };
+  selectPermission?: { selectedItems: string[]; onSelectionChange: (permissionId: string, checked: boolean) => void; disabled?: boolean };
+  isSelected?: boolean;
+}) {
+  const perms = (item as any).permissions || [];
+
+  const grouped = useMemo(() => {
+    const map = new Map<string, Array<{ id: string; resource: string; action: string }>>();
+    for (const p of perms) {
+      const arr = map.get(p.resource) ?? [];
+      arr.push(p);
+      map.set(p.resource, arr);
+    }
+    return Array.from(map.entries()); // [[resource, permissions[]], ...]
+  }, [perms]);
+
+  // if (!grouped.length) return <span className="text-xs text-muted-foreground">-</span>;
+
+  const selected = selectPermission?.selectedItems ?? [];
+  const disabledAll = !!selectPermission?.disabled;
+
+  const toggle = (id: string, checked: boolean) => {
+    if (!selectPermission) return;
+    selectPermission.onSelectionChange(id, checked);
+  };
+
+  return (
+    <div className="flex items-start flex-col gap-2.5">
+      {grouped.map(([resource, list]) => (
+        <div key={`${item.id}-${resource}`} className="flex gap-3 items-start">
+          <span className="text-sm text-muted-foreground min-w-16 truncate font-bold">{resource}</span>
+          <div className="flex items-center gap-x-4 gap-y-2 flex-wrap">
+            {list.map((p) => {
+              const checkboxId = `perm-${item.id}-${p.id}`;
+              const labelId = `perm-label-${item.id}-${p.id}`;
+              const checked = selected.includes(p.id);
+              return (
+                <div key={p.id} className="inline-flex items-center gap-2 text-sm">
+                  <Checkbox
+                    id={checkboxId}
+                    aria-labelledby={labelId}
+                    checked={checked}
+                    disabled={disabledAll || !isSelected}
+                    onCheckedChange={(c) => toggle(p.id, Boolean(c))}
+                  />
+                  <label
+                    id={labelId}
+                    htmlFor={checkboxId}
+                    className={cn("text-muted-foreground", !disabledAll && "cursor-pointer")}
+                  >
+                    {p.action}
+                  </label>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
