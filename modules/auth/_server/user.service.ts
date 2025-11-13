@@ -20,16 +20,27 @@ export async function getUsers() {
 }
 
 export async function getLoginMethod(email: string) {
-  const result = await db.query.users.findFirst({
-    where: (table, { eq }) => eq(table.email, email),
-    columns: {
-      loginMethod: true,
+  // 先以 members 取得角色的登入方式
+  const membership = await db.query.members.findFirst({
+    with: {
+      role: {
+        columns: { loginMethod: true },
+      },
     },
+    where: (t, { and, eq, isNull }) => and(eq(t.email, email), isNull(t.deletedAt)),
   });
 
-  if (!result) return null;
+  if (membership?.role?.loginMethod) {
+    return membership.role.loginMethod;
+  }
 
-  return result?.loginMethod ?? 'both';
+  // 回退到使用者自己的登入方式
+  const user = await db.query.users.findFirst({
+    where: (table, { eq }) => eq(table.email, email),
+    columns: { loginMethod: true },
+  });
+
+  return user?.loginMethod ?? 'both';
 }
 
 export async function getMemberStatus(email: string) {

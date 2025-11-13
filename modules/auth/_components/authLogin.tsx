@@ -1,5 +1,5 @@
 import { ActionButton } from '@/components/primitives/action-button';
-import { useState, useTransition } from 'react'
+import { useTransition } from 'react'
 import { z } from "zod";
 import {
   Form,
@@ -70,7 +70,6 @@ const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, any
         try {
           const loginMethod = await getLoginMethod(values.email); // 登入方式
           const memberStatus = await getMemberStatus(values.email); // 成員狀態
-          console.log('loginMethod: ', loginMethod, memberStatus);
 
           if (!loginMethod || !memberStatus) {
             setError(t('error.userNotFound'));

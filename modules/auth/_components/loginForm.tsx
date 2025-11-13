@@ -34,12 +34,11 @@ function LoginForm({ email, anyUser, orgName, oAuthData }: { email?: string | nu
 
   const [loginMethod, setLoginMethod] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState('');
-  const [step, setStep] = useState<LoginStep>(LoginStepEnum.Password);
+  const [step, setStep] = useState<LoginStep>(LoginStepEnum.Email);
   const [error, setError] = useState<string>("");
 
   // 針對已完成 OAuth 的使用者，根據 member 狀態顯示提示訊息
   useEffect(() => {
-    console.log("oAuthData--", oAuthData);
     if (!oAuthData || !oAuthData.status) return;
     const status = oAuthData.status;
     if (status === MemberStatus.Invited) {
@@ -56,11 +55,6 @@ function LoginForm({ email, anyUser, orgName, oAuthData }: { email?: string | nu
   const handleLoginSuccess = () => {
     router.push('/dashboard');
   };
-
-  useEffect(() => {
-    console.log("step--", step);
-
-  }, [step]);
 
   const handleVerifyOTP = async (authEmail: string) => {
     if (authEmail === "") {
