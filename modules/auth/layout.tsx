@@ -13,12 +13,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-sub-background relative font-lato">
-      <Link
+      {/* <Link
         href="/"
         className="absolute top-4 left-4 flex items-center text-sm text-muted-foreground hover:text-primary"
       >
         <ArrowLeftIcon className="h-4 w-4 mr-2" /> {t("back")}
-      </Link>
+      </Link> */}
 
       <main className="w-full max-w-lg bg-background py-16 px-12 rounded-[12px] shadow-[1px_1px_4px_0_rgba(0,0,0,0.1)] shadow-primary/70 relative">
         <div className="flex flex-col items-center justify-center mb-4">
