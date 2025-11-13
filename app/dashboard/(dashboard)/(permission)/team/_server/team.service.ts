@@ -2,16 +2,13 @@
 
 import { and, eq, isNull, asc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { getTranslations } from "next-intl/server";
 import { auth } from "@/modules/auth/auth.config";
 import { settings } from "@/config/settings";
-import config from "@/config";
-import { getSiteSettings } from "@/server/services/system/setting";
 import { db } from "@/lib/db";
 import type { TMember, TRole, TUser } from "@/lib/db/schema";
 import { members, roles } from "@/lib/db/schema";
 import { users } from "@/lib/db/schema/auth/user";
-import { sendEmail, sendInviteUserEmail } from "@/lib/email";
+import { sendInviteUserEmail } from "@/lib/email";
 import { hashPassword } from "@/lib/hash";
 import { generateInviteToken } from "@/lib/id-generator";
 
@@ -70,7 +67,7 @@ async function invite({
       isOwner: role === "owner",
     });
 
-    revalidatePath("./team", "page");
+    revalidatePath("/dashboard/permission/team", "page");
   }
 
   return inviteId;
@@ -107,7 +104,7 @@ async function updateMember({
       .where(eq(users.id, userId));
   }
 
-  revalidatePath("./team", "page");
+  revalidatePath("/dashboard/permission/team", "page");
   return member;
 }
 
@@ -180,7 +177,7 @@ async function leaveTeam(id: string) {
   //     deletedAt: new Date(),
   //   })
   //   .where(eq(members.id, id));
-  revalidatePath("./team", "page");
+  revalidatePath("/dashboard/permission/team", "page");
 }
 
 
@@ -235,7 +232,7 @@ async function addMember({
     })
     .returning();
 
-  revalidatePath("./team", "page");
+  revalidatePath("/dashboard/permission/team", "page");
   return { user, member };
 }
 

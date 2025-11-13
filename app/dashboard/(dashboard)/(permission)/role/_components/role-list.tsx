@@ -111,7 +111,7 @@ function RoleItemCollapsible(
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>(role.permissions?.map((p: any) => p.permission.id) ?? [])
   const [name, setName] = useState<string>(role.name || "")
   const [description, setDescription] = useState<string>(role.description || "")
-  const [loginMethod, setLoginMethod] = useState<string>(LoginMethodEnum.Both)
+  const [loginMethod, setLoginMethod] = useState<string>(role.loginMethod || LoginMethodEnum.Both)
   const [fullAccessEditing, setFullAccessEditing] = useState<boolean>(role.fullAccess ?? false)
   const prevPermissionsRef = useRef<string[] | null>(null)
   const prevMenusRef = useRef<string[] | null>(null)
@@ -215,7 +215,7 @@ function RoleItemCollapsible(
 
   const handleSave = () => {
     startTransition(async () => {
-      await updateRole(role.id, { name, description, fullAccess: fullAccessEditing })
+      await updateRole(role.id, { name, description, fullAccess: fullAccessEditing, loginMethod: loginMethod })
       await assignMenus({ roleId: role.id, menus: selectedMenus })
       await assignPermissions({ roleId: role.id, permissions: selectedPermissions })
       toast.success(t("form.update_title"))
@@ -416,6 +416,7 @@ function CreateOrUpdateRole({
   const formSchema = z.object({
     name: z.string().min(1, { message: t("validation.name_required") }),
     description: z.string().optional(),
+    loginMethod: z.string(),
     fullAccess: z.boolean().optional(),
   });
 
@@ -423,6 +424,7 @@ function CreateOrUpdateRole({
     resolver: zodResolver(formSchema),
     defaultValues: {
       fullAccess: false,
+      loginMethod: LoginMethodEnum.Both,
     },
   });
 
@@ -431,6 +433,7 @@ function CreateOrUpdateRole({
       form.setValue("name", data.name);
       form.setValue("description", data.description ?? "");
       form.setValue("fullAccess", data.fullAccess ?? false);
+      form.setValue("loginMethod", data.loginMethod ?? LoginMethodEnum.Both);
     }
   }, [data, form]);
 
@@ -482,6 +485,31 @@ function CreateOrUpdateRole({
                   <FormLabel>{t("description")}</FormLabel>
                   <FormControl>
                     <Textarea placeholder={t("description")} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="loginMethod"
+              defaultValue=""
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("method.title")}</FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={t("method.description")} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.values(LoginMethodEnum).map((methodValue) => (
+                          <SelectItem key={methodValue} value={methodValue}>
+                            {t(`method.${methodValue}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
