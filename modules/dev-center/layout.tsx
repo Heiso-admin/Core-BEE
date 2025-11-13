@@ -108,15 +108,15 @@ export default async function DashboardLayout({
       id: 'separator1',
       type: 'Separator',
     },
-    {
-      id: 'theme',
-      text: 'Theme',
-      type: 'Theme',
-    },
-    {
-      id: 'separator2',
-      type: 'Separator',
-    },
+    // {
+    //   id: 'theme',
+    //   text: 'Theme',
+    //   type: 'Theme',
+    // },
+    // {
+    //   id: 'separator2',
+    //   type: 'Separator',
+    // },
     // {
     //   id: 'homePage',
     //   text: 'Home Page',
