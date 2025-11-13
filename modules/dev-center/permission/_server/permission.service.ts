@@ -3,7 +3,7 @@
 import { and, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { permissions, type TMenu, type TPermission } from "@/lib/db/schema";
+import { permissions } from "@/lib/db/schema";
 
 async function getPermissions() {
   const result = await db.query.permissions.findMany({
@@ -13,24 +13,46 @@ async function getPermissions() {
   return result;
 }
 
-async function groupPermissionsByMenu<T extends TMenu, P extends TPermission>(
-  menus: Pick<T, "id" | "title" | "icon" >[],
-  permissions: P[],
+type MinimalMenu = { id: string; title: string; icon: string | null };
+type MinimalPermission = {
+  id: string;
+  resource: string;
+  action: string;
+  menuId?: string | null;
+  db?: boolean;
+};
+
+async function groupPermissionsByMenu(
+  menus: MinimalMenu[],
+  permissions: MinimalPermission[],
+  dbPermissions: MinimalPermission[],
 ) {
+  // 合併時以穩定 key（id）為主；DB 覆寫同 id 的 config
+  const map = new Map<string, MinimalPermission>();
+  for (const p of permissions) {
+    map.set(p.id, p);
+  }
+  for (const p of dbPermissions) {
+    map.set(p.id, p);
+  }
+  const uniquePermissions = Array.from(map.values());
+
   return menus.map((menu) => {
-    const menuPermissions = permissions.filter((permission) => {
-      return permission.menuId === menu.id;
-    });
+    const menuPermissions = uniquePermissions.filter((permission) => permission.menuId === menu.id);
 
     return {
       id: menu.id,
       title: menu.title,
       icon: menu.icon,
-      permissions: menuPermissions.map((p) => ({
-        id: p.id,
-        resource: p.resource,
-        action: p.action,
-      })),
+      permissions: menuPermissions.map((p) => {
+        const dbPermission = dbPermissions.find((dbP) => dbP.id === p.id);
+        return ({
+          id: p.id,
+          resource: p.resource,
+          action: p.action,
+          db: !!dbPermission
+        })
+      }),
     };
   });
 }
@@ -50,7 +72,7 @@ async function createPermission({
     action,
   });
 
-  revalidatePath("./permission/organization", "page");
+  revalidatePath("/dev-center/permission", "page");
   return result;
 }
 
@@ -71,7 +93,7 @@ async function updatePermission({
     })
     .where(eq(permissions.id, id));
 
-  revalidatePath("./permission/organization", "page");
+  revalidatePath("/dev-center/permission", "page");
   return result;
 }
 
@@ -83,7 +105,29 @@ async function deletePermission({ id }: { id: string }) {
     })
     .where(and(eq(permissions.id, id), isNull(permissions.deletedAt)));
 
-  revalidatePath("./permission/organization", "page");
+  revalidatePath("/dev-center/permission", "page");
+  return result;
+}
+
+async function deletePermissionByKey({ id }: { id: string }) {
+  const result = await db
+    .update(permissions)
+    .set({ deletedAt: new Date() })
+    .where(and(eq(permissions.id, id), isNull(permissions.deletedAt)));
+
+  revalidatePath("/dev-center/permission", "page");
+  return result;
+}
+
+// Soft delete all current permissions (set deletedAt)
+async function deleteAllPermissions() {
+  const result = await db
+    .update(permissions)
+    .set({ deletedAt: new Date() })
+    .where(isNull(permissions.deletedAt));
+
+  // Refresh the permission page to reflect all unchecked states
+  revalidatePath("/dev-center/permission", "page");
   return result;
 }
 
@@ -93,4 +137,6 @@ export {
   createPermission,
   updatePermission,
   deletePermission,
+  deletePermissionByKey,
+  deleteAllPermissions,
 };

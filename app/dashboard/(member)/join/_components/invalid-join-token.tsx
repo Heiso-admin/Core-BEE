@@ -1,21 +1,21 @@
 "use client";
 
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { removeJoinToken } from "../_server/member.service";
+import { useTranslations } from 'next-intl';
+import { signOut } from 'next-auth/react';
 
 export function InvalidJoinToken() {
+  const t = useTranslations('auth.join');
   return (
-    <div className="h-screen flex flex-col gap-4 items-center justify-center">
-      <p>Invite token is invalid</p>
+    <>
+      <p>{t("error.expiredLink")}</p>
       <Button
-        onClick={async () => {
-          await removeJoinToken();
+        onClick={() => {
+          signOut({ callbackUrl: "/login" })
         }}
-        asChild
       >
-        <Link href="/dashboard">Go to dashboard</Link>
+        {t("action.reLogin")}
       </Button>
-    </div>
+    </>
   );
 }

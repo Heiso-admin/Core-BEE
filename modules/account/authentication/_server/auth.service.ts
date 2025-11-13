@@ -72,3 +72,25 @@ export async function toggle2FA(userId: string, enabled: boolean) {
 
   revalidatePath("/dashboard/account/authentication");
 }
+
+// 查詢會員（含角色），支援以 userId 或 email 查找
+export async function findMembershipByUserOrEmail(params: { userId?: string; email?: string }) {
+  const { userId, email } = params || {};
+  const membershipById = userId
+    ? await db.query.members.findFirst({
+        columns: { id: true, status: true, isOwner: true, userId: true, email: true },
+        with: { role: { columns: { id: true, name: true, fullAccess: true } } },
+        where: (t, { and, eq, isNull }) => and(eq(t.userId, userId), isNull(t.deletedAt)),
+      })
+    : null;
+
+  const membership = membershipById ?? (email
+    ? await db.query.members.findFirst({
+        columns: { id: true, status: true, isOwner: true, userId: true, email: true },
+        with: { role: { columns: { id: true, name: true, fullAccess: true } } },
+        where: (t, { and, eq, isNull }) => and(eq(t.email, email!), isNull(t.deletedAt)),
+      })
+    : null);
+
+  return membership;
+}

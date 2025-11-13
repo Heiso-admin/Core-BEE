@@ -1,6 +1,7 @@
 "use server";
 
 import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { roleMenus, rolePermissions } from "@/lib/db/schema";
 
@@ -22,6 +23,7 @@ async function assignMenus({
       );
     }
   });
+  revalidatePath("/dashboard/role", "page");
 }
 
 async function assignPermissions({
@@ -42,6 +44,7 @@ async function assignPermissions({
       );
     }
   });
+  revalidatePath("/dashboard/role", "page");
 }
 
 export { assignMenus, assignPermissions };

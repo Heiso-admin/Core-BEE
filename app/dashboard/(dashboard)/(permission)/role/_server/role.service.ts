@@ -44,14 +44,14 @@ async function getRoles(): Promise<Role[]> {
 
 async function createRole(data: TRoleInsert) {
   const result = await db.insert(roles).values(data);
-  revalidatePath("./role", "page");
+  revalidatePath("/dashboard/role", "page");
   return result;
 }
 
 async function updateRole(id: string, data: TRoleUpdate) {
   const result = await db.update(roles).set(data).where(eq(roles.id, id));
 
-  revalidatePath("./role", "page");
+  revalidatePath("/dashboard/role", "page");
   return result;
 }
 
@@ -63,7 +63,7 @@ async function deleteRole({ id }: { id: string }) {
     })
     .where(and(eq(roles.id, id), isNull(roles.deletedAt)));
 
-  revalidatePath("./role", "page");
+  revalidatePath("/dashboard/role", "page");
   return result;
 }
 

@@ -121,12 +121,12 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
     },
     {
       header: t("updatedDate"),
-      accessorKey: "updatedAt",
+      accessorKey: "lastLoginAt",
       sortingFn: "datetime",
       cell: ({ row }) => {
         const { user } = row.original;
-        const updateDate = user?.updatedAt
-        return (updateDate ? readableDate(updateDate) : "-")
+        const lastLoginAt = user?.lastLoginAt
+        return (lastLoginAt ? readableDate(lastLoginAt) : "-")
       },
     },
     {

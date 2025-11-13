@@ -2,10 +2,9 @@
 
 // import { GitHubLogoIcon } from '@radix-ui/react-icons';
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { ActionButton, PasswordInput } from "@/components/primitives";
@@ -20,7 +19,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { login } from "@/server/services/auth";
 import Header from "./header";
-import Link from "next/link";
 import AuthRedirectHint from "./authRedirectHint";
 import { Button } from "@/components/ui/button";
 import { LoginMethodEnum, type LoginStep, LoginStepEnum } from "./loginForm";

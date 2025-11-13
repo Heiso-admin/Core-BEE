@@ -9,7 +9,6 @@ import {
   getMyMenus,
   getUser,
 } from './_server/membership.service';
-import { getOverviewInfo } from './_server/overview.service';
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();

@@ -5,24 +5,44 @@ type PermissionConfigShape = {
   readonly id: string;
   readonly resource: string;
   readonly action: string;
-  readonly menu?: { readonly id: string; readonly title: string; readonly path?: string | null } | null;
+  readonly menu: { readonly id: string; readonly title: string; readonly path?: string | null } | null;
 };
 
 export const permissionsConfig = [
   {
-    "id": "pe_7tb7zg9lo7",
-    "resource": "member",
-    "action": "edit",
+    "id": "pe_r9OA3piAEX",
+    "resource": "aa",
+    "action": "aaa",
     "menu": {
-      "id": "JiZgDz80U6",
-      "title": "Team",
-      "path": "/team"
+      "id": "wUDWmFoS2J",
+      "title": "Page",
+      "path": "/article"
     }
   },
   {
-    "id": "pe_mCRXwVcqvv",
-    "resource": "member",
-    "action": "view",
+    "id": "pe_AvKjqrDXPO",
+    "resource": "rw",
+    "action": "re",
+    "menu": {
+      "id": "tUkCKz1yfd",
+      "title": "Navigation",
+      "path": "/navigation"
+    }
+  },
+  {
+    "id": "pe_FL7RookSEh",
+    "resource": "vv",
+    "action": "bb",
+    "menu": {
+      "id": "wUDWmFoS2J",
+      "title": "Page",
+      "path": "/article"
+    }
+  },
+  {
+    "id": "pe_aA2JP4B4Xm",
+    "resource": "cc",
+    "action": "cc",
     "menu": {
       "id": "JiZgDz80U6",
       "title": "Team",

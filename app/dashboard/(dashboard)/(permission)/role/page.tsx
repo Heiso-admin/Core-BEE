@@ -1,4 +1,3 @@
-import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { TableSkeleton } from "@/components/skeleton";
 import { RoleList } from "./_components/role-list";
@@ -10,16 +9,13 @@ import {
 import { getRoles } from "./_server/role.service";
 
 export default async function RolePage() {
-  const t = await getTranslations("dashboard.permission.role");
   return (
-    <div className="container mx-auto max-w-6xl justify-start py-10 p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
+    <div className="flex w-full min-h-full bg-sub-background">
+      <div className="main-section-item grow w-full">
+        <Suspense fallback={<TableSkeleton />}>
+          <RoleManagement />
+        </Suspense>
       </div>
-
-      <Suspense fallback={<TableSkeleton />}>
-        <RoleManagement />
-      </Suspense>
     </div>
   );
 }

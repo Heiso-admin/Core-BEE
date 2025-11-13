@@ -3,7 +3,6 @@
 import { useSession } from "next-auth/react";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { TUser } from "@/lib/db/schema";
-import { getAccount } from "@/server/user.service";
 
 interface Membership {
   id: string;
@@ -30,7 +29,7 @@ const AccountContext = createContext<AccountContextType>({
   membership: null,
   isLoading: false,
   error: null,
-  updateAccount: () => {},
+  updateAccount: () => { },
 });
 
 export function AccountProvider({ children }: { children: React.ReactNode }) {
@@ -45,15 +44,33 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
     async function fetchAccount() {
       try {
         const userId = session?.user?.id;
-        if (!userId) return null;
+        const userEmail = session?.user?.email ?? "";
+
+        if (!userId && !userEmail) return null;
 
         setIsLoading(true);
-        const data = await getAccount(userId);
+
+        // 改用 API 路由避免在 Client 端匯入 server/db 導致打包錯誤
+        const res = await fetch('/api/account/me', {
+          method: 'GET',
+          cache: 'no-store',
+        });
+
+        if (!res.ok) {
+          throw new Error(`Failed to fetch account: ${res.status}`);
+        }
+        const data = await res.json();
+
         if (data) {
           const { developer, membership: myMembership, ...account } = data;
           setAccount(account);
           setIsDeveloper(!!developer);
           setMembership(myMembership);
+        } else {
+          // No matching local account found
+          setAccount(null);
+          setIsDeveloper(false);
+          setMembership(null);
         }
       } catch (err) {
         setError(err instanceof Error ? err : new Error('Unknown error'));
@@ -63,7 +80,7 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
     }
 
     fetchAccount();
-  }, [session?.user?.id]);
+  }, [session?.user?.id, session?.user?.email]);
 
   const updateAccount = (updatedAccount: Partial<TUser>) => {
     setAccount(updatedAccount);

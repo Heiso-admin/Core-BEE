@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import AuthLogin from "./authLogin";
 import EmailVerification from "./emailVerification";
@@ -9,6 +8,8 @@ import LoginPassword from "./loginPassword";
 import OTPLoginForm from './otpLoginForm';
 import { generateOTP } from '../_server/otp.service';
 import { useTranslations } from 'next-intl';
+import type { OAuthDataType } from '../login/page';
+import { MemberStatus } from '@/app/dashboard/(dashboard)/(permission)/team/_components/member-list';
 
 
 export enum LoginStepEnum {
@@ -27,20 +28,32 @@ export enum LoginMethodEnum {
 
 export type LoginStep = `${LoginStepEnum}`;
 
-function LoginForm({ email, anyUser, orgName }: { email?: string | null; anyUser: boolean; orgName?: string }) {
-
+function LoginForm({ email, anyUser, orgName, oAuthData }: { email?: string | null; anyUser: boolean; orgName?: string; oAuthData?: OAuthDataType }) {
   const router = useRouter();
-  const { data: session } = useSession();
   const t = useTranslations('auth.login');
-  const optT = useTranslations('auth.otp');
 
   const [loginMethod, setLoginMethod] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState('');
-  const [step, setStep] = useState<LoginStep>(LoginStepEnum.Email);
+  const [step, setStep] = useState<LoginStep>(LoginStepEnum.Password);
   const [error, setError] = useState<string>("");
 
+  // 針對已完成 OAuth 的使用者，根據 member 狀態顯示提示訊息
+  useEffect(() => {
+    console.log("oAuthData--", oAuthData);
+    if (!oAuthData || !oAuthData.status) return;
+    const status = oAuthData.status;
+    if (status === MemberStatus.Invited) {
+      setError(t('error.invited'));
+    } else if (status === MemberStatus.Review) {
+      setError(t('error.oAuthReview'));
+    } else if (status !== MemberStatus.Joined) {
+      setError(t('error.general'));
+    } else {
+      setError('');
+    }
+  }, [oAuthData, t]);
+
   const handleLoginSuccess = () => {
-    // 使用客戶端路由前往儀表板
     router.push('/dashboard');
   };
 
@@ -59,7 +72,6 @@ function LoginForm({ email, anyUser, orgName }: { email?: string | null; anyUser
 
     if (result.success) {
       setError('');
-      console.log("result--", result, "成功寄出");
       setStep(LoginStepEnum.Otp);
     } else {
       setError(t(`error.${result.message}`));
@@ -85,9 +97,6 @@ function LoginForm({ email, anyUser, orgName }: { email?: string | null; anyUser
     }
   };
 
-
-
-
   const renderStep = () => {
     switch (step) {
       case LoginStepEnum.Email:
@@ -105,7 +114,7 @@ function LoginForm({ email, anyUser, orgName }: { email?: string | null; anyUser
         );
 
       case LoginStepEnum.Invite:
-        return <EmailVerification email={userEmail || email} />;
+        return <EmailVerification email={userEmail || email} setStep={setStep} />;
 
       case LoginStepEnum.Password:
         return <LoginPassword

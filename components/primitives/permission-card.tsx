@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect, useCallback } from 'react';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import * as z from 'zod';
 import { ActionButton } from '@/components/primitives';
@@ -16,7 +16,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -38,14 +37,20 @@ import { Input } from '@/components/ui/input';
 import {
   createPermission,
   deletePermission,
+  deletePermissionByKey,
   updatePermission,
 } from '@/modules/dev-center/permission/_server/permission.service';
 import { DynamicIcon, type IconName } from "lucide-react/dynamic";
+import { type CheckedState } from '@radix-ui/react-checkbox';
+import { Button } from '../ui/button';
+import { PencilIcon, SquarePlus, TrashIcon } from 'lucide-react';
 
 export interface Permission {
   id: string;
   resource: string;
   action: string;
+  checked?: boolean;
+  db?: boolean;
 }
 
 export interface PermissionGroup {
@@ -57,37 +62,55 @@ export interface PermissionGroup {
 
 const permissionFormSchema = z.object({
   resource: z.string().min(1, 'Resource is required'),
-  action: z.string().min(1, 'Action is required'),
+  action: z.string()
+    .min(1, 'Action is required')
+    .max(20, { message: 'Action cannot exceed 20 characters.' }),
 });
 
 type PermissionFormValues = z.infer<typeof permissionFormSchema>;
 
-
-
 export function PermissionCard({
   permissionGroup,
   selectable,
-  editable = false,
 }: {
   permissionGroup: PermissionGroup;
   selectable?: {
     value: string[];
     onCheckedChange?: (value: string[]) => void;
   };
-  editable?: boolean;
 }) {
   const [isCreatePending, startCreateTransition] = useTransition();
   const [isEditPending, startEditTransition] = useTransition();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [editingPermission, setEditingPermission] = useState<Permission | null>(
     null
   );
-  const value = selectable?.value.length
-    ? permissionGroup.permissions
-        .filter((p) => selectable.value.includes(p.id))
-        .map((p) => p.id)
-    : [];
-    
+  const [localPermissions, setLocalPermissions] = useState<Permission[]>(permissionGroup.permissions);
+  const [isAll, setIsAll] = useState<CheckedState>(false);
+
+  const getOverallCheckboxState = useCallback((list: { checked?: boolean }[]): CheckedState => {
+    const areAllChecked = list.length > 0 && list.every(p => !!p.checked);
+    const isAnyChecked = list.some(p => !!p.checked);
+
+    if (areAllChecked) {
+      return true;
+    }
+
+    if (isAnyChecked) {
+      return 'indeterminate';
+    }
+    return false;
+  }, []);
+
+  // useEffect(() => {
+  //   setLocalPermissions(permissionGroup.permissions);
+  //   setIsAll(getOverallCheckboxState(permissionGroup.permissions));
+  // }, [permissionGroup.permissions, getOverallCheckboxState]);
+
+  // useEffect(() => {
+  //   setIsAll(getOverallCheckboxState(localPermissions));
+  // }, [localPermissions, getOverallCheckboxState]);
+
   const form = useForm<PermissionFormValues>({
     resolver: zodResolver(permissionFormSchema),
     defaultValues: {
@@ -99,24 +122,6 @@ export function PermissionCard({
   if (selectable && permissionGroup.permissions.length === 0) {
     return null;
   }
-
-  // const handlePermissionChange = (
-  //   // groupIndex: number,
-  //   permissionIndex: number
-  // ) => {
-  //   // const newPermissionGroups = [...permissionGroups];
-  //   // newPermissionGroups[groupIndex].permissions[permissionIndex].checked =
-  //   //   !newPermissionGroups[groupIndex].permissions[permissionIndex].checked;
-  //   // setPermissionGroups(newPermissionGroups);
-  // };
-
-  const handleSelectAll = (checked: boolean) => {
-    if (selectable?.onCheckedChange) {
-      selectable.onCheckedChange(
-        checked ? permissionGroup.permissions.map((p) => p.id) : []
-      );
-    }
-  };
 
   const handleCreatePermission = async (data: PermissionFormValues) => {
     startCreateTransition(async () => {
@@ -145,6 +150,10 @@ export function PermissionCard({
     });
   };
 
+  const handleDeletePermission = async (id: string) => {
+    await deletePermission({ id });
+  };
+
   const openEditDialog = (permission: Permission) => {
     setEditingPermission(permission);
     form.reset({
@@ -152,6 +161,63 @@ export function PermissionCard({
       action: permission.action,
     });
     setIsDialogOpen(true);
+  };
+
+  const handlePermissionChange = (
+    checked: boolean | string,
+    permission: Permission
+  ) => {
+    if (typeof checked !== 'boolean') return;
+
+    const { resource, action, id } = permission;
+    setLocalPermissions((prev) =>
+      prev.map((p) =>
+        p.id === id ? { ...p, checked } : p,
+      ),
+    );
+
+    if (checked) {
+      startCreateTransition(async () => {
+        const created = await createPermission({
+          menuId: permissionGroup.id,
+          resource,
+          action,
+        });
+      });
+    } else {
+      startEditTransition(async () => {
+        await deletePermissionByKey({ id: permission.id });
+      });
+    }
+  };
+
+  const handleToggleAll = (checkedAll: boolean) => {
+    setIsAll(checkedAll);
+    const currentPermissions = localPermissions;
+
+    setLocalPermissions((prevState) => prevState.map((p) => ({ ...p, checked: checkedAll })));
+
+    if (checkedAll) {
+      const toCreate = currentPermissions.filter((p) => !p.checked);
+      if (toCreate.length === 0) return;
+
+      startCreateTransition(async () => {
+        await Promise.all(
+          toCreate.map((p) =>
+            createPermission({ menuId: permissionGroup.id, resource: p.resource, action: p.action }),
+          ),
+        );
+      });
+    } else {
+      startEditTransition(async () => {
+        const toDelete = currentPermissions.filter((p) => p.checked);
+        if (toDelete.length === 0) return;
+
+        await Promise.all(
+          toDelete.map((p) => deletePermissionByKey({ id: p.id })),
+        );
+      });
+    }
   };
 
   return (
@@ -172,72 +238,80 @@ export function PermissionCard({
         <CardHeader className="space-y-1">
           <div className="flex justify-between">
             <div className="flex items-center space-x-2">
-              {selectable && (
-                <Checkbox
-                  id={`select-all-${permissionGroup.title}`}
-                  // checked={permissionGroup.permissions.every((p) => p.checked)}
-                  onCheckedChange={(checked: boolean) =>
-                    handleSelectAll(checked)
-                  }
-                />
-              )}
-              <CardTitle className="text-md font-medium text-gray-400 flex items-center gap-2">
-                {permissionGroup.icon && <DynamicIcon name={permissionGroup.icon as IconName} size={20} />}
+              <CardTitle className="text-md font-medium text-gray-500 flex items-center gap-2">
+                {permissionGroup.icon && <DynamicIcon name={permissionGroup.icon as IconName} size={18} />}
                 {permissionGroup.title}
               </CardTitle>
             </div>
 
-            {editable && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  form.reset({
-                    resource: '',
-                    action: '',
-                  });
-                  setIsDialogOpen(true);
-                }}
-              >
-                Add new
-              </Button>
-            )}
+            <Button
+              className='text-gray-500'
+              variant="ghost"
+              size="icon_sm"
+              onClick={() => {
+                form.reset({
+                  resource: '',
+                  action: '',
+                });
+                setIsDialogOpen(true);
+              }}
+            >
+              <SquarePlus className='size-4' />
+            </Button>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
+          {/* {localPermissions.length > 0 && (
+            <>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id={`select-all-${permissionGroup.id}`}
+                  checked={isAll}
+                  onCheckedChange={(checked: boolean) =>
+                    handleToggleAll(checked)
+                  }
+                />
+                <label
+                  htmlFor={`select-all-${permissionGroup.id}`}
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Select All
+                </label>
+              </div>
+              <Separator className="my-4" />
+            </>
+          )} */}
           <div className="space-y-2">
-            {permissionGroup.permissions.map((permission, permissionIndex) => (
-              <div
-                key={permission.id}
-                className="flex min-h-6 items-center justify-between mb-0"
-              >
-                <div className="flex items-center space-x-2">
-                  {selectable && (
-                    <Checkbox
-                      id={permission.id}
-                      checked={value.indexOf(permission.id) !== -1}
-                      onCheckedChange={(checked) => {
-                        // handlePermissionChange(permissionIndex);
-                        selectable.onCheckedChange?.(
-                          checked
-                            ? [...value, permission.id]
-                            : value.filter((id) => id !== permission.id)
-                        );
-                      }}
-                    />
-                  )}
-                  <label
-                    htmlFor={permission.id}
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    {permission.resource}: {permission.action}
-                  </label>
-                </div>
-                {editable && (
+            {permissionGroup.permissions.map((permission) => {
+              const uiId = `${permission.resource}:${permission.action}:${permission.id}`;
+              return (
+                <div
+                  key={`${permission.id}:${permission.resource}:${permission.action}`}
+                  className="flex min-h-6 items-center justify-between mb-0"
+                >
                   <div className="flex items-center space-x-2">
+                    {/* {(
+                      <Checkbox
+                        id={uiId}
+                        checked={permission?.checked}
+                        onCheckedChange={(isChecked) => {
+                          handlePermissionChange(isChecked, permission);
+                        }}
+                      />
+                    )} */}
+                    <label
+                      htmlFor={uiId}
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      {permission.resource}: {permission.action}
+                    </label>
+                  </div>
+
+                  {permission.db && <div className="flex items-center">
                     <Button
+                      className='text-gray-500 '
                       variant="ghost"
-                      size="sm"
+                      size="icon_sm"
                       onClick={() =>
                         openEditDialog({
                           id: permission.id,
@@ -246,17 +320,22 @@ export function PermissionCard({
                         })
                       }
                     >
-                      Edit
+                      <PencilIcon className="size-4" />
                     </Button>
                     <DeleteConfirm id={permission.id}>
-                      <Button variant="ghost" size="sm">
-                        Delete
+                      <Button
+                        variant="ghost"
+                        size="icon_sm"
+                        className='text-gray-500'
+                      >
+                        <TrashIcon className="size-4" />
                       </Button>
                     </DeleteConfirm>
-                  </div>
-                )}
-              </div>
-            ))}
+                  </div>}
+
+                </div>
+              );
+            })}
           </div>
         </CardContent>
       </Card>
@@ -284,7 +363,7 @@ function AddOrEditPermission({
   handleEditPermission: (data: PermissionFormValues) => Promise<void>;
   isCreatePending: boolean;
   isEditPending: boolean;
-}){
+}) {
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogContent>

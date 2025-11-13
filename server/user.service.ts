@@ -96,6 +96,41 @@ export async function getAccount(id: string) {
   return account;
 }
 
+export async function getAccountByEmail(email: string) {
+  const account = await db.query.users.findFirst({
+    columns: {
+      id: true,
+      name: true,
+      email: true,
+      avatar: true,
+      active: true,
+      lastLoginAt: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+    with: {
+      developer: true,
+      membership: {
+        columns: {
+          id: true,
+          isOwner: true,
+        },
+        with: {
+          role: {
+            columns: {
+              id: true,
+              name: true,
+              fullAccess: true,
+            },
+          },
+        },
+      },
+    },
+    where: (table, { eq }) => eq(table.email, email),
+  });
+  return account;
+}
+
 export async function getUser(email: string) {
   const user = await db.query.users.findFirst({
     columns: {

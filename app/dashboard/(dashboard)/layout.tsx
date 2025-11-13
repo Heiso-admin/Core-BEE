@@ -1,7 +1,9 @@
 import { getTranslations } from 'next-intl/server';
+import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 import { Suspense } from 'react';
 import { auth } from '@/modules/auth/auth.config';
-import { Layout } from '@/components/primitives';
+import { Layout } from '@/components/primitives/layout';
 import type { UserAvatarMenuItem } from '@/components/primitives/user-avatar';
 import { LayoutSkeleton } from '@/components/skeleton';
 import { findMenus, groupMenuItems } from '@/lib/tree';
@@ -29,6 +31,16 @@ export default async function OrgLayout({ children }: OrgLayoutProps) {
 async function OrgLayoutWrap({ children }: { children: React.ReactNode }) {
   // Get user membership and permissions
   const membership = await getMyMembership();
+
+  // // 若非開發者，且尚未加入（無 membership 或 status !== 'joined'），強制導向 Join 頁
+  // if (!membership.isDeveloper && (!membership?.id || membership?.status !== 'joined')) {
+  //   const cookieStore = await cookies();
+  //   const joinToken = cookieStore.get('join-token');
+  //   if (joinToken) {
+  //     redirect(`/dashboard/join?token=${joinToken.value}`);
+  //   }
+  //   redirect('/dashboard/join');
+  // }
   const hasFullAccess =
     membership.isDeveloper === true ||
     membership.isOwner === true ||

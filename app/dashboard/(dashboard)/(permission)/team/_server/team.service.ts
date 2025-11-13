@@ -87,7 +87,26 @@ async function updateMember({
     status?: string;
   };
 }) {
-  const member = await db.update(members).set(data).where(eq(members.id, id));
+  // Prepare member updates, including deletedAt based on status
+  const isJoined = data.status === 'joined';
+
+  const memberUpdates: Partial<typeof members.$inferInsert> = {
+    ...data,
+    updatedAt: new Date(),
+  };
+
+  const member = await db.update(members).set(memberUpdates).where(eq(members.id, id));
+
+  // user table，除了 joined，其他狀態都皆不可登入
+  const [current] = await db.select().from(members).where(eq(members.id, id)).limit(1);
+  const userId = current?.userId;
+  if (userId) {
+    await db
+      .update(users)
+      .set({ active: isJoined })
+      .where(eq(users.id, userId));
+  }
+
   revalidatePath("./team", "page");
   return member;
 }
@@ -163,6 +182,7 @@ async function leaveTeam(id: string) {
   //   .where(eq(members.id, id));
   revalidatePath("./team", "page");
 }
+
 
 async function addMember({
   email,
@@ -287,7 +307,7 @@ async function transferOwnership({
   });
 
   revalidatePath("/dashboard/team");
-  
+
   return { success: true };
 }
 

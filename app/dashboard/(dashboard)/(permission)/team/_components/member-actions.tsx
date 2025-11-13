@@ -211,14 +211,16 @@ export function MemberActions({
       });
     });
   };
+  const visibleActionItems = actionItems.filter((a) => a.visible);
+
+  if (visibleActionItems.length === 0) return null;
 
   return (
     <div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {actionItems
-            .filter((a) => a.visible)
+          {visibleActionItems
             .map(({ key, label, Icon, onClick }) => (
               <DropdownMenuItem
                 key={key}

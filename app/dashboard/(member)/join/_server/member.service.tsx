@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { auth } from '@/modules/auth/auth.config';
 import { db } from "@/lib/db";
 import { members } from "@/lib/db/schema";
+import { users } from "@/lib/db/schema/auth/user";
 
 async function getMembership() {
   const session = await auth();
@@ -60,16 +61,19 @@ async function getInviteToken({ token }: { token: string }) {
   return member;
 }
 
-async function join(id: string, userId: string) {
-  return await db
+async function join(userId: string) {
+  const result = await db
     .update(members)
     .set({
       userId,
       inviteToken: "",
       tokenExpiredAt: null,
-      status: "joined",
+      status: "review",
     })
-    .where(eq(members.id, id));
+    .where(and(eq(members.userId, userId), isNull(members.deletedAt)));
+  console.log("join result: ", result);
+
+  return result;
 }
 
 async function decline(id: string) {
@@ -89,3 +93,51 @@ async function removeJoinToken() {
 }
 
 export { getMembership, getInviteToken, join, decline, removeJoinToken };
+
+// 更新使用者基本資料（名稱、Email、頭像）並同步 members.email
+export async function updateBasicProfile({
+  userId,
+  name,
+  email,
+  avatar,
+  password,
+}: {
+  userId: string;
+  name?: string;
+  email?: string;
+  avatar?: string | null;
+  password?: string;
+}) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.id !== userId) {
+    throw new Error('Unauthorized');
+  }
+
+  const updates: Partial<{ name: string; email: string; avatar?: string | null; password: string; updatedAt: Date }> = {
+    updatedAt: new Date(),
+  };
+  if (typeof name === 'string' && name.trim()) updates.name = name.trim();
+  if (typeof email === 'string' && email.trim()) updates.email = email.trim();
+  if (typeof avatar === 'string') updates.avatar = avatar;
+
+  // 若提供密碼，進行雜湊後更新（未提供則不更新密碼）
+  if (typeof password === 'string' && password.trim().length > 0) {
+    const { hashPassword } = await import('@/lib/hash');
+    updates.password = await hashPassword(password.trim());
+  }
+
+  // 更新 users
+  if (Object.keys(updates).length > 0) {
+    await db.update(users).set(updates).where(eq(users.id, userId));
+  }
+
+  // 同步 members.email（若提供 email）
+  if (typeof email === 'string' && email.trim()) {
+    await db
+      .update(members)
+      .set({ email: email.trim(), updatedAt: new Date() })
+      .where(and(eq(members.userId, userId), isNull(members.deletedAt)));
+  }
+
+  return { ok: true };
+}

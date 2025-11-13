@@ -89,7 +89,7 @@ export function PermissionAccess({
                     {permissions.map((permission: any, i: number) => (
                       <PermissionCard
                         permissionGroup={permission}
-                        key={i}
+                        key={permission.id}
                         selectable={{
                           value: field.value ?? [],
                           onCheckedChange: (value: string[]) => {
