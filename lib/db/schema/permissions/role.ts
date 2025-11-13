@@ -18,22 +18,23 @@ import { roleMenus } from "./role-menus";
 import { rolePermissions } from "./role-permission";
 
 export const roles = pgTable(
-  "roles",
+  'roles',
   {
-    id: varchar("id", { length: 20 })
+    id: varchar('id', { length: 20 })
       .primaryKey()
       .$default(() => generateRoleId()),
-    name: varchar("name", { length: 50 }).notNull(),
-    description: varchar("description", { length: 255 }),
-    fullAccess: boolean("full_access").notNull().default(false),
-    deletedAt: timestamp("deleted_at"),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+    name: varchar('name', { length: 50 }).notNull(),
+    description: varchar('description', { length: 255 }),
+    fullAccess: boolean('full_access').notNull().default(false),
+    loginMethod: varchar('login_method', { length: 20 }),
+    deletedAt: timestamp('deleted_at'),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
   },
   (table) => [
-    index("roles_name_idx").on(table.name),
-    index("roles_deleted_at_idx").on(table.deletedAt),
-  ],
+    index('roles_name_idx').on(table.name),
+    index('roles_deleted_at_idx').on(table.deletedAt),
+  ]
 );
 
 export const roleRelations = relations(roles, ({ many }) => ({

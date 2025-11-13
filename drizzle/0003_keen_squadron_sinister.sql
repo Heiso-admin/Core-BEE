@@ -1,0 +1,1 @@
+ALTER TABLE "roles" ADD COLUMN "login_method" varchar(20);
