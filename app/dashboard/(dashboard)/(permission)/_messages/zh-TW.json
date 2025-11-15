@@ -159,6 +159,7 @@
 			"lastLogin": "最後登入時間",
 			"role": "角色",
 			"selectRole": "請選擇角色",
+			"roleInvalid": "請輸入有效的角色名稱",
 			"status": "成員存取權限",
 			"cancel": "取消",
 			"save": "儲存",

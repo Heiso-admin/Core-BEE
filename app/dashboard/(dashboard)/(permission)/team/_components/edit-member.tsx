@@ -39,7 +39,7 @@ import { MemberStatus, MemberUser } from "./member-list";
 import { cn } from "@/lib/utils";
 
 const updateMemberFormSchema = z.object({
-  roleId: z.string().optional(),
+  roleId: z.string(),
   isOwner: z.boolean(),
   status: z.string(),
 });
@@ -57,11 +57,12 @@ interface EditMemberProps {
 export function EditMember({ open, onClose, member, roles, lastOwner }: EditMemberProps) {
   const t = useTranslations("dashboard.permission.message.edit");
   const [isLoading, setIsLoading] = useState(false);
+  const isRole = roles.find((role) => role.id === member.roleId)?.name;
 
   const form = useForm<UpdateMemberFormValues>({
     resolver: zodResolver(updateMemberFormSchema),
     defaultValues: {
-      roleId: member.roleId || "",
+      roleId: isRole || undefined,
       isOwner: member.isOwner, // 這個只是用來一開始的狀態
       status: member.status || "active", // 預設為啟用狀態
     },
@@ -149,7 +150,6 @@ export function EditMember({ open, onClose, member, roles, lastOwner }: EditMemb
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormMessage />
                 </FormItem>
               )}
             />

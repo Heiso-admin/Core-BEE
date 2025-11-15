@@ -159,6 +159,7 @@
 			"lastLogin": "Last Login Time",
 			"role": "Role",
 			"selectRole": "Please select role",
+			"roleInvalid": "Please enter a valid role name",
 			"status": "Member Access Permission",
 			"cancel": "Cancel",
 			"save": "Save",

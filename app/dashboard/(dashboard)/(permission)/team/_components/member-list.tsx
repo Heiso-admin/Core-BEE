@@ -103,8 +103,10 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
       header: t("role"),
       cell: ({ row }) => {
         const isOwner = row.original.isOwner;
-        const nullOwner = row.original.role === null && !row.original.isOwner
-        return (!nullOwner && <Badge variant="tag" onClick={() => console.log(row.original)}>{isOwner ? MemberStatus.Owner : row.original.role?.name}</Badge>);
+        const isRole = roles.find((role) => role.id === row.original.roleId)?.name || null;
+
+        if (isOwner) return <Badge variant="tag">{MemberStatus.Owner}</Badge>
+        return isRole && <Badge variant="tag" onClick={() => console.log(row.original)}>{isRole}</Badge>;
       },
     },
     {
