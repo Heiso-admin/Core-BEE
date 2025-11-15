@@ -10,10 +10,9 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { MoreHorizontal, Plus } from "lucide-react";
-import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ProtectedArea } from "@/components/permission/protected-area";
 import { Avatar, DataPagination } from "@/components/primitives";
 import { Badge } from "@/components/ui/badge";
@@ -27,26 +26,30 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Member } from "../_server/team.service";
-import { AddMember } from "./add-member";
 import { InviteMember } from "./invite-member";
 import { MemberActions } from "./member-actions";
 import { SearchInput } from "@/components/ui/search-input";
 import { CaptionTotal } from "@/components/ui/caption";
 import { readableDate } from "@/lib/utils/format";
+import { RadioGroup } from '@/components/ui/radio-group';
+import { RadioTagGroupItem, RadioTagLabel } from '@/components/ui/radio-tag';
 
 export enum MemberStatus {
   Invited = "invited",        // 已邀請/待驗證
   Joined = "joined",          // 已加入/啟用
   Review = "review",          // 待審核
-  Disabled = "suspend",      // 停用
-  Declined = "declined",      // 已拒絕
+  Disabled = "suspend",      // 停用/已拒絕
   Owner = "Owner",            // 擁有者
 }
+
+type FilterStatus = "all" | MemberStatus;
 
 export interface Role {
   id: string;
   name: string;
 }
+
+const filterStatuses: FilterStatus[] = ["all", MemberStatus.Joined, MemberStatus.Review, MemberStatus.Disabled]
 
 export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
   const { data: session } = useSession();
@@ -54,6 +57,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
   const te = useTranslations("dashboard.permission.team");
   const t = useTranslations("dashboard.permission.team.members");
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [filterStatus, setFilterStatus] = useState<FilterStatus>(filterStatuses[0]);
 
   const AllRoles: Role[] = [{ id: MemberStatus.Owner, name: MemberStatus.Owner }, ...roles]
 
@@ -61,7 +65,6 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
     switch (member) {
       case MemberStatus.Invited:
         return <Badge status="blue">{t("statuses.invited")}</Badge>;
-      case MemberStatus.Declined:
       case MemberStatus.Disabled:
         return <Badge status="hidden">{t("statuses.declined")}</Badge>;
       case MemberStatus.Joined:
@@ -158,13 +161,18 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
     },
   ];
 
+  const columnFilters = useMemo(
+    () => (filterStatus === "all" ? [] : [{ id: "status", value: filterStatus }]),
+    [filterStatus]
+  );
+
   const table = useReactTable({
-    // data: data.filter((item) => item.user?.email?.includes(filtering)),
-    data,
+    data: data,
     columns,
     state: {
       sorting,
       globalFilter: filtering ?? "",
+      columnFilters,
     },
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
@@ -194,6 +202,15 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
           </ProtectedArea>
         </div>
       </div>
+      <RadioGroup value={filterStatus} className="flex items-center gap-3 mb-2" onValueChange={(value) => setFilterStatus(value as FilterStatus)}>
+        <span className='text-sm text-text-secondary'>{t("filter.title")}:</span>
+        {filterStatuses.map((item) => (
+          <div className="flex items-center gap-3" key={item}>
+            <RadioTagGroupItem className="hidden" value={item} id={item} />
+            <RadioTagLabel htmlFor={item}>{t(`filter.${item}`)}</RadioTagLabel>
+          </div>
+        ))}
+      </RadioGroup>
 
       <div className="layout-split-pane flex flex-col justify-between grow overflow-y-auto">
         <Table>

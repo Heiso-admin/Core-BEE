@@ -1,0 +1,29 @@
+import { cn } from '@/lib/utils';
+import { RadioGroupItem } from './radio-group';
+import { Label } from './label';
+
+function RadioTagGroupItem({
+  className,
+  ...props
+}: React.ComponentProps<typeof RadioGroupItem>) {
+  return (
+    <RadioGroupItem className={cn(" peer", className)} {...props} />
+  );
+}
+
+function RadioTagLabel({
+  className,
+  ...props
+}: React.ComponentProps<typeof Label>) {
+  return (
+    <Label className={cn(
+      "cursor-pointer select-none inline-flex items-center justify-center px-3 py-1 rounded-md text-xs transition-colors whitespace-nowrap border shadow-xs hover:bg-input/50 text-primary-foreground dark:bg-input/30 border-input/50",
+      "peer-data-[state=checked]:bg-background peer-data-[state=checked]:text-primary-foreground peer-data-[state=checked]:font-medium",
+      className
+    )}
+      {...props}
+    />
+  );
+}
+
+export { RadioTagGroupItem, RadioTagLabel };

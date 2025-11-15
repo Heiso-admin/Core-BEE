@@ -78,6 +78,13 @@
 				"declined": "Declined",
 				"joined": "Joined",
 				"review": "Review"
+			},
+			"filter": {
+				"title": "Filter",
+				"all": "All",
+				"joined": "Users",
+				"review": "Applications",
+				"suspend": "Suspend"
 			}
 		},
 		"addMember": {

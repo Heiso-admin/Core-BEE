@@ -78,6 +78,13 @@
 				"declined": "停用",
 				"joined": "啟動",
 				"review": "待審核"
+			},
+			"filter": {
+				"title": "篩選",
+				"all": "全部",
+				"joined": "用戶",
+				"review": "待處理",
+				"suspend": "停權"
 			}
 		},
 		"addMember": {
