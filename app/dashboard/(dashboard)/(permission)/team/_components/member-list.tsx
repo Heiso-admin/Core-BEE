@@ -38,7 +38,7 @@ export enum MemberStatus {
   Invited = "invited",        // 已邀請/待驗證
   Joined = "joined",          // 已加入/啟用
   Review = "review",          // 待審核
-  Disabled = "disabled",      // 停用
+  Disabled = "suspend",      // 停用
   Declined = "declined",      // 已拒絕
   Owner = "Owner",            // 擁有者
 }
