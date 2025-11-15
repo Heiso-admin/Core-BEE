@@ -115,9 +115,9 @@ const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, any
         {/* Microsoft Login */}
         <div className="my-6 space-y-2" >
           <OAuthLoginButtons
-            href="/api/auth/signin/azure-ad?callbackUrl=/dashboard"
             icon='logos:microsoft-icon'
             alt="Microsoft"
+            onClick={() => oAuthLogin("microsoft-entra-id")}
           />
           <OAuthLoginButtons
             icon='akar-icons:github-fill'
