@@ -3,10 +3,12 @@
 import {
   type ColumnDef,
   type SortingState,
+  type PaginationState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
+  getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { MoreHorizontal, Plus } from "lucide-react";
@@ -58,6 +60,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
   const t = useTranslations("dashboard.permission.team.members");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filterStatus, setFilterStatus] = useState<FilterStatus>(filterStatuses[0]);
+  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
 
   const AllRoles: Role[] = [{ id: MemberStatus.Owner, name: MemberStatus.Owner }, ...roles]
 
@@ -173,11 +176,14 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
       sorting,
       globalFilter: filtering ?? "",
       columnFilters,
+      pagination,
     },
     onSortingChange: setSorting,
+    onPaginationChange: setPagination,
     getSortedRowModel: getSortedRowModel(),
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   const totalRows = table.getFilteredRowModel().rows.length
@@ -203,7 +209,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
         </div>
       </div>
       <RadioGroup value={filterStatus} className="flex items-center gap-3 mb-2" onValueChange={(value) => setFilterStatus(value as FilterStatus)}>
-        <span className='text-sm text-text-secondary'>{t("filter.title")}:</span>
+        <span className='pl-0.5 text-sm text-text-secondary'>{t("filter.title")}:</span>
         {filterStatuses.map((item) => (
           <div className="flex items-center gap-3" key={item}>
             <RadioTagGroupItem className="hidden" value={item} id={item} />
@@ -254,6 +260,15 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
             ))}
           </TableBody>
         </Table>
+
+        <DataPagination
+          className="border-t"
+          total={totalRows}
+          inputPage={pagination.pageIndex + 1}
+          onInputPageChange={(page) => table.setPageIndex(page - 1)}
+          defaultRows={pagination.pageSize}
+          onChangeRows={(rows) => table.setPageSize(rows)}
+        />
 
       </div>
     </div>
