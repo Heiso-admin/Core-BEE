@@ -90,11 +90,11 @@ export function MemberActions({
       onClick: () => setOpenResetPassword(true),
     },
     {
-      // 刪除成員，僅未驗證者，已驗證者僅只能停用
+      // 刪除成員，僅擁有者可操作
       key: "remove" as const,
       label: t("remove.action"),
       Icon: Trash2,
-      visible: member.status === MemberStatus.Invited && isUserNotReview,
+      visible: isCurrentUserOwner,
       onClick: () => setOpenRemoveConfirm(true),
     },
     // {
