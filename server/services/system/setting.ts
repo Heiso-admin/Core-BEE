@@ -16,6 +16,19 @@ export async function getSettings(): Promise<Settings> {
   return result;
 }
 
+export async function getGeneralSettings(): Promise<Settings> {
+  const settings = await db.query.generalSettings.findMany({
+    where: (fields, { isNull }) =>
+      // and(eq(fields.isKey, false), isNull(fields.deletedAt)),
+      isNull(fields.deletedAt),
+  });
+  const result: Record<string, unknown> = {};
+  for (const { name, value } of settings) {
+    result[name] = value;
+  }
+  return result;
+}
+
 export async function getSiteSettings(): Promise<Settings> {
   const settings = await db.query.siteSettings.findMany({
     where: (fields, { isNull }) => isNull(fields.deletedAt),
