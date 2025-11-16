@@ -17,6 +17,7 @@ declare module 'next-auth' {
   }
   interface JWT {
     isDeveloper?: boolean;
+    memberStatus?: string | null;
   }
 
   interface User {
@@ -29,10 +30,69 @@ class InvalidLoginError extends CredentialsSignin {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  pages: {
+    signIn: '/login',
+    error: '/login', // 將 NextAuth 的錯誤（如 AccessDenied）導向 login，附帶 ?error=...
+  },
   callbacks: {
+    async signIn({ user, account, profile }) {
+      const isNewUser = account?.isNewUser;
+      console.log('isNewUser', isNewUser);
+      // 禁止已用 email/密碼登入過的帳號使用 OAuth 註冊
+      try {
+        // 僅處理 OAuth 供應商，略過 credentials
+        if (!account || account.provider === 'credentials') return true;
+
+        const email = (user?.email || (profile && (profile as any).email) || '').toString().trim();
+        if (!email) return true;
+
+        const { db } = await import('@/lib/db');
+        const { users, members } = await import('@/lib/db/schema');
+        const { and, eq, isNull } = await import('drizzle-orm');
+
+        const existingUser = await db.query.users.findFirst({
+          where: (t, ops) => eq(t.email, email),
+          columns: { loginMethod: true },
+        });
+
+        const existingMember = await db.query.members.findFirst({
+          where: (t, ops) => and(eq(t.email, email), isNull(t.deletedAt)),
+          columns: { status: true },
+        });
+
+        // 第二次登入 OAuth：若已存在 member 且狀態非 joined，直接拒絕
+        if (existingUser && existingMember && existingMember.status !== "joined") {
+          // return false; // 讓 NextAuth 回傳 error=AccessDenied，回到 login 顯示提示
+          return '/login?error=under_review';
+        }
+
+        // 已在 member 有註冊過，拒絕 OAuth 註冊
+        if (existingMember && existingUser && !existingUser.loginMethod) {
+          return false
+        }
+
+        return true;
+      } catch (err) {
+        console.error('[OAuth signIn] pre-check failed:', err);
+        return true; // 若檢查失敗，不阻擋登入以避免誤判
+      }
+    },
     async jwt({ token, user }) {
+      // 將使用者開發者標記與 email 同步到 token
       if (user) {
-        token.isDeveloper = user.isDeveloper;
+        token.isDeveloper = (user as any).isDeveloper;
+        // 保留 email 以便後續查 membership
+        token.email = (user as any).email ?? (token as any).email;
+      }
+      // 查詢 membership 狀態並寫入 token 供 middleware 判斷導向
+      try {
+        const userId = token.sub;
+        const email = (token as any).email as string | undefined;
+        const { findMembershipByUserOrEmail } = await import('@/modules/account/authentication/_server/auth.service');
+        const membership = await findMembershipByUserOrEmail({ userId, email });
+        (token as any).memberStatus = membership?.status ?? null;
+      } catch (e) {
+        console.warn('[jwt] attach memberStatus failed:', e);
       }
       return token;
     },
@@ -124,16 +184,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           userId = inserted?.[0]?.id;
           console.log('[OAuth signIn] created user:', userId);
         } else {
-          // 更新最後登入時間與登入方式
+          // 更新最後登入時間
           await db.update(users)
-            .set({ lastLoginAt: new Date(), loginMethod: account.provider, updatedAt: new Date() })
+            .set({ lastLoginAt: new Date(), updatedAt: new Date() })
             .where(eq(users.id, existingUser.id));
           console.log('[OAuth signIn] existing user:', existingUser.id);
         }
 
-        // 尋找既有 member：
-        // - 若存在且為 joined，不變更狀態；僅同步 userId/loginMethod/updatedAt
-        // - 若存在且非 joined，維持原狀態；僅同步 userId/loginMethod/updatedAt
+        // 再次登入，但未審核過，僅更新 updateAt
         const existingMember = await db.query.members.findFirst({
           where: (t, ops) => and(eq(t.email, email), isNull(t.deletedAt)),
         });
@@ -142,13 +200,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           await db.update(members)
             .set({
               userId: userId ?? existingMember.userId,
-              loginMethod: account.provider,
               updatedAt: new Date(),
             })
             .where(eq(members.id, existingMember.id));
           console.log('[OAuth signIn] synced existing member without status change:', existingMember.id);
         } else {
-          console.log('[OAuth signIn] no existing member, will be handled by Login flow');
+          // 首次 OAuth 登入：建立 member，狀態設為 review 以便導向 pending
+          const insertedMember = await db.insert(members).values({
+            email,
+            userId: userId ?? undefined,
+            loginMethod: account.provider,
+            status: 'review',
+            updatedAt: new Date(),
+          }).returning();
+          console.log('[OAuth signIn] created member in review status:', insertedMember?.[0]?.id);
         }
       } catch (err) {
         console.error('[OAuth signIn] member upsert failed:', err);

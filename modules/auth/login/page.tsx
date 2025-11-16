@@ -12,19 +12,18 @@ export type OAuthDataType = {
   email: string | null;
   status: string | null;
 }
-export default async function Page({ searchParams }: { searchParams?: { join?: string } }) {
+export default async function Page({ searchParams }: { searchParams?: { join?: string; relogin?: string; error?: string } }) {
   const anyUser = await hasAnyUser();
   const site = await getSiteSettings();
   const orgName = (site as any)?.branding?.organization || config?.site?.organization;
 
-  const cookieStore = await cookies();
-  const existingJoinCookie = cookieStore.get("join-token");
   const session = await auth(); // oAuth 登入
   let email = "";
   let oAuthData: OAuthDataType | undefined = undefined;
 
   // 使用 oAuth 有可能會遇到第三方不願意給 email
-  if (session?.user) {
+  const isRelogin = !!searchParams?.relogin;
+  if (session?.user && !isRelogin) {
     const userId = session.user.id ?? undefined;
     const sessionEmail = session.user.email ?? undefined;
 
@@ -36,7 +35,11 @@ export default async function Page({ searchParams }: { searchParams?: { join?: s
       if (member.status === 'joined') {
         redirect("/dashboard");
       }
-      // 非 joined：停留於 Login，由前端提示錯誤
+      // 非 joined：如無錯誤參數才導向 Pending；有錯誤時留在 login 顯示錯誤
+      const err = searchParams?.error;
+      if (!err) {
+        redirect('/pending');
+      }
     } else {
       // 無成員紀錄：第一次登入，建立/刷新 member 並設為 review，不寄送 email
       if (sessionEmail) {

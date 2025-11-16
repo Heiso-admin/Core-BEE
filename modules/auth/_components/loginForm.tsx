@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import AuthLogin from "./authLogin";
 import EmailVerification from "./emailVerification";
@@ -9,8 +9,6 @@ import OTPLoginForm from './otpLoginForm';
 import { generateOTP } from '../_server/otp.service';
 import { useTranslations } from 'next-intl';
 import type { OAuthDataType } from '../login/page';
-import { MemberStatus } from '@/app/dashboard/(dashboard)/(permission)/team/_components/member-list';
-
 
 export enum LoginStepEnum {
   Email = 'email',       // 邮箱登录步骤
@@ -30,6 +28,7 @@ export type LoginStep = `${LoginStepEnum}`;
 
 function LoginForm({ email, anyUser, orgName, oAuthData, systemOauth }: { email?: string | null; anyUser: boolean; orgName?: string; oAuthData?: OAuthDataType; systemOauth?: string }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations('auth.login');
 
   const [loginMethod, setLoginMethod] = useState<string | null>(null);
@@ -37,20 +36,16 @@ function LoginForm({ email, anyUser, orgName, oAuthData, systemOauth }: { email?
   const [step, setStep] = useState<LoginStep>(LoginStepEnum.Email);
   const [error, setError] = useState<string>("");
 
-  // 針對已完成 OAuth 的使用者，根據 member 狀態顯示提示訊息
+  // 若 NextAuth 阻擋了 OAuth 登入（例如 AccessDenied），提示『請使用 email 登入』
   useEffect(() => {
-    if (!oAuthData || !oAuthData.status) return;
-    const status = oAuthData.status;
-    if (status === MemberStatus.Invited) {
-      setError(t('error.invited'));
-    } else if (status === MemberStatus.Review) {
+    const err = searchParams.get('error');
+    if (err === 'under_review') {
       setError(t('error.oAuthReview'));
-    } else if (status !== MemberStatus.Joined) {
-      setError(t('error.general'));
-    } else {
-      setError('');
+      return;
+    } else if (err === 'AccessDenied') {
+      setError(t('error.useEmailLogin'));
     }
-  }, [oAuthData, t]);
+  }, [searchParams, t]);
 
   const handleLoginSuccess = () => {
     router.push('/dashboard');

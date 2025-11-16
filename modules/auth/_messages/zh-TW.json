@@ -212,7 +212,7 @@
 			"general": "發生錯誤，請重試或聯繫您的組織管理員。",
 			"notActive": "您的帳號目前無法登入，請聯繫您的組織管理員尋求協助。",
 			"oAuthReview": "您的帳號已送出申請，請耐心等候組織管理員的最終批准。",
-			"useEmailLogin": "請使用 email 登入"
+			"useEmailLogin": "您的 Email 已註冊，請使用電子郵件登入。"
 		},
 		"notFound": {
 			"password": "不想使用密碼？ <Link>驗證碼登入</Link>",
