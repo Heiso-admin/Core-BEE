@@ -51,7 +51,7 @@ export interface Role {
   name: string;
 }
 
-const filterStatuses: FilterStatus[] = ["all", MemberStatus.Joined, MemberStatus.Review, MemberStatus.Disabled]
+const filterStatuses: FilterStatus[] = ["all", MemberStatus.Review, MemberStatus.Joined, MemberStatus.Disabled]
 
 export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
   const { data: session } = useSession();

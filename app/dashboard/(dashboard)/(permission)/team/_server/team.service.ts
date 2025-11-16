@@ -8,7 +8,7 @@ import { db } from "@/lib/db";
 import type { TMember, TRole, TUser } from "@/lib/db/schema";
 import { members, roles } from "@/lib/db/schema";
 import { users } from "@/lib/db/schema/auth/user";
-import { sendInviteUserEmail } from "@/lib/email";
+import { sendApprovedEmail, sendInviteUserEmail } from "@/lib/email";
 import { hashPassword } from "@/lib/hash";
 import { generateInviteToken } from "@/lib/id-generator";
 
@@ -123,6 +123,19 @@ async function sendInvite({
     to: [email],
     inviteToken,
     owner: isOwner,
+  });
+  return result;
+}
+
+async function sendApproved({
+  email,
+}: {
+  email: string;
+}) {
+  const { NOTIFY_EMAIL } = await settings();
+  const result = await sendApprovedEmail({
+    from: NOTIFY_EMAIL as string,
+    to: [email],
   });
   return result;
 }
@@ -366,6 +379,7 @@ export {
   getTeamMembers,
   invite,
   updateMember,
+  sendApproved,
   sendInvite,
   resendInvite,
   revokeInvite,

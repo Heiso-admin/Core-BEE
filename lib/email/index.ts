@@ -5,6 +5,7 @@ import { ForgotPasswordEmail } from "@/emails/forgot-password";
 import { InviteUserEmail } from "@/emails/invite-user";
 import { getSiteSettings } from "@/server/services/system/setting";
 import InviteOwnerEmail from "@/emails/invite-owner";
+import ApprovedEmail from "@/emails/approved";
 
 const { RESEND_API_KEY } = await settings();
 const resend = new Resend(RESEND_API_KEY as string);
@@ -74,16 +75,17 @@ export async function sendForgotPasswordEmail({
   name?: string;
   resetLink: string;
 }) {
-  const site = await getSiteSettings();
+  const site: any = await getSiteSettings();
   const { BASE_HOST } = await settings();
-  const siteLogo = (site as any)?.assets?.logo || config?.site?.logo?.url || "/images/logo.png";
-  const derivedLogoUrl = (typeof siteLogo === "string" && siteLogo.startsWith("http"))
+  const siteLogo = site?.assets?.logo || "/images/logo.png";
+  const derivedLogoUrl = (typeof siteLogo === "string" && siteLogo.startsWith("http")
     ? siteLogo
-    : `${BASE_HOST}${siteLogo}`;
+    : `${BASE_HOST}${siteLogo}`);
+  const orgName = site?.branding?.organization || config?.site?.organization;
 
   const email = ForgotPasswordEmail({
     resetLink,
-    orgName: name || (config?.site?.name as string) || "Heiso",
+    orgName: orgName,
     logoUrl: derivedLogoUrl,
   });
 
@@ -91,6 +93,35 @@ export async function sendForgotPasswordEmail({
     from,
     to,
     subject: subject || "Reset your password",
+    body: email,
+  });
+}
+
+export async function sendApprovedEmail({
+  from,
+  to,
+}: {
+  from: string;
+  to: string[];
+}) {
+  const site: any = await getSiteSettings();
+  const { BASE_HOST } = await settings();
+  const siteLogo = site?.assets?.logo || "/images/logo.png";
+  const derivedLogoUrl = (typeof siteLogo === "string" && siteLogo.startsWith("http")
+    ? siteLogo
+    : `${BASE_HOST}${siteLogo}`);
+  const orgName = site?.branding?.organization || config?.site?.organization;
+
+  const email = ApprovedEmail({
+    loginUrl: `${BASE_HOST}/login`,
+    orgName: orgName,
+    logoUrl: derivedLogoUrl,
+  });
+
+  return await sendEmail({
+    from,
+    to,
+    subject: `Congratulations! Your ${orgName} Account Has Been Approved`,
     body: email,
   });
 }

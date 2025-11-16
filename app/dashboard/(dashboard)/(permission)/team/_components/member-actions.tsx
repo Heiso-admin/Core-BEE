@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import type { Member } from "../_server/team.service";
-import { leaveTeam, resendInvite, transferOwnership, resetMemberPassword, updateMember } from "../_server/team.service";
+import { leaveTeam, resendInvite, transferOwnership, resetMemberPassword, updateMember, sendApproved } from "../_server/team.service";
 import { ConfirmRemoveMember } from "./confirm-remove-member";
 import { ConfirmResendInvitation } from "./confirm-resend-invitation";
 import { ConfirmTransferOwner } from "./confirm-transfer-owner";
@@ -130,6 +130,9 @@ export function MemberActions({
           data: { isOwner: isOwner, roleId: roleId, status: MemberStatus.Joined, },
         });
         toast.success(t("review.success"));
+        await sendApproved({
+          email: member.email,
+        });
         setOpenReviewConfirm(false);
       } catch (error) {
         toast.error(t("review.failed"));
