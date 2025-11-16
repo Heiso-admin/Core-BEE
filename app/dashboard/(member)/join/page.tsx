@@ -1,6 +1,7 @@
 // Server Component
 import { AccountConfirmAlert } from './_components/account-confirm-alert';
 import { InvalidJoinToken } from "./_components/invalid-join-token";
+import { MemberJoin } from './_components/member-join';
 import { getInviteToken } from "./_server/member.service";
 
 export type JoinUser = { id: string; name?: string | null; email?: string | null; avatar?: string | null } | null;
@@ -17,7 +18,9 @@ export default async function JoinPage({
   const user = membership
     ? {
       id: membership.id ?? '',
+      name: membership.user?.name ?? null,
       email: membership.email ?? '',
+      avatar: membership.user?.avatar ?? null,
       status: membership.status ?? '',
     }
     : null;
@@ -27,5 +30,5 @@ export default async function JoinPage({
     return <InvalidJoinToken />;
   }
 
-  return <AccountConfirmAlert user={user} />;
+  return <MemberJoin user={user} />;
 }

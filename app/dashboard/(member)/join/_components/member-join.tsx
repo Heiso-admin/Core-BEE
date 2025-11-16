@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { ActionButton, PasswordInput, RandomAvatar } from "@/components/primitives";
-import { join, removeJoinToken, updateBasicProfile } from "../_server/member.service";
+import { removeJoinToken } from "../_server/member.service";
+import { signup } from "@/server/services/auth";
 import { AccountConfirmAlert } from "./account-confirm-alert";
 import { useTranslations } from 'next-intl';
 import Header from '@/modules/auth/_components/header';
@@ -19,37 +20,20 @@ import { type JoinUser } from '../page';
 
 export function MemberJoin({ user }: { user: JoinUser | null }) {
   const t = useTranslations('auth.signup');
-  const j = useTranslations('auth.join');
   const p = useTranslations('auth.resetPassword.password.strength');
 
   const email = user?.email || "";
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const [isJoining, startJoiningTransition] = useTransition();
-  const [isDeclining, startDecliningTransition] = useTransition();
 
-  const handleJoin = async () => {
-    startJoiningTransition(async () => {
-      const userId = user?.id;
-
-      if (!userId) {
-        setError(t("error.general"));
-        return;
-      }
-
-      await join(userId);
-      // 清掉 join-token，避免持續被導回 token 流程
-      await removeJoinToken();
-      // 停留在 Join 頁等待審核（status=review），不導向 Dashboard 以免進入重定向迴圈
-    });
-  };
+  // 加入流程等同註冊：改由表單送出時執行 `signup` 與移除 join-token
 
   const signupSchema = z
     .object({
       name: z.string().min(3, { message: t('name.error') }),
       email: z.string().email({ message: t('email.error') }),
-      password: z.string().min(8, t('password.error')).or(z.literal('')).optional(),
-      confirmPassword: z.string().optional(),
+      password: z.string().min(8, t('password.error')).or(z.literal('')),
+      confirmPassword: z.string(),
     }).refine(
       (v) => {
         // 只有在 password 不是空的時候，才檢查
@@ -98,25 +82,13 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
     }
     console.log("signupEmail", data);
 
-    if (!user?.id) {
-      setError(t("error.general"));
-      return;
-    }
-
     try {
-      await updateBasicProfile({
-        userId: user.id,
-        name: data.name,
-        email: data.email,
-        avatar: user?.avatar ?? null,
-        password: data.password && data.password.trim() !== "" ? data.password : undefined,
-      });
-      await join(user.id);
-      await removeJoinToken();
+      // 使用通用 signup 服務：建立/更新使用者（姓名、密碼）並將成員狀態設為 review（非首位使用者）
+      await signup({ name: data.name, email: data.email, password: data.password ?? "" });
       setSubmitted(true);
       setError("");
     } catch (e) {
-      console.error("updateBasicProfile error", e);
+      console.error("member-join signup error", e);
       setError(t("error.general"));
     }
   };
@@ -137,12 +109,6 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
           <div className="space-y-4 mb-8">
 
             <div className="flex flex-row items-center justify-center gap-4">
-              <Avatar className="rounded-full shadow-sm h-8 w-8">
-                <AvatarImage src={user?.avatar ?? ""} alt={user?.name ?? ""} />
-                <AvatarFallback asChild>
-                  <RandomAvatar name={user?.email ?? ""} />
-                </AvatarFallback>
-              </Avatar>
               <span className="text-md"> {email}</span>
             </div>
             <div className="flex flex-col space-y-1">
@@ -176,7 +142,7 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium leading-relaxed peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      <FormLabel required className="text-sm font-medium leading-relaxed peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                         {t("password.label")}
                       </FormLabel>
                       <FormControl>
@@ -211,7 +177,7 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium leading-relaxed peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      <FormLabel required className="text-sm font-medium leading-relaxed peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                         {t("password.confirm")}
                       </FormLabel>
                       <FormControl>
@@ -222,7 +188,6 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
                         />
                       </FormControl>
                       <FormMessage />
-                      <p className="text-sm text-neutral">{j("passwordDesc")}</p>
                     </FormItem>
                   )
                 }}
