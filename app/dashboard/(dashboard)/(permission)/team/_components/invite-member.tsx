@@ -34,6 +34,7 @@ import {
 import { invite } from "../_server/team.service";
 import type { Role } from "./member-list";
 import { toast } from "sonner";
+import { Button } from '@/components/ui/button';
 
 export function InviteMember({
   userName,
@@ -49,13 +50,13 @@ export function InviteMember({
   const [open, setOpen] = useState(false);
 
   const inviteFormSchema = z.object({
+    name: z.string().optional(),
     email: z
       .string()
       .min(1, t("form.validation.emailInvalid")),
     role: z
       .string()
       .min(1, t("form.validation.roleInvalid")),
-    entry: z.string().optional(),
   });
 
   type InviteFormValues = z.infer<typeof inviteFormSchema>;
@@ -63,9 +64,9 @@ export function InviteMember({
   const form = useForm<InviteFormValues>({
     resolver: zodResolver(inviteFormSchema),
     defaultValues: {
+      name: "",
       email: "",
       role: "",
-      entry: "",
     },
   });
 
@@ -83,20 +84,20 @@ export function InviteMember({
         setOpen(false);
       } catch (error) {
         let errorMessage: string = "";
-        
-        const isEmailRepeatError = 
-            error instanceof Error && 
-            error.message.includes("EMAIL_REPEAT"); 
+
+        const isEmailRepeatError =
+          error instanceof Error &&
+          error.message.includes("EMAIL_REPEAT");
 
         if (isEmailRepeatError) {
-            errorMessage = t("form.validation.emailRepeat");
+          errorMessage = t("form.validation.emailRepeat");
         } else {
-            console.error(error);
-            errorMessage = t("form.error");
+          console.error(error);
+          errorMessage = t("form.error");
         }
-        
+
         form.setError('email', {
-          type: 'server', 
+          type: 'server',
           message: errorMessage,
         });
       }
@@ -116,6 +117,21 @@ export function InviteMember({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("form.name")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t("form.namePlaceholder")}
+                      {...field}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
@@ -126,7 +142,6 @@ export function InviteMember({
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -153,11 +168,17 @@ export function InviteMember({
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormMessage />
                 </FormItem>
               )}
             />
             <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpen(false)}
+              >
+                {t("actions.cancel")}
+              </Button>
               <ActionButton
                 type="submit"
                 loading={isInviting}
