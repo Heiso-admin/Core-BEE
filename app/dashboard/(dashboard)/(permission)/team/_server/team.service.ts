@@ -182,14 +182,18 @@ async function revokeInvite(id: string) {
 }
 
 async function leaveTeam(id: string) {
-  await db.delete(members).where(eq(members.id, id));
+  // 刪除成員並取得其 userId
+  const [deletedMember] = await db
+    .delete(members)
+    .where(eq(members.id, id))
+    .returning({ userId: members.userId });
 
-  // await db
-  //   .update(members)
-  //   .set({
-  //     deletedAt: new Date(),
-  //   })
-  //   .where(eq(members.id, id));
+  // 若有綁定使用者，連同 users 一併刪除
+  const userId = deletedMember?.userId;
+  if (userId) {
+    await db.delete(users).where(eq(users.id, userId));
+  }
+
   revalidatePath("/dashboard/permission/team", "page");
 }
 
