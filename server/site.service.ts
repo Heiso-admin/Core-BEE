@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/lib/db';
-import type { SiteSetting } from '@/modules/dev-center/system/settings/site/page';
+import type { SiteSetting } from '@/modules/dev-center/system/settings/general/page';
 
 export async function getSiteSettings(): Promise<SiteSetting> {
   const settings = await db.query.siteSettings.findMany({

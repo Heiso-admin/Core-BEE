@@ -28,7 +28,7 @@ export enum LoginMethodEnum {
 
 export type LoginStep = `${LoginStepEnum}`;
 
-function LoginForm({ email, anyUser, orgName, oAuthData }: { email?: string | null; anyUser: boolean; orgName?: string; oAuthData?: OAuthDataType }) {
+function LoginForm({ email, anyUser, orgName, oAuthData, systemOauth }: { email?: string | null; anyUser: boolean; orgName?: string; oAuthData?: OAuthDataType; systemOauth?: string }) {
   const router = useRouter();
   const t = useTranslations('auth.login');
 
@@ -104,6 +104,7 @@ function LoginForm({ email, anyUser, orgName, oAuthData }: { email?: string | nu
             anyUser={anyUser}
             orgName={orgName}
             handleAuthMethod={handleAuthMethod}
+            systemOauth={systemOauth}
           />
         );
 

@@ -1,112 +1,121 @@
 {
-  "site": {
-    "title": "網站設置",
-    "basic": {
-      "title": "基本信息",
-      "description": "配置您的網站基本信息。",
-      "form": {
-        "name": {
-          "label": "網站名稱",
-          "description": "請最多使用32個字符。"
-        },
-        "title": {
-          "label": "網站預設標題"
-        },
-        "base_url": {
-          "label": "基礎網址"
-        },
-        "domain": {
-          "label": "域名"
-        }
-      }
-    },
-    "branding": {
-      "title": "品牌",
-      "description": "自定義您的網站品牌元素。",
-      "form": {
-        "organization": {
-          "label": "組織"
-        },
-        "slogan": {
-          "label": "標語"
-        },
-        "description": {
-          "label": "網站預設描述"
-        },
-        "copyright": {
-          "label": "版權"
-        }
-      }
-    },
-    "assets": {
-      "title": "資源",
-      "description": "管理您的網站視覺資源。",
-      "form": {
-        "logo": {
-          "label": "標誌"
-        },
-        "favicon": {
-          "label": "預設 favicon"
-        },
-        "ogImage": {
-          "label": "預設 og:image"
-        }
-      }
-    },
-    "actions": {
-      "save": {
-        "button": "保存更改"
-      }
-    },
-    "toast": {
-      "success": "網站設置已更新"
-    }
-  },
-  "tracking": {
-    "title": "分析工具管理",
-    "loading": "載入中...",
-    "selector": {
-      "title": "新增客戶活動追蹤",
-      "tools": {
-        "google_analytics_4": "Google Analytics 4",
-        "google_tag_manager": "Google Tag Manager",
-        "facebook_pixel": "Facebook Pixel",
-        "tiktok_pixel": "TikTok Pixel",
-        "line_tag": "LINE Tag",
-        "microsoft_clarity": "Microsoft Clarity"
-      }
-    },
-    "table": {
-      "headers": {
-        "tool": "追蹤工具",
-        "tracking_id": "追蹤 ID / 名稱",
-        "actions": "操作"
-      }
-    },
-    "form": {
-      "title": "追蹤工具",
-      "tool_label": "我想使用的追蹤工具是：",
-      "tracking_id_label": "我的 Google Tag Manager 追蹤 ID 是：",
-      "tracking_id_placeholder": "GTM-NPRBBWWB",
-      "tracking_id_required": "請輸入追蹤 ID",
-      "actions": {
-        "discard": "取消",
-        "save": "儲存",
-        "saving": "儲存中..."
-      }
-    },
-    "confirm_remove": {
-      "title": "刪除追蹤工具",
-      "content": "您確定要刪除此追蹤工具嗎？",
-      "actions": {
-        "cancel": "取消",
-        "remove": "刪除"
-      }
-    },
-    "toast": {
-      "success": "分析工具設置已儲存",
-      "error": "儲存失敗，請重試",
-      "removed": "追蹤工具已刪除"
-    }
-  }
+	"site": {
+		"title": "網站設置",
+		"basic": {
+			"title": "基本信息",
+			"description": "配置您的網站基本信息。",
+			"form": {
+				"name": {
+					"label": "網站名稱",
+					"description": "請最多使用32個字符。"
+				},
+				"title": {
+					"label": "網站預設標題"
+				},
+				"base_url": {
+					"label": "基礎網址"
+				},
+				"domain": {
+					"label": "域名"
+				},
+				"system_oauth": {
+					"label": "系統 OAuth"
+				}
+			}
+		},
+		"branding": {
+			"title": "品牌",
+			"description": "自定義您的網站品牌元素。",
+			"form": {
+				"organization": {
+					"label": "組織"
+				},
+				"slogan": {
+					"label": "標語"
+				},
+				"description": {
+					"label": "網站預設描述"
+				},
+				"copyright": {
+					"label": "版權"
+				}
+			}
+		},
+		"assets": {
+			"title": "資源",
+			"description": "管理您的網站視覺資源。",
+			"form": {
+				"logo": {
+					"label": "標誌"
+				},
+				"favicon": {
+					"label": "預設 favicon"
+				},
+				"ogImage": {
+					"label": "預設 og:image"
+				}
+			}
+		},
+		"actions": {
+			"save": {
+				"button": "保存更改"
+			}
+		},
+		"toast": {
+			"success": "網站設置已更新"
+		},
+		"language": {
+			"title": "語言設置",
+			"description": "選擇您網站界面的默認語言。",
+			"default": "默認語言",
+			"default_description": "這將是訪客的默認語言。"
+		}
+	},
+	"tracking": {
+		"title": "分析工具管理",
+		"loading": "載入中...",
+		"selector": {
+			"title": "新增客戶活動追蹤",
+			"tools": {
+				"google_analytics_4": "Google Analytics 4",
+				"google_tag_manager": "Google Tag Manager",
+				"facebook_pixel": "Facebook Pixel",
+				"tiktok_pixel": "TikTok Pixel",
+				"line_tag": "LINE Tag",
+				"microsoft_clarity": "Microsoft Clarity"
+			}
+		},
+		"table": {
+			"headers": {
+				"tool": "追蹤工具",
+				"tracking_id": "追蹤 ID / 名稱",
+				"actions": "操作"
+			}
+		},
+		"form": {
+			"title": "追蹤工具",
+			"tool_label": "我想使用的追蹤工具是：",
+			"tracking_id_label": "我的 Google Tag Manager 追蹤 ID 是：",
+			"tracking_id_placeholder": "GTM-NPRBBWWB",
+			"tracking_id_required": "請輸入追蹤 ID",
+			"actions": {
+				"discard": "取消",
+				"save": "儲存",
+				"saving": "儲存中..."
+			}
+		},
+		"confirm_remove": {
+			"title": "刪除追蹤工具",
+			"content": "您確定要刪除此追蹤工具嗎？",
+			"actions": {
+				"cancel": "取消",
+				"remove": "刪除"
+			}
+		},
+		"toast": {
+			"success": "分析工具設置已儲存",
+			"error": "儲存失敗，請重試",
+			"removed": "追蹤工具已刪除"
+		}
+	}
 }

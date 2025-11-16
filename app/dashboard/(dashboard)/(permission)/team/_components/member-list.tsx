@@ -35,6 +35,7 @@ import { CaptionTotal } from "@/components/ui/caption";
 import { readableDate } from "@/lib/utils/format";
 import { RadioGroup } from '@/components/ui/radio-group';
 import { RadioTagGroupItem, RadioTagLabel } from '@/components/ui/radio-tag';
+import { capitalize } from 'lodash';
 
 export enum MemberStatus {
   Invited = "invited",        // 已邀請/待驗證
@@ -61,8 +62,6 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filterStatus, setFilterStatus] = useState<FilterStatus>(filterStatuses[0]);
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
-  console.log(data);
-
 
   const AllRoles: Role[] = [{ id: MemberStatus.Owner, name: MemberStatus.Owner }, ...roles]
 
@@ -130,9 +129,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
       cell: ({ row }) => {
         const userMethod = (row.original.user?.loginMethod ?? "").trim();
         const method = userMethod || "login";
-        const capitalizeFirst = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
-
-        return capitalizeFirst(method);
+        return capitalize(method);
       }
     },
     {

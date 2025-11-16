@@ -21,6 +21,7 @@ import config from "@/config";
 import { MemberStatus } from '@/app/dashboard/(dashboard)/(permission)/team/_components/member-list';
 import OAuthLoginButtons from './oAuthLoginButtons';
 import { oAuthLogin } from '@/server/services/auth';
+import { SystemOauth } from '@/modules/dev-center/system/settings/general/page';
 
 interface AuthLoginProps {
   error: string;
@@ -31,9 +32,10 @@ interface AuthLoginProps {
   anyUser: boolean;
   orgName?: string;
   handleAuthMethod: (method: string, email: string) => void;
+  systemOauth?: string;
 }
 
-const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, anyUser, orgName, handleAuthMethod }: AuthLoginProps) => {
+const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, anyUser, orgName, handleAuthMethod, systemOauth }: AuthLoginProps) => {
   const t = useTranslations("auth.login");
 
   const usedOrgName = orgName || config?.site?.organization;
@@ -104,36 +106,62 @@ const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, any
         }
       });
     }
-
-
   };
 
-  return (
-    <>
-      <Header title={anyUser ? t("title") : t("titleInvite", { organization: usedOrgName })} />
-      <div className="mt-6">
-        {/* Microsoft Login */}
-        <div className="my-6 space-y-2" >
+  const createAuthButton = (value: string | undefined) => {
+    switch (value) {
+      case SystemOauth.google:
+        return (
           <OAuthLoginButtons
-            icon='logos:microsoft-icon'
-            alt="Microsoft"
-            onClick={() => oAuthLogin("microsoft-entra-id")}
+            icon='material-icon-theme:google'
+            alt="Google"
+            onClick={() => oAuthLogin("google")}
           />
+        );
+
+      case SystemOauth.github:
+        return (
           <OAuthLoginButtons
             icon='akar-icons:github-fill'
             alt="GitHub"
             onClick={() => oAuthLogin("github")}
           />
-        </div>
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t" />
+        );
+
+      case SystemOauth.microsoft:
+        return (
+          <OAuthLoginButtons
+            icon='logos:microsoft-icon'
+            alt="Microsoft"
+            onClick={() => oAuthLogin("microsoft-entra-id")}
+          />
+        );
+
+      case SystemOauth.none:
+        return null;
+      default:
+        return null;
+    }
+  }
+
+  return (
+    <>
+      <Header title={anyUser ? t("title") : t("titleInvite", { organization: usedOrgName })} />
+      {createAuthButton(systemOauth) && (
+        <div className="mt-6">
+          <div className="my-6 space-y-2" >
+            {createAuthButton(systemOauth)}
           </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-background text-foreground/40">Or</span>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-background text-foreground/40">Or</span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
       <Form {...emailForm}>
         <form className="mt-8 space-y-6" onSubmit={emailForm.handleSubmit(handleEmailSubmit)}>
           <div className="space-y-4">

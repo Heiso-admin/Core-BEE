@@ -56,7 +56,7 @@ export default async function Page({ searchParams }: { searchParams?: { join?: s
 
   return (
     <div className="w-full max-w-md space-y-10">
-      <Login email={email} anyUser={anyUser} orgName={orgName} oAuthData={oAuthData} />
+      <Login email={email} anyUser={anyUser} orgName={orgName} oAuthData={oAuthData} systemOauth={site.system_oauth as string} />
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { db } from "@/lib/db";
 import { siteSettings } from "@/lib/db/schema";
 import type { Settings } from "@/types/system";
-import type { SiteSetting } from "../settings/site/page";
+import type { SiteSetting } from "../settings/general/page";
 
 async function getSettings(): Promise<Settings> {
   const settings = await db.query.settings.findMany({
