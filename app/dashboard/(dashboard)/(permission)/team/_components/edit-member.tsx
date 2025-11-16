@@ -57,7 +57,7 @@ interface EditMemberProps {
 export function EditMember({ open, onClose, member, roles, lastOwner }: EditMemberProps) {
   const t = useTranslations("dashboard.permission.message.edit");
   const [isLoading, setIsLoading] = useState(false);
-  const isRole = roles.find((role) => role.id === member.roleId)?.name;
+  const isRole = roles.find((role) => role.id === member.roleId)?.id;
 
   const form = useForm<UpdateMemberFormValues>({
     resolver: zodResolver(updateMemberFormSchema),
@@ -126,20 +126,14 @@ export function EditMember({ open, onClose, member, roles, lastOwner }: EditMemb
                 <FormItem>
                   <FormLabel>{t("role")}</FormLabel>
                   <Select
-                    onValueChange={(value) => {
-                      if (value === "owner") {
-                        form.setValue("isOwner", true);
-                        form.setValue("roleId", "");
-                      } else {
-                        form.setValue("isOwner", false);
-                        field.onChange(value);
-                      }
-                    }}
-                    value={form.watch("isOwner") ? MemberStatus.Owner : field.value}
+                    onValueChange={(value) => field.onChange(value)}
+                    value={field.value}
+                    disabled={form.watch("isOwner")}
                   >
                     <FormControl>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder={t("selectRole")} />
+                        {form.watch("isOwner") ? <span>{MemberStatus.Owner}</span> :
+                          <SelectValue placeholder={t("selectRole")} />}
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="w-full">

@@ -149,7 +149,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
                 <MemberActions
                   member={row.original}
                   currentMembers={data}
-                  roles={AllRoles}
+                  roles={roles}
                 >
                   <Button variant="ghost" size="icon" className="h-8 w-8">
                     <MoreHorizontal className="h-4 w-4" />
@@ -202,7 +202,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
           />
           <ProtectedArea resource="team" action="invite">
             {/* <AddMember roles={AllRoles} /> */}
-            <InviteMember userName={userName} roles={AllRoles}>
+            <InviteMember userName={userName} roles={roles}>
               <Button><Plus className="h-4 w-4" /> {t("invite")}</Button>
             </InviteMember>
           </ProtectedArea>
