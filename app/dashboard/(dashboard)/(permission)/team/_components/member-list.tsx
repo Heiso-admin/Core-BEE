@@ -61,6 +61,8 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filterStatus, setFilterStatus] = useState<FilterStatus>(filterStatuses[0]);
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
+  console.log(data);
+
 
   const AllRoles: Role[] = [{ id: MemberStatus.Owner, name: MemberStatus.Owner }, ...roles]
 
@@ -122,6 +124,18 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
       cell: ({ row }) => showStatus(row.original.status)
     },
     {
+      header: t("signin"),
+      accessorKey: "signin",
+      sortingFn: "basic",
+      cell: ({ row }) => {
+        const userMethod = (row.original.user?.loginMethod ?? "").trim();
+        const method = userMethod || "login";
+        const capitalizeFirst = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+
+        return capitalizeFirst(method);
+      }
+    },
+    {
       header: t("createdDate"),
       accessorKey: "createdAt",
       sortingFn: "datetime",
@@ -145,7 +159,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
         return (
           !isYou && (
             <div className="w-full flex items-center justify-center gap-2">
-              <ProtectedArea resource="team" action="edit">
+              <ProtectedArea resource={"team" as any} action={"edit" as any}>
                 <MemberActions
                   member={row.original}
                   currentMembers={data}
@@ -200,7 +214,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
             onChange={(e) => setFiltering(e.target.value)}
             placeholder={t("searchMembers")}
           />
-          <ProtectedArea resource="team" action="invite">
+          <ProtectedArea resource={"team" as any} action={"invite" as any}>
             {/* <AddMember roles={AllRoles} /> */}
             <InviteMember userName={userName} roles={roles}>
               <Button><Plus className="h-4 w-4" /> {t("invite")}</Button>
