@@ -249,7 +249,7 @@ function RoleItemCollapsible(
     >
       <div className="grid items-center gap-4" style={{ gridTemplateColumns: 'minmax(200px, auto) 1fr auto' }}>
         <CollapsibleTrigger asChild>
-          <div className='flex items-center space-x-2 cursor-pointer'>
+          <div className='flex items-center space-x-3 cursor-pointer'>
             {isOpen ? <ChevronDown className='size-5' /> : <ChevronRight className='size-5' />}
             {isEditing ? (
               <Input
@@ -263,19 +263,30 @@ function RoleItemCollapsible(
             )}
           </div>
         </CollapsibleTrigger>
-        <span className="w-full wrap-break-words overflow-hidden ">
-          {isEditing ? (
-            <Textarea
-              className="min-h-8 py-1"
-              value={description}
-              onChange={(e) => { if (e.target.value.length <= 200) setDescription(e.target.value) }}
-              placeholder={t("form.description")}
-              maxLength={200}
-            />
-          ) : (
-            role.description
-          )}
-        </span>
+        {/* Setting user loginMethod*/}
+        <div className="flex items-center gap-2 text-muted-foreground text-sm">
+          {
+            isEditing ?
+              (<Select value={loginMethod} onValueChange={setLoginMethod} >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder={t("form.method.description")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>{t("form.method.title")}</SelectLabel>
+                    {Object.values(LoginMethodEnum).map((methodValue) => (
+                      <SelectItem key={methodValue} value={methodValue}>
+                        {t(`form.method.${methodValue}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>) :
+              (<span>{`${t(`form.method.${loginMethod}`)}`}</span>)
+          }
+
+        </div>
+
         <div className="flex items-center">
           {!isEditing ? (
             <Button
@@ -324,27 +335,19 @@ function RoleItemCollapsible(
         </div>
       </div>
       <CollapsibleContent className="flex flex-col gap-6 px-8 pt-2">
-        {/* Setting user loginMethod*/}
-        <div className="flex items-center gap-2 text-muted-foreground text-sm">
-          <span>{t(`form.method.title`)}</span>
-          {
-            isEditing ?
-              (<Select value={loginMethod} onValueChange={setLoginMethod} >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder={t("form.method.description")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.values(LoginMethodEnum).map((methodValue) => (
-                    <SelectItem key={methodValue} value={methodValue}>
-                      {t(`form.method.${methodValue}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>) :
-              (<span>{`: ${t(`form.method.${loginMethod}`)}`}</span>)
-          }
-
-        </div>
+        <span className="w-full wrap-break-words overflow-hidden ">
+          {isEditing ? (
+            <Textarea
+              className="min-h-8 py-1"
+              value={description}
+              onChange={(e) => { if (e.target.value.length <= 200) setDescription(e.target.value) }}
+              placeholder={t("form.description")}
+              maxLength={200}
+            />
+          ) : (
+            <span className='text-sm'>{`${t("form.description")} : ${role.description}`}</span>
+          )}
+        </span>
         <Separator />
 
         {/* Header row */}
