@@ -211,7 +211,8 @@
 			"invited": "您的電子郵件已收到邀請信，請檢查您的收件箱。",
 			"general": "發生錯誤，請重試或聯繫您的組織管理員。",
 			"notActive": "您的帳號目前無法登入，請聯繫您的組織管理員尋求協助。",
-			"oAuthReview": "您的帳號已送出申請，請耐心等候組織管理員的最終批准。"
+			"oAuthReview": "您的帳號已送出申請，請耐心等候組織管理員的最終批准。",
+			"useEmailLogin": "請使用 email 登入"
 		},
 		"notFound": {
 			"password": "不想使用密碼？ <Link>驗證碼登入</Link>",
@@ -292,10 +293,10 @@
 		"codeSentTo": "驗證碼已發送至"
 	},
 	"join": {
-		"title": "申請建立帳號",
+		"title": "申請已送出",
 		"description": "您的電子郵件 {email} 已成功驗證。",
 		"passwordDesc": "注意：可選填密碼，若未設定密碼，您將無法使用密碼登入",
-		"joinSuccess": "您的帳號申請 {email} 已成功送出。\n 您將在組織管理員批准後才可進入系統。",
+		"joinSuccess": "您的帳號申請已成功送出。\n 您將在組織管理員批准後才可進入系統。",
 		"submit": "申請建立帳號",
 		"error": {
 			"invalidLink": "無效的加入連結，請檢查並重新輸入。",
