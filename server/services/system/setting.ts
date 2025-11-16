@@ -5,6 +5,7 @@ import type { Settings } from "@/types/system";
 
 export async function getSettings(): Promise<Settings> {
   const settings = await db.query.settings.findMany({
+    columns: { name: true, value: true },
     where: (fields, { isNull }) =>
       // and(eq(fields.isKey, false), isNull(fields.deletedAt)),
       isNull(fields.deletedAt),

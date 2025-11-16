@@ -7,6 +7,7 @@ import type { SiteSetting } from "../site/page";
 
 async function getSettings(): Promise<Settings> {
   const settings = await db.query.settings.findMany({
+    columns: { name: true, value: true },
     where: (fields, { and, eq, isNull }) =>
       and(eq(fields.isKey, false), isNull(fields.deletedAt)),
   });
