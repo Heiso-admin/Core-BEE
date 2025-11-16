@@ -31,9 +31,11 @@ async function getTeamMembers(): Promise<Member[]> {
 async function invite({
   email,
   role,
+  name,
 }: {
   email: string;
   role?: string;
+  name?: string;
 }) {
   // 檢查是否已存在相同 email 的成員
   const existingMember = await db
@@ -46,6 +48,38 @@ async function invite({
     throw new Error("EMAIL_REPEAT");
   }
 
+  // 若提供 name，先建立或更新 user 資料
+  let boundUserId: string | undefined = undefined;
+  if (name && name.trim()) {
+    const existingUser = await db.query.users.findFirst({
+      where: (t, { eq }) => eq(t.email, email),
+    });
+
+    if (existingUser) {
+      // 輸入使用者名稱（不影響密碼與登入狀態）
+      await db
+        .update(users)
+        .set({ name, updatedAt: new Date() })
+        .where(eq(users.id, existingUser.id));
+      boundUserId = existingUser.id;
+    } else {
+      // 建立使用者占位密碼，避免與註冊流程衝突
+      const placeholder = await hashPassword(generateInviteToken());
+      const [created] = await db
+        .insert(users)
+        .values({
+          email,
+          name,
+          password: placeholder,
+          active: false,
+          mustChangePassword: true,
+          updatedAt: new Date(),
+        })
+        .returning();
+      boundUserId = created?.id;
+    }
+  }
+
   const inviteToken = generateInviteToken();
   const inviteTokenExpiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7); // 7 days
 
@@ -55,6 +89,7 @@ async function invite({
       roleId: role !== "owner" ? role : null,
       isOwner: role === "owner",
       email,
+      userId: boundUserId ?? undefined,
       inviteToken,
       tokenExpiredAt: inviteTokenExpiresAt,
     })

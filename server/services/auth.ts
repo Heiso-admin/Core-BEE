@@ -36,17 +36,40 @@ export async function signup({
   password: string;
 }): Promise<{ id: string; name: string } | null> {
   try {
-    const [user] = await db
-      .insert(usersTable)
-      .values({
-        email,
-        name: name ?? email.split("@")[0],
-        password: await hashPassword(password),
-      })
-      .returning({
-        id: usersTable.id,
-        name: usersTable.name,
-      });
+    // 先檢查是否已存在 user（可能由邀請流程預先建立）
+    const existing = await db.query.users.findFirst({
+      where: (t, { eq }) => eq(t.email, email),
+      columns: { id: true, name: true },
+    });
+
+    let user: { id: string; name: string } | null = null;
+
+    if (existing) {
+      // 已存在則更新密碼與姓名，避免重複建立
+      const hashed = await hashPassword(password);
+      const [updated] = await db
+        .update(usersTable)
+        .set({
+          name: name ?? existing.name ?? email.split("@")[0],
+          password: hashed,
+          mustChangePassword: false,
+          updatedAt: new Date(),
+        })
+        .where(eq(usersTable.id, existing.id))
+        .returning({ id: usersTable.id, name: usersTable.name });
+      user = updated ?? null;
+    } else {
+      // 不存在則建立新使用者
+      const [created] = await db
+        .insert(usersTable)
+        .values({
+          email,
+          name: name ?? email.split("@")[0],
+          password: await hashPassword(password),
+        })
+        .returning({ id: usersTable.id, name: usersTable.name });
+      user = created ?? null;
+    }
 
     // 建立成功，更改為審查，但如果目前資料庫中只有一個使用者，則直接加入
     if (user?.id) {

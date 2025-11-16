@@ -78,6 +78,7 @@ export function InviteMember({
         await invite({
           email: data.email,
           role: data.role,
+          name: data.name,
         });
         toast.success(t("form.success", { email: data.email }));
         form.reset();
@@ -142,6 +143,7 @@ export function InviteMember({
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -168,6 +170,7 @@ export function InviteMember({
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
                 </FormItem>
               )}
             />
