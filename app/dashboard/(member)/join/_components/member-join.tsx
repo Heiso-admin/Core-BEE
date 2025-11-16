@@ -14,8 +14,8 @@ import { useForm } from 'react-hook-form';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { calcStrength, Progress, ProgressLabel } from '@/components/ui/progress';
 import { motion } from 'framer-motion';
+import { type JoinUser } from '../page';
 
-type JoinUser = { id: string; name?: string | null; email?: string | null; avatar?: string | null } | null;
 
 export function MemberJoin({ user }: { user: JoinUser | null }) {
   const t = useTranslations('auth.signup');
@@ -122,7 +122,7 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
   };
 
   if (submitted) {
-    return <AccountConfirmAlert email={email} />;
+    return <AccountConfirmAlert user={user} />;
   }
 
   return (

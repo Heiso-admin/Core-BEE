@@ -1,45 +1,31 @@
 // Server Component
+import { AccountConfirmAlert } from './_components/account-confirm-alert';
 import { InvalidJoinToken } from "./_components/invalid-join-token";
-import { MemberJoin } from "./_components/member-join";
 import { getInviteToken } from "./_server/member.service";
-import { auth } from '@/modules/auth/auth.config';
-import { redirect } from "next/navigation";
+
+export type JoinUser = { id: string; name?: string | null; email?: string | null; avatar?: string | null } | null;
 
 export default async function JoinPage({
   searchParams,
 }: {
   searchParams: { token?: string };
 }) {
-  const token = (searchParams?.token ?? '').trim();
+  const { token } = await searchParams;
+  if (!token) return null;
+
   const membership = await getInviteToken({ token });
-  const session = await auth();
-  const user = session?.user
+  const user = membership
     ? {
-      id: session.user.id ?? '',
-      name: session.user.name ?? '',
-      email: session.user.email ?? '',
-      avatar: (session.user as any)?.image ?? '',
+      id: membership.id ?? '',
+      email: membership.email ?? '',
+      status: membership.status ?? '',
     }
     : null;
 
-  console.log("JoinPage membership:", membership);
-
-  const isMemberJoined = session?.member?.status === 'joined';
-  if (isMemberJoined) {
-    redirect('/dashboard');
-  }
-
-  if (!membership) {
+  // 只有邀請狀態的用戶才能加入，其他狀態的用戶都不能加入 (AccountConfirmAlert)
+  if (!membership || membership.status !== 'invited') {
     return <InvalidJoinToken />;
   }
 
-  if ((membership as any)?.status === 'joined' || (membership as any)?.userId) {
-    return <InvalidJoinToken />;
-  }
-
-  if (user && (membership as any)?.email && user.email && (membership as any).email !== user.email) {
-    return <InvalidJoinToken />;
-  }
-
-  return <MemberJoin user={user} />;
+  return <AccountConfirmAlert user={user} />;
 }

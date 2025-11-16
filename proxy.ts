@@ -39,6 +39,7 @@ export default auth(async (req) => {
 
 export const config = {
   matcher: [
-    '/((?!api|public|_next/static|_next/image|images|favicon.ico|login|signup|auth|pending).*)',
+    // 排除不需要強制登入的路徑：login、signup、auth、pending、dashboard/join
+    '/((?!api|public|_next/static|_next/image|images|favicon.ico|login|signup|auth|pending|dashboard/join).*)',
   ],
 };

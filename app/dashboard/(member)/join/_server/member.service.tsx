@@ -65,13 +65,13 @@ async function join(userId: string) {
   const result = await db
     .update(members)
     .set({
-      userId,
+      id: userId,
       inviteToken: "",
       tokenExpiredAt: null,
       status: "review",
+      updatedAt: new Date(),
     })
-    .where(and(eq(members.userId, userId), isNull(members.deletedAt)));
-  console.log("join result: ", result);
+    .where(and(eq(members.id, userId), isNull(members.deletedAt)));
 
   return result;
 }
