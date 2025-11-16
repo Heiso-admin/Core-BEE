@@ -113,7 +113,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
         const isRole = roles.find((role) => role.id === row.original.roleId)?.name || null;
 
         if (isOwner) return <Badge variant="tag">{MemberStatus.Owner}</Badge>
-        return isRole && <Badge variant="tag" onClick={() => console.log(row.original)}>{isRole}</Badge>;
+        return isRole && <Badge variant="tag">{isRole}</Badge>;
       },
     },
     {
@@ -124,28 +124,25 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
     },
     {
       header: t("signin"),
-      accessorKey: "signin",
-      sortingFn: "basic",
-      cell: ({ row }) => {
-        const userMethod = (row.original.user?.loginMethod ?? "").trim();
-        const method = userMethod || "login";
-        return capitalize(method);
-      }
+      id: "signin",
+      accessorFn: (row) => (row.user?.loginMethod?.trim() || "login"),
+      sortingFn: "text",
+      cell: ({ getValue }) => capitalize(String(getValue()))
     },
     {
       header: t("createdDate"),
       accessorKey: "createdAt",
       sortingFn: "datetime",
-      cell: ({ row }) => (readableDate(row.original.createdAt)),
+      cell: ({ row }) => readableDate(row.original.createdAt),
     },
     {
       header: t("updatedDate"),
-      accessorKey: "lastLoginAt",
+      id: "lastLoginAt",
+      accessorFn: (row) => row.user?.lastLoginAt ?? null,
       sortingFn: "datetime",
-      cell: ({ row }) => {
-        const { user } = row.original;
-        const lastLoginAt = user?.lastLoginAt
-        return (lastLoginAt ? readableDate(lastLoginAt) : "-")
+      cell: ({ getValue }) => {
+        const value = getValue() as Date | string | null;
+        return value ? readableDate(value) : "-";
       },
     },
     {
