@@ -35,6 +35,7 @@ function LoginForm({ email, anyUser, orgName, oAuthData, systemOauth }: { email?
   const [userEmail, setUserEmail] = useState('');
   const [step, setStep] = useState<LoginStep>(LoginStepEnum.Email);
   const [error, setError] = useState<string>("");
+  const [twoStep, setTwoStep] = useState<boolean>(false);
 
   // 若 NextAuth 阻擋了 OAuth 登入（例如 AccessDenied），提示『請使用 email 登入』
   useEffect(() => {
@@ -70,8 +71,13 @@ function LoginForm({ email, anyUser, orgName, oAuthData, systemOauth }: { email?
   // 根据登录方法决定下一步
   const handleAuthMethod = (method: string, authEmail: string) => {
     switch (method) {
-      case LoginMethodEnum.Otp:
       case LoginMethodEnum.Both:
+        // 兩步驟：先密碼，再導向 /login/2steps
+        setTwoStep(true);
+        setStep(LoginStepEnum.Password);
+        return;
+
+      case LoginMethodEnum.Otp:
         handleVerifyOTP(authEmail);
         return;
 
@@ -112,6 +118,7 @@ function LoginForm({ email, anyUser, orgName, oAuthData, systemOauth }: { email?
           loginMethod={loginMethod}
           setStep={setStep}
           handleLoginSuccess={handleLoginSuccess}
+          twoStep={twoStep}
         />;
 
       case LoginStepEnum.Otp:

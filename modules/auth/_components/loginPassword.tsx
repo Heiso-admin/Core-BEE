@@ -3,6 +3,7 @@
 // import { GitHubLogoIcon } from '@radix-ui/react-icons';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -17,7 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { login } from "@/server/services/auth";
+import { login, verifyPasswordOnly } from "@/server/services/auth";
 import Header from "./header";
 import AuthRedirectHint from "./authRedirectHint";
 import { Button } from "@/components/ui/button";
@@ -28,12 +29,14 @@ interface LoginPasswordProps {
   loginMethod?: string | null;
   setStep: (step: LoginStep) => void;
   handleLoginSuccess: () => void;
+  twoStep: boolean;
 }
 
-export default function LoginPassword({ email, loginMethod, setStep, handleLoginSuccess }: LoginPasswordProps) {
+export default function LoginPassword({ email, loginMethod, setStep, handleLoginSuccess, twoStep }: LoginPasswordProps) {
   const t = useTranslations("auth.login");
   const [error, setError] = useState("");
   const { update } = useSession();
+  const router = useRouter();
 
   const formSchema = z.object({
     email: z.string().email({ message: t("email.error") }),
@@ -52,13 +55,23 @@ export default function LoginPassword({ email, loginMethod, setStep, handleLogin
     setError("");
     const { email, password } = values;
 
+    // 若屬於兩步驟登入，先只驗證密碼，成功後導向 2steps 並寄送 OTP
+    if (twoStep) {
+      const ok = await verifyPasswordOnly(email, password);
+      if (!ok) {
+        setError(t("error.errorPassword"));
+        return;
+      }
+      router.push(`/login/2steps?email=${encodeURIComponent(email)}`);
+      return;
+    }
+
+    // 一般密碼登入：建立 Session 並導向 Dashboard
     const result = await login(email, password);
-    console.log("result: ", result);
     if (!result) {
       setError(t("error.errorPassword"));
       return;
     }
-
     await update();
     handleLoginSuccess();
   };
@@ -132,22 +145,20 @@ export default function LoginPassword({ email, loginMethod, setStep, handleLogin
           >
             {t("submit")}
           </ActionButton>
-          {loginMethod !== LoginMethodEnum.Email && (
-            <AuthRedirectHint>
-              {t.rich('notFound.password', {
-                Link: (chunks) => (
-                  <Button
-                    variant="link"
-                    className="text-neutral font-normal p-0 underline"
-                    onClick={() => setStep(LoginStepEnum.Otp)}
-                    type="button"
-                  >
-                    {chunks}
-                  </Button>
-                ),
-              })}
-            </AuthRedirectHint>
-          )}
+          <AuthRedirectHint>
+            {t.rich('backToLogin', {
+              Link: (chunks) => (
+                <Button
+                  variant="link"
+                  className="text-neutral font-normal p-0 underline"
+                  onClick={() => setStep(LoginStepEnum.Email)}
+                  type="button"
+                >
+                  {chunks}
+                </Button>
+              ),
+            })}
+          </AuthRedirectHint>
         </form>
       </Form>
     </>

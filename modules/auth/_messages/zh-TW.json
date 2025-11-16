@@ -219,7 +219,8 @@
 			"password": "不想使用密碼？ <Link>驗證碼登入</Link>",
 			"code": "找不到驗證碼？ <Link>密碼登入</Link>"
 		},
-		"back": "返回首頁"
+		"back": "返回首頁",
+		"backToLogin": "需要更改帳號？<Link>返回</Link>"
 	},
 	"forgotPassword": {
 		"title": "忘記密碼",
@@ -290,6 +291,7 @@
 			"code": "找不到驗證碼？ <Link>使用密碼登入</Link>"
 		},
 		"backToPassword": "改用密碼登入",
+		"backToLogin": "需要更改帳號？<Link>返回</Link>",
 		"back": "返回",
 		"codeSentTo": "驗證碼已發送至"
 	},
@@ -297,7 +299,7 @@
 		"title": "申請已送出",
 		"description": "您的電子郵件 {email} 已成功驗證。",
 		"passwordDesc": "注意：可選填密碼，若未設定密碼，您將無法使用密碼登入",
-		"joinSuccess": "您的帳號申請已成功送出。\n 您將在組織管理員批准後才可進入系統。",
+		"joinSuccess": "您的 {email} 申請已成功送出。\n 您將在組織管理員批准後才可進入系統。",
 		"submit": "申請建立帳號",
 		"error": {
 			"invalidLink": "無效的加入連結，請檢查並重新輸入。",

@@ -228,23 +228,20 @@ export default function OTPLoginForm({ email, setStep, loginMethod, error, setEr
             </ActionButton>
           </div>
         </form>
-
-        {loginMethod !== LoginMethodEnum.Otp && (
-          <AuthRedirectHint>
-            {t.rich('notFound.code', {
-              Link: (chunks) => (
-                <Button
-                  variant="link"
-                  className="text-neutral font-normal p-0 underline"
-                  onClick={() => setStep(LoginStepEnum.Password)}
-                  type="button"
-                >
-                  {chunks}
-                </Button>
-              ),
-            })}
-          </AuthRedirectHint>
-        )}
+        <AuthRedirectHint>
+          {t.rich('backToLogin', {
+            Link: (chunks) => (
+              <Button
+                variant="link"
+                className="text-neutral font-normal p-0 underline"
+                onClick={() => setStep(LoginStepEnum.Email)}
+                type="button"
+              >
+                {chunks}
+              </Button>
+            ),
+          })}
+        </AuthRedirectHint>
       </Form>
     </>
   );

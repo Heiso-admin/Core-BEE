@@ -229,7 +229,8 @@
 			"password": "Don't want a password? <Link>Use code</Link>",
 			"code": "Can't find your code? <Link>Use password</Link>"
 		},
-		"back": "Back to home"
+		"back": "Back to home",
+		"backToLogin": "Need to change accounts? <Link>Go back<Link>"
 	},
 	"forgotPassword": {
 		"title": "Forgot Password",
@@ -303,6 +304,7 @@
 			"code": "Can't find your code? <Link>Use password</Link>"
 		},
 		"backToPassword": "Sign in with password instead",
+		"backToLogin": "Need to change accounts? <Link>Go back<Link>",
 		"back": "Back",
 		"loginBack": "Use Password",
 		"codeSentTo": "Verification code sent to"
@@ -311,7 +313,7 @@
 		"title": "Application Submitted",
 		"description": "You have successfully verified your email {email}.",
 		"passwordDesc": "Note: Password is optional. If you don't set one, you will be unable to sign in with a password.",
-		"joinSuccess": "Your account application has been submitted successfully. \n You will be able to access the system only after approval by the organization administrator.",
+		"joinSuccess": "Your {email} application has been submitted successfully. \n You will be able to access the system only after approval by the organization administrator.",
 		"submit": "Apply to Create Account",
 		"error": {
 			"invalidLink": "Invalid join link. Please check and try again.",

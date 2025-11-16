@@ -4,6 +4,7 @@ import { signIn, signOut } from '@/modules/auth/auth.config';
 import { db } from "@/lib/db";
 import { users as usersTable, members } from "@/lib/db/schema";
 import { hashPassword } from "@/lib/hash";
+import { verifyPassword as verifyPasswordHash } from "@/lib/hash";
 import { and, eq, isNull, sql } from "drizzle-orm";
 
 export async function login(username: string, password: string) {
@@ -23,6 +24,26 @@ export async function login(username: string, password: string) {
   } catch (error) {
     console.error("Error during login:", error);
     return false; // Return false to indicate login failure
+  }
+}
+
+/**
+ * Verify user password without creating a session.
+ * Returns true if the email exists and the password matches.
+ */
+export async function verifyPasswordOnly(email: string, password: string): Promise<boolean> {
+  try {
+    const user = await db.query.users.findFirst({
+      where: (t, { eq }) => eq(t.email, email),
+      columns: { id: true, password: true },
+    });
+    if (!user) return false;
+
+    const isMatch = await verifyPasswordHash(password, user.password);
+    return !!isMatch;
+  } catch (error) {
+    console.error("Error during verifyPasswordOnly:", error);
+    return false;
   }
 }
 

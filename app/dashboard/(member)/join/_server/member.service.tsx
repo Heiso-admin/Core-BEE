@@ -50,6 +50,11 @@ async function getMembership() {
 async function getInviteToken({ token }: { token: string }) {
   const member = await db.query.members.findFirst({
     where: (t, { eq }) => and(eq(t.inviteToken, token), isNull(t.deletedAt)),
+    with: {
+      user: {
+        columns: { id: true, name: true, avatar: true },
+      },
+    },
   });
 
   if (!member) return null;
