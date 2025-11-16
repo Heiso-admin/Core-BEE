@@ -19,28 +19,34 @@ export async function getUsers() {
   return users;
 }
 
-export async function getLoginMethod(email: string) {
-  // 先以 members 取得角色的登入方式
-  const membership = await db.query.members.findFirst({
-    with: {
-      role: {
-        columns: { loginMethod: true },
-      },
-    },
-    where: (t, { and, eq, isNull }) => and(eq(t.email, email), isNull(t.deletedAt)),
-  });
-
-  if (membership?.role?.loginMethod) {
-    return membership.role.loginMethod;
-  }
-
-  // 回退到使用者自己的登入方式
+export async function getUserLoginMethod(email: string) {
   const user = await db.query.users.findFirst({
     where: (table, { eq }) => eq(table.email, email),
     columns: { loginMethod: true },
   });
 
-  return user?.loginMethod ?? 'both';
+  return user?.loginMethod || null;
+}
+
+export async function getLoginMethod(email: string) {
+  // 以 member 取得 roleId，然後查詢 role 的 loginMethod
+  const membership = await db.query.members.findFirst({
+    columns: { roleId: true, isOwner: true },
+    where: (t, { and, eq, isNull }) => and(eq(t.email, email), isNull(t.deletedAt)),
+  });
+  // role: owner 
+  if (membership?.isOwner) return 'both';
+
+  // role: other
+  const roleId = membership?.roleId ?? null;
+  if (roleId === null) return null;
+
+  const role = await db.query.roles.findFirst({
+    where: (t, { eq }) => eq(t.id, roleId),
+    columns: { loginMethod: true },
+  });
+
+  return role?.loginMethod || null;
 }
 
 export async function getMemberStatus(email: string) {

@@ -222,7 +222,8 @@
 			"general": "An error occurred. Please try again or contact your organization administrator.",
 			"notActive": "Account is not active. Please contact your organization administrator.",
 			"oAuthReview": "Your account application has been submitted. Please wait patiently for final approval from the organization administrator.",
-			"useEmailLogin": "Your email is already registered. Please use your email to sign in."
+			"useEmailLogin": "Your email is already registered. Please use your email to sign in.",
+			"userAuth": "Your account already exists and is configured to sign in via {oAuth}. Please click the corresponding button to proceed."
 		},
 		"notFound": {
 			"password": "Don't want a password? <Link>Use code</Link>",

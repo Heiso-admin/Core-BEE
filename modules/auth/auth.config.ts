@@ -50,25 +50,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const { users, members } = await import('@/lib/db/schema');
         const { and, eq, isNull } = await import('drizzle-orm');
 
+        const existingMember = await db.query.members.findFirst({
+          where: (t, ops) => and(eq(t.email, email), isNull(t.deletedAt)),
+          columns: { status: true, userId: true, roleId: true },
+        });
+
         const existingUser = await db.query.users.findFirst({
           where: (t, ops) => eq(t.email, email),
           columns: { loginMethod: true },
         });
 
-        const existingMember = await db.query.members.findFirst({
-          where: (t, ops) => and(eq(t.email, email), isNull(t.deletedAt)),
-          columns: { status: true },
-        });
+        // 已有在 member 用戶，目前都會有 roleId，所以用 role 去判斷是不是新用戶
+        if (existingMember?.roleId) {
+          return false;
+        }
 
         // 第二次登入 OAuth：若已存在 member 且狀態非 joined，直接拒絕
         if (existingUser && existingMember && existingMember.status !== "joined") {
           // return false; // 讓 NextAuth 回傳 error=AccessDenied，回到 login 顯示提示
           return '/login?error=under_review';
-        }
-
-        // 已在 member 有註冊過，拒絕 OAuth 註冊
-        if (existingMember && existingUser && !existingUser.loginMethod) {
-          return false
         }
 
         return true;
@@ -161,8 +161,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           where: (t, ops) => eq(t.email, email),
         });
 
+        const existingMember = await db.query.members.findFirst({
+          where: (t, ops) => and(eq(t.email, email), isNull(t.deletedAt)),
+        });
+
         let userId = existingUser?.id;
-        if (!existingUser) {
+        // 新用戶需要沒有 user and member 才可以建立
+        if (!existingUser && !existingMember) {
           // 建立占位密碼（OAuth 用戶不需要實際密碼）
           const placeholderPassword = await hashPassword(generateId(undefined, 32));
 
@@ -184,18 +189,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           userId = inserted?.[0]?.id;
           console.log('[OAuth signIn] created user:', userId);
         } else {
-          // 更新最後登入時間
-          await db.update(users)
-            .set({ lastLoginAt: new Date(), updatedAt: new Date() })
-            .where(eq(users.id, existingUser.id));
-          console.log('[OAuth signIn] existing user:', existingUser.id);
+          if (existingUser) {
+            // 更新最後登入時間
+            await db.update(users)
+              .set({ lastLoginAt: new Date(), updatedAt: new Date() })
+              .where(eq(users.id, existingUser.id));
+            console.log('[OAuth signIn] existing user:', existingUser.id);
+          }
         }
 
         // 再次登入，但未審核過，僅更新 updateAt
-        const existingMember = await db.query.members.findFirst({
-          where: (t, ops) => and(eq(t.email, email), isNull(t.deletedAt)),
-        });
-
         if (existingMember) {
           await db.update(members)
             .set({

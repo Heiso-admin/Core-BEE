@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from '@/components/ui/input';
 import { useTranslations } from 'next-intl';
-import { getLoginMethod, getMemberStatus } from '../_server/user.service';
+import { getLoginMethod, getMemberStatus, getUserLoginMethod } from '../_server/user.service';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type LoginStep, LoginStepEnum } from './loginForm';
@@ -22,6 +22,7 @@ import { MemberStatus } from '@/app/dashboard/(dashboard)/(permission)/team/_com
 import OAuthLoginButtons from './oAuthLoginButtons';
 import { oAuthLogin } from '@/server/services/auth';
 import { SystemOauth } from '@/modules/dev-center/system/settings/general/page';
+import { capitalize } from 'lodash';
 
 interface AuthLoginProps {
   error: string;
@@ -70,21 +71,24 @@ const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, any
     } else {
       startTransition(async () => {
         try {
+          const userAuth = await getUserLoginMethod(values.email);
           const loginMethod = await getLoginMethod(values.email); // 登入方式
           const memberStatus = await getMemberStatus(values.email); // 成員狀態
 
-          if (!loginMethod || !memberStatus) {
-            setError(t('error.userNotFound'));
-            return;
+          if (userAuth) {
+            return setError(t('error.userAuth', { oAuth: capitalize(systemOauth) || "" }));
           }
+
+          if (!loginMethod || !memberStatus) {
+            return setError(t('error.userNotFound'));
+          }
+
           if (memberStatus === MemberStatus.Invited) {
-            setError(t('error.invited'));
-            return;
+            return setError(t('error.invited'));
           }
 
           if (memberStatus === MemberStatus.Review) {
-            setError(t('error.review'));
-            return;
+            return setError(t('error.review'));
           }
 
           if (memberStatus !== MemberStatus.Joined) {
