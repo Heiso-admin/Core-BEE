@@ -17,8 +17,8 @@ function RadioTagLabel({
 }: React.ComponentProps<typeof Label>) {
   return (
     <Label className={cn(
-      "cursor-pointer select-none inline-flex items-center justify-center px-3 py-1 rounded-md text-xs transition-colors whitespace-nowrap border shadow-xs hover:bg-input/50 text-primary-foreground dark:bg-input/30 border-input/50",
-      "peer-data-[state=checked]:bg-background peer-data-[state=checked]:text-primary-foreground peer-data-[state=checked]:font-medium",
+      "cursor-pointer select-none inline-flex items-center justify-center px-3 py-1 rounded-md text-xs transition-colors whitespace-nowrap border shadow-xs hover:bg-background dark:hover:bg-input/50 text-text-Neutral/70 border-input/50",
+      "peer-data-[state=checked]:bg-background dark:peer-data-[state=checked]:bg-input/50  peer-data-[state=checked]:text-text-Neutral peer-data-[state=checked]:font-medium",
       className
     )}
       {...props}
