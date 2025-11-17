@@ -21,6 +21,9 @@ export default getRequestConfig(async () => {
       `@/modules/dev-center/system/api-keys/_messages/${locale}.json`
     )
   ).default;
+  const role = (
+    await import(`@/modules/permission/role/_messages/${locale}.json`)
+  ).default;
 
   const dashboard = await getDashboardMessages(locale);
 
@@ -34,6 +37,7 @@ export default getRequestConfig(async () => {
       apiKeys,
       account,
       dashboard,
+      role,
     },
   };
 });

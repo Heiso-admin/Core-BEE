@@ -36,6 +36,12 @@ const nav: Navigation = {
         path: '/permission',
         icon: 'user-lock',
       },
+      {
+        id: 'Role',
+        title: 'Role',
+        path: '/role',
+        icon: 'square-user-round',
+      },
     ],
     [
       {

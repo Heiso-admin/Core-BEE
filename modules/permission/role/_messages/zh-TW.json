@@ -1,0 +1,45 @@
+{
+  "title": "角色管理",
+  "description": "管理您組織的角色和權限",
+  "list": {
+    "add_new": "新增角色",
+    "table": {
+      "role_name": "角色名稱",
+      "description": "描述",
+      "actions": "操作"
+    },
+    "full_access": "完全存取",
+    "actions": {
+      "edit": "編輯",
+      "menu_access": "選單存取",
+      "permission": "權限",
+      "delete": "刪除"
+    }
+  },
+  "form": {
+    "create_title": "建立新角色",
+    "update_title": "更新角色",
+    "name": "角色名稱",
+    "description": "描述",
+    "full_access": "完全存取",
+    "save": "儲存",
+    "validation": {
+      "name_required": "角色名稱為必填項目"
+    }
+  },
+  "delete_confirm": {
+    "title": "刪除角色",
+    "description": "您確定要刪除此角色嗎？此操作無法復原。",
+    "cancel": "取消",
+    "delete": "刪除"
+  },
+  "menuAccess": {
+    "title": "選單存取",
+    "description": "設定角色選單權限：{name}",
+    "success": "選單權限更新成功",
+    "actions": {
+      "cancel": "取消",
+      "save": "儲存"
+    }
+  }
+}

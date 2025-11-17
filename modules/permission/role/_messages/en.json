@@ -1,0 +1,45 @@
+{
+  "title": "Role Management",
+  "description": "Manage roles and permissions for your organization",
+  "list": {
+    "add_new": "Add New Role",
+    "table": {
+      "role_name": "Role Name",
+      "description": "Description",
+      "actions": "Actions"
+    },
+    "full_access": "Full Access",
+    "actions": {
+      "edit": "Edit",
+      "menu_access": "Menu Access",
+      "permission": "Permissions",
+      "delete": "Delete"
+    }
+  },
+  "form": {
+    "create_title": "Create New Role",
+    "update_title": "Update Role",
+    "name": "Role Name",
+    "description": "Description",
+    "full_access": "Full Access",
+    "save": "Save",
+    "validation": {
+      "name_required": "Role name is required"
+    }
+  },
+  "delete_confirm": {
+    "title": "Delete Role",
+    "description": "Are you sure you want to delete this role? This action cannot be undone.",
+    "cancel": "Cancel",
+    "delete": "Delete"
+  },
+  "menuAccess": {
+    "title": "Menu Access",
+    "description": "Set menu permissions for role: {name}",
+    "success": "Menu permissions updated successfully",
+    "actions": {
+      "cancel": "Cancel",
+      "save": "Save"
+    }
+  }
+}
