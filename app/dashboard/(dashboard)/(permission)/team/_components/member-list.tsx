@@ -31,7 +31,7 @@ import type { Member } from "../_server/team.service";
 import { InviteMember } from "./invite-member";
 import { MemberActions } from "./member-actions";
 import { SearchInput } from "@/components/ui/search-input";
-import { CaptionTotal } from "@/components/ui/caption";
+import { CaptionTotal } from '@/components/ui/caption-total';
 import { readableDate } from "@/lib/utils/format";
 import { RadioGroup } from '@/components/ui/radio-group';
 import { RadioTagGroupItem, RadioTagLabel } from '@/components/ui/radio-tag';

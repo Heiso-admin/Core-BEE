@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -34,13 +34,13 @@ import type { TMenu } from "@/lib/db/schema";
 import type { Role } from "../_server/role.service";
 import { createRole, deleteRole, updateRole } from "../_server/role.service";
 import { assignMenus, assignPermissions } from "../_server/assign.service";
+import { CaptionTotal } from '@/components/ui/caption-total';
 import { Plus, ChevronDown, ChevronRight, Pencil, Trash, ListChevronsDownUp } from 'lucide-react';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { toast } from "sonner";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { LoginMethodEnum } from '@/modules/auth/_components/loginForm';
 import { Separator } from '@/components/ui/separator';
-import { CaptionTotal } from '@/components/ui/caption-total';
 
 export function RoleList({
   data,
@@ -413,11 +413,11 @@ function CreateOrUpdateRole({
   onClose: () => void;
   data: Role | null;
 }) {
-  const t = useTranslations('role.form');
+  const t = useTranslations("dashboard.permission.role.form");
   const [isPending, startTransition] = useTransition();
 
   const formSchema = z.object({
-    name: z.string().min(1, { message: t('validation.name_required') }),
+    name: z.string().min(1, { message: t("validation.name_required") }),
     description: z.string().optional(),
     loginMethod: z.string(),
     fullAccess: z.boolean().optional(),
@@ -460,7 +460,7 @@ function CreateOrUpdateRole({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {data ? t('update_title') : t('create_title')}
+            {data ? t("update_title") : t("create_title")}
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -471,9 +471,9 @@ function CreateOrUpdateRole({
               defaultValue=""
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('name')}</FormLabel>
+                  <FormLabel>{t("name")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('name')} {...field} />
+                    <Input placeholder={t("name")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -485,9 +485,9 @@ function CreateOrUpdateRole({
               defaultValue=""
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('description')}</FormLabel>
+                  <FormLabel>{t("description")}</FormLabel>
                   <FormControl>
-                    <Textarea placeholder={t('description')} {...field} />
+                    <Textarea placeholder={t("description")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -529,7 +529,7 @@ function CreateOrUpdateRole({
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <FormLabel>{t('full_access')}</FormLabel>
+                  <FormLabel>{t("full_access")}</FormLabel>
                   <FormMessage />
                 </FormItem>
               )}
@@ -540,7 +540,7 @@ function CreateOrUpdateRole({
                 loading={isPending}
                 disabled={isPending}
               >
-                {t('save')}
+                {t("save")}
               </ActionButton>
             </div>
           </form>
@@ -586,7 +586,7 @@ function DeleteConfirm({
               loading={isDeletePending}
               disabled={isDeletePending}
             >
-              {t('delete')}
+              {t("delete")}
             </ActionButton>
           </DialogClose>
         </DialogFooter>
