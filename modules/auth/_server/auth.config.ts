@@ -6,15 +6,15 @@ import { verifyPassword } from '@/lib/hash';
 declare module 'next-auth' {
   interface Session {
     user: {
-      isAdmin: boolean;
+      isDeveloper: boolean;
     } & DefaultSession['user'];
   }
   interface JWT {
-    isAdmin?: boolean;
+    isDeveloper?: boolean;
   }
 
   interface User {
-    isAdmin: boolean;
+    isDeveloper: boolean;
   }
 }
 
@@ -26,7 +26,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.isAdmin = user.isAdmin;
+        token.isDeveloper = user.isDeveloper;
       }
       return token;
     },
@@ -34,7 +34,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (token) {
         session.user = {
           ...session.user,
-          isAdmin: token.isAdmin as boolean,
+          isDeveloper: token.isDeveloper as boolean,
           id: token.sub!,
         };
       }
@@ -58,8 +58,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if (!user || user.id !== credentials.userId) {
             throw new InvalidLoginError();
           }
-          const isAdmin = !!user?.administrator;
-          return { id: user.id, name: user.name, email: user.email, isAdmin };
+          const isDeveloper = !!user?.developer;
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            isDeveloper,
+          };
         }
 
         // Handle traditional username/password flow
@@ -81,8 +86,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           throw new InvalidLoginError();
         }
 
-        const isAdmin = !!user?.administrator;
-        return { id: user.id, name: user.name, email: user.email, isAdmin };
+        const isDeveloper = !!user?.developer;
+        return { id: user.id, name: user.name, email: user.email, isDeveloper };
       },
     }),
   ],

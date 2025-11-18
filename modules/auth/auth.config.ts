@@ -258,8 +258,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
 
           const isDeveloper = !!user?.developer;
-          const isAdmin = false;
-          return { id: user.id, name: user.name, email: user.email, isDeveloper, isAdmin };
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            isDeveloper,
+          };
         }
 
         // 1) 密碼登入：維持原本的 username/password 流程
@@ -283,8 +287,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         const isDeveloper = !!user?.developer;
-        const isAdmin = false;
-        return { id: user.id, name: user.name, email: user.email, isDeveloper, isAdmin };
+        return { id: user.id, name: user.name, email: user.email, isDeveloper };
       },
     }),
   ],

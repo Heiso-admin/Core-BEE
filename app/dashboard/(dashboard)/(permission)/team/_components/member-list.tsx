@@ -82,17 +82,16 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
 
   const columns: ColumnDef<Member>[] = [
     {
-      header: t("user"),
+      header: t('user'),
       accessorFn: (row) => {
-        const userName = row.user?.name || row.email.split("@")[0];
+        const userName = row.user?.name || row.email.split('@')[0];
         return `${userName} ${row.email}`;
       },
-      sortingFn: "basic",
+      sortingFn: 'basic',
       cell: ({ row }) => {
         const { user } = row.original;
         const isYou = user?.id === session?.user.id;
-        return (<MemberUser member={row.original} isYou={isYou} />
-        );
+        return <MemberUser member={row.original} isYou={isYou} />;
       },
     },
     {
@@ -100,60 +99,65 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
         if (row.isOwner) {
           return MemberStatus.Owner;
         }
-        return row.role?.name || "No Role";
+        return row.role?.name || 'No Role';
       },
       sortingFn: (rowA, rowB) => {
-        const aValue = rowA.original.isOwner ? "0_Owner" : `1_${rowA.original.role?.name || "ZZZ_No_Role"}`;
-        const bValue = rowB.original.isOwner ? "0_Owner" : `1_${rowB.original.role?.name || "ZZZ_No_Role"}`;
+        const aValue = rowA.original.isOwner
+          ? '0_Owner'
+          : `1_${rowA.original.role?.name || 'ZZZ_No_Role'}`;
+        const bValue = rowB.original.isOwner
+          ? '0_Owner'
+          : `1_${rowB.original.role?.name || 'ZZZ_No_Role'}`;
         return aValue.localeCompare(bValue);
       },
-      header: t("role"),
+      header: t('role'),
       cell: ({ row }) => {
         const isOwner = row.original.isOwner;
-        const isRole = roles.find((role) => role.id === row.original.roleId)?.name || null;
+        const isRole =
+          roles.find((role) => role.id === row.original.roleId)?.name || null;
 
-        if (isOwner) return <Badge variant="tag">{MemberStatus.Owner}</Badge>
+        if (isOwner) return <Badge variant="tag">{MemberStatus.Owner}</Badge>;
         return isRole && <Badge variant="tag">{isRole}</Badge>;
       },
     },
     {
-      header: t("status"),
-      accessorKey: "status",
-      sortingFn: "basic",
-      cell: ({ row }) => showStatus(row.original.status)
+      header: t('status'),
+      accessorKey: 'status',
+      sortingFn: 'basic',
+      cell: ({ row }) => showStatus(row.original.status),
     },
     {
-      header: t("signin"),
-      id: "signin",
-      accessorFn: (row) => (row.user?.loginMethod?.trim() || "login"),
-      sortingFn: "text",
-      cell: ({ getValue }) => capitalize(String(getValue()))
+      header: t('signin'),
+      id: 'signin',
+      accessorFn: (row) => row.user?.loginMethod?.trim() || 'login',
+      sortingFn: 'text',
+      cell: ({ getValue }) => capitalize(String(getValue())),
     },
     {
-      header: t("createdDate"),
-      accessorKey: "createdAt",
-      sortingFn: "datetime",
+      header: t('createdDate'),
+      accessorKey: 'createdAt',
+      sortingFn: 'datetime',
       cell: ({ row }) => readableDate(row.original.createdAt),
     },
     {
-      header: t("updatedDate"),
-      id: "lastLoginAt",
+      header: t('updatedDate'),
+      id: 'lastLoginAt',
       accessorFn: (row) => row.user?.lastLoginAt ?? null,
-      sortingFn: "datetime",
+      sortingFn: 'datetime',
       cell: ({ getValue }) => {
         const value = getValue() as Date | string | null;
-        return value ? readableDate(value) : "-";
+        return value ? readableDate(value) : '-';
       },
     },
     {
-      header: t("actions"),
-      id: "actions",
+      header: t('actions'),
+      id: 'actions',
       cell: ({ row }) => {
         const isYou = row.original.user?.id === session?.user.id;
         return (
           !isYou && (
             <div className="w-full flex items-center justify-center gap-2">
-              <ProtectedArea resource={"team" as any} action={"edit" as any}>
+              <ProtectedArea resource="member" action="edit">
                 <MemberActions
                   member={row.original}
                   currentMembers={data}
@@ -173,7 +177,8 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
   ];
 
   const columnFilters = useMemo(
-    () => (filterStatus === "all" ? [] : [{ id: "status", value: filterStatus }]),
+    () =>
+      filterStatus === 'all' ? [] : [{ id: 'status', value: filterStatus }],
     [filterStatus]
   );
 
@@ -182,7 +187,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
     columns,
     state: {
       sorting,
-      globalFilter: filtering ?? "",
+      globalFilter: filtering ?? '',
       columnFilters,
       pagination,
     },
@@ -194,30 +199,38 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  const totalRows = table.getFilteredRowModel().rows.length
+  const totalRows = table.getFilteredRowModel().rows.length;
   const userName = session?.user?.name;
   if (!userName) return null;
 
   return (
     <div className="container mx-auto pt-4 pr-4 h-full flex flex-col">
       <div className="flex items-center justify-between mb-4">
-        <CaptionTotal title={te("title")} total={totalRows} />
+        <CaptionTotal title={te('title')} total={totalRows} />
         <div className="flex gap-2">
           <SearchInput
             value={filtering}
             onChange={(e) => setFiltering(e.target.value)}
-            placeholder={t("searchMembers")}
+            placeholder={t('searchMembers')}
           />
-          <ProtectedArea resource={"team" as any} action={"invite" as any}>
+          <ProtectedArea resource={'member'} action={'edit'}>
             {/* <AddMember roles={AllRoles} /> */}
             <InviteMember userName={userName} roles={roles}>
-              <Button><Plus className="h-4 w-4" /> {t("invite")}</Button>
+              <Button>
+                <Plus className="h-4 w-4" /> {t('invite')}
+              </Button>
             </InviteMember>
           </ProtectedArea>
         </div>
       </div>
-      <RadioGroup value={filterStatus} className="flex items-center gap-3 mb-2" onValueChange={(value) => setFilterStatus(value as FilterStatus)}>
-        <span className='pl-0.5 text-sm text-text-secondary'>{t("filter.title")}:</span>
+      <RadioGroup
+        value={filterStatus}
+        className="flex items-center gap-3 mb-2"
+        onValueChange={(value) => setFilterStatus(value as FilterStatus)}
+      >
+        <span className="pl-0.5 text-sm text-text-secondary">
+          {t('filter.title')}:
+        </span>
         {filterStatuses.map((item) => (
           <div className="flex items-center gap-3" key={item}>
             <RadioTagGroupItem className="hidden" value={item} id={item} />
@@ -239,16 +252,21 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
                       key={header.id}
                       isSortable={isSortable}
                       sorted={sorted}
-                      onClick={isSortable ? header.column.getToggleSortingHandler() : undefined}
-                      isCenter={header.column.id === "actions"}
+                      onClick={
+                        isSortable
+                          ? header.column.getToggleSortingHandler()
+                          : undefined
+                      }
+                      isCenter={header.column.id === 'actions'}
                     >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                    </TableHead>)
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  );
                 })}
               </TableRow>
             ))}
@@ -258,10 +276,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext(),
-                    )}
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
               </TableRow>
@@ -277,7 +292,6 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
           defaultRows={pagination.pageSize}
           onChangeRows={(rows) => table.setPageSize(rows)}
         />
-
       </div>
     </div>
   );

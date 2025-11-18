@@ -16,6 +16,11 @@ interface MenuTreeProps {
     onAddItem: (item: MenuItem) => void;
     onEditItem: (item: MenuItem) => void;
     onDeleteItem: (itemId: string) => void;
+    onMoveItem: (
+      dragId: string,
+      hoverId: string,
+      position: 'before' | 'after' | 'inside'
+    ) => void;
   };
   selectable?: {
     selectedItems: string[];

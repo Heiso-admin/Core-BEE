@@ -10,39 +10,19 @@ type PermissionConfigShape = {
 
 export const permissionsConfig = [
   {
-    "id": "pe_r9OA3piAEX",
-    "resource": "aa",
-    "action": "aaa",
+    "id": "pe_mCRXwVcqvv",
+    "resource": "member",
+    "action": "view",
     "menu": {
-      "id": "wUDWmFoS2J",
-      "title": "Page",
-      "path": "/article"
+      "id": "JiZgDz80U6",
+      "title": "Team",
+      "path": "/team"
     }
   },
   {
-    "id": "pe_AvKjqrDXPO",
-    "resource": "rw",
-    "action": "re",
-    "menu": {
-      "id": "tUkCKz1yfd",
-      "title": "Navigation",
-      "path": "/navigation"
-    }
-  },
-  {
-    "id": "pe_FL7RookSEh",
-    "resource": "vv",
-    "action": "bb",
-    "menu": {
-      "id": "wUDWmFoS2J",
-      "title": "Page",
-      "path": "/article"
-    }
-  },
-  {
-    "id": "pe_aA2JP4B4Xm",
-    "resource": "cc",
-    "action": "cc",
+    "id": "pe_7tb7zg9lo7",
+    "resource": "member",
+    "action": "edit",
     "menu": {
       "id": "JiZgDz80U6",
       "title": "Team",
