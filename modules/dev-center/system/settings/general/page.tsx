@@ -23,22 +23,28 @@ import { useSite } from "@/providers/site";
 import { getUserLocale } from "@/server/locale";
 import { saveSiteSetting } from "../../_server/setting.service";
 import { useTranslations } from 'next-intl';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { capitalize } from 'lodash';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export const SystemOauth = {
-  "none": "none",
-  "google": "google",
-  "github": "github",
-  "microsoft": "microsoft"
-}
+  none: 'none',
+  'Google SSO': 'google',
+  'Azure SSO': 'microsoft',
+  // 'Github SSO': 'github',
+};
 
 const settingsSchema = z.object({
   basic: z.object({
-    name: z.string().min(2, "Site name must be at least 2 characters").max(32),
-    title: z.string().min(2, "Site title must be at least 2 characters"),
-    base_url: z.string().min(1, "Base URL must be at least 1 character"),
-    domain: z.string().min(1, "Domain must be at least 1 character"),
+    name: z.string().min(2, 'Site name must be at least 2 characters').max(32),
+    title: z.string().min(2, 'Site title must be at least 2 characters'),
+    base_url: z.string().min(1, 'Base URL must be at least 1 character'),
+    domain: z.string().min(1, 'Domain must be at least 1 character'),
   }),
   branding: z.object({
     slogan: z.string().optional(),
@@ -58,7 +64,7 @@ type SettingsFormValues = z.infer<typeof settingsSchema>;
 export type SiteSetting = SettingsFormValues;
 
 export default function Setting() {
-  const t = useTranslations("dashboard.settings.site");
+  const t = useTranslations('dashboard.settings.site');
   const [isLoading, startTransition] = useTransition();
   const { site, refresh } = useSite();
   const [currentLocale, setCurrentLocale] = useState<Locale | undefined>();
@@ -76,31 +82,31 @@ export default function Setting() {
     resolver: zodResolver(settingsSchema),
     defaultValues: {
       basic: {
-        name: site?.basic?.name || "",
-        title: site?.basic?.title || "",
-        base_url: site?.basic?.base_url || "",
-        domain: site?.basic?.domain || "",
+        name: site?.basic?.name || '',
+        title: site?.basic?.title || '',
+        base_url: site?.basic?.base_url || '',
+        domain: site?.basic?.domain || '',
       },
       branding: {
-        slogan: site?.branding?.slogan || "",
-        organization: site?.branding?.organization || "",
-        description: site?.branding?.description || "",
-        copyright: site?.branding?.copyright || "",
+        slogan: site?.branding?.slogan || '',
+        organization: site?.branding?.organization || '',
+        description: site?.branding?.description || '',
+        copyright: site?.branding?.copyright || '',
       },
       assets: {
-        favicon: site?.assets?.favicon || "",
-        logo: site?.assets?.logo || "",
-        ogImage: site?.assets?.ogImage || "",
+        favicon: site?.assets?.favicon || '',
+        logo: site?.assets?.logo || '',
+        ogImage: site?.assets?.ogImage || '',
       },
-      system_oauth: (site as any)?.system_oauth as string || "none",
-    }
+      system_oauth: ((site as any)?.system_oauth as string) || 'none',
+    },
   });
 
   async function onSubmit(data: SettingsFormValues) {
     startTransition(async () => {
       await saveSiteSetting(data);
       refresh();
-      toast("Site settings updated");
+      toast('Site settings updated');
     });
   }
 
@@ -117,9 +123,9 @@ export default function Setting() {
           <Card className="bg-card/50 p-6">
             <div className="flex flex-col gap-6">
               <div>
-                <h2 className="text-lg font-semibold">{t("basic.title")}</h2>
+                <h2 className="text-lg font-semibold">{t('basic.title')}</h2>
                 <p className="text-sm text-muted-foreground">
-                  {t("basic.description")}
+                  {t('basic.description')}
                 </p>
               </div>
               <div className="grid gap-4">
@@ -128,12 +134,12 @@ export default function Setting() {
                   name="basic.name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("basic.form.name.label")}</FormLabel>
+                      <FormLabel>{t('basic.form.name.label')}</FormLabel>
                       <FormControl>
                         <Input {...field} maxLength={32} />
                       </FormControl>
                       <FormDescription>
-                        {t("basic.form.name.description")}
+                        {t('basic.form.name.description')}
                       </FormDescription>
                     </FormItem>
                   )}
@@ -143,7 +149,7 @@ export default function Setting() {
                   name="basic.title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("basic.form.title.label")}</FormLabel>
+                      <FormLabel>{t('basic.form.title.label')}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -155,7 +161,7 @@ export default function Setting() {
                   name="basic.base_url"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("basic.form.base_url.label")}</FormLabel>
+                      <FormLabel>{t('basic.form.base_url.label')}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -167,7 +173,7 @@ export default function Setting() {
                   name="basic.domain"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("basic.form.domain.label")}</FormLabel>
+                      <FormLabel>{t('basic.form.domain.label')}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -179,19 +185,26 @@ export default function Setting() {
                   name="system_oauth"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("basic.form.system_oauth.label")}</FormLabel>
+                      <FormLabel>
+                        {t('basic.form.system_oauth.label')}
+                      </FormLabel>
                       <FormControl>
-                        <Select value={field.value} onValueChange={field.onChange}>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
                           <SelectTrigger className="w-full">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectGroup>
-                              {Object.values(SystemOauth).map((item) => (
-                                <SelectItem key={item} value={item}>
-                                  {capitalize(item)}
-                                </SelectItem>
-                              ))}
+                              {Object.entries(SystemOauth).map(
+                                ([key, value]) => (
+                                  <SelectItem key={key} value={value}>
+                                    {key}
+                                  </SelectItem>
+                                )
+                              )}
                             </SelectGroup>
                           </SelectContent>
                         </Select>
@@ -209,7 +222,7 @@ export default function Setting() {
               loading={isLoading}
               disabled={isLoading}
             >
-              {t("actions.save.button")}
+              {t('actions.save.button')}
             </ActionButton>
           </div>
         </form>
@@ -219,16 +232,18 @@ export default function Setting() {
       <Card className="p-6">
         <div className="space-y-4">
           <div>
-            <h3 className="text-lg font-medium">{t("language.title")}</h3>
+            <h3 className="text-lg font-medium">{t('language.title')}</h3>
             <p className="text-sm text-muted-foreground">
-              {t("language.description")}
+              {t('language.description')}
             </p>
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-sm font-medium">{t("language.default")}</span>
+              <span className="text-sm font-medium">
+                {t('language.default')}
+              </span>
               <p className="text-xs text-muted-foreground">
-                {t("language.default_description")}
+                {t('language.default_description')}
               </p>
             </div>
             <div className="">
@@ -237,7 +252,7 @@ export default function Setting() {
                 lang={currentLocale}
                 onChange={setCurrentLocale}
               >
-                {getLanguageInfo(currentLocale ?? "en")?.nativeName}
+                {getLanguageInfo(currentLocale ?? 'en')?.nativeName}
               </LanguageSwitcher>
             </div>
           </div>

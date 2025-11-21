@@ -166,7 +166,10 @@ export default function OTPLoginForm({ email, setStep, loginMethod, error, setEr
 
   return (
     <>
-      <Header title={t("title")} description={t("description", { email: email || "email" })} />
+      <Header
+        title={t('title')}
+        description={t('description', { email: email || 'email' })}
+      />
 
       <Form {...otpForm}>
         <form
@@ -179,7 +182,7 @@ export default function OTPLoginForm({ email, setStep, loginMethod, error, setEr
               name="code"
               render={({ field }) => (
                 <FormItem>
-                  <FormControl >
+                  <FormControl>
                     <InputOTP
                       value={field.value}
                       onChange={(val) => {
@@ -193,18 +196,25 @@ export default function OTPLoginForm({ email, setStep, loginMethod, error, setEr
                     >
                       {new Array(codeBoxMaxWidth).fill(0).map((_, i) => (
                         <InputOTPGroup key={slotKeys[i]}>
-                          <InputOTPSlot index={i} className="text-xl w-12 h-15" />
+                          <InputOTPSlot
+                            index={i}
+                            className="text-xl w-12 h-15"
+                          />
                         </InputOTPGroup>
                       ))}
                     </InputOTP>
                   </FormControl>
-                  <FormMessage className='w-full text-center' />
-                  {error && <p className="w-full text-sm text-destructive/80 text-center">{error}</p>}
+                  <FormMessage className="w-full text-center" />
+                  {error && (
+                    <p className="w-full text-sm text-destructive/80 text-center">
+                      {error}
+                    </p>
+                  )}
                 </FormItem>
               )}
             />
           </div>
-          <div className='w-full flex justify-center'>
+          <div className="w-full flex justify-center">
             <button
               type="button"
               onClick={handleResendOTP}
@@ -215,7 +225,6 @@ export default function OTPLoginForm({ email, setStep, loginMethod, error, setEr
                 ? t('resend.countdown', { seconds: countdown })
                 : t('resend.action')}
             </button>
-
           </div>
 
           <div className="mb-2">
