@@ -299,7 +299,7 @@
 		"title": "申請已送出",
 		"description": "您的電子郵件 {email} 已成功驗證。",
 		"passwordDesc": "注意：可選填密碼，若未設定密碼，您將無法使用密碼登入",
-		"joinSuccess": "您的 {email} 申請已成功送出。\n 您將在組織管理員批准後才可進入系統。",
+		"joinSuccess": "您的 {email} 不在系統使用者清單中。\n請聯絡管理員。",
 		"submit": "申請建立帳號",
 		"error": {
 			"invalidLink": "無效的加入連結，請檢查並重新輸入。",
