@@ -24,21 +24,16 @@ import { saveSiteSetting } from "../_server/setting.service";
 
 const settingsSchema = z.object({
   basic: z.object({
-    name: z.string().min(2, "Site name must be at least 2 characters").max(32),
-    title: z.string().min(2, "Site title must be at least 2 characters"),
-    base_url: z.string().min(1, "Base URL must be at least 1 character"),
-    domain: z.string().min(1, "Domain must be at least 1 character"),
+    name: z.string().min(2, 'Site name must be at least 2 characters').max(32),
+    title: z.string().min(2, 'Site title must be at least 2 characters'),
+    base_url: z.string().min(1, 'Base URL must be at least 1 character'),
+    domain: z.string().min(1, 'Domain must be at least 1 character'),
   }),
   branding: z.object({
     slogan: z.string().optional(),
     organization: z.string().optional(),
     description: z.string().optional(),
     copyright: z.string().optional(),
-  }),
-  assets: z.object({
-    favicon: z.string().optional(),
-    logo: z.string().optional(),
-    ogImage: z.string().optional(),
   }),
 });
 
@@ -47,28 +42,23 @@ export type SiteSetting = SettingsFormValues;
 
 const defaultValues: SettingsFormValues = {
   basic: {
-    name: "",
-    title: "",
-    base_url: "",
-    domain: "",
+    name: '',
+    title: '',
+    base_url: '',
+    domain: '',
   },
   branding: {
-    slogan: "",
-    organization: "",
-    description: "",
-    copyright: "",
-  },
-  assets: {
-    favicon: "",
-    logo: "",
-    ogImage: "",
+    slogan: '',
+    organization: '',
+    description: '',
+    copyright: '',
   },
 };
 
 export default function Setting() {
   const [isLoading, startTransition] = useTransition();
   const { site, refresh } = useSite();
-  const t = useTranslations("dashboard.settings.site");
+  const t = useTranslations('dashboard.settings.site');
 
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
@@ -79,13 +69,13 @@ export default function Setting() {
     startTransition(async () => {
       await saveSiteSetting(data);
       refresh();
-      toast(t("toast.success"));
+      toast(t('toast.success'));
     });
   }
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-8">
-      <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+      <h1 className="text-2xl font-semibold tracking-tight">{t('title')}</h1>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -93,9 +83,9 @@ export default function Setting() {
           <Card className="bg-card/50 p-6">
             <div className="flex flex-col gap-6">
               <div>
-                <h2 className="text-lg font-semibold">{t("basic.title")}</h2>
+                <h2 className="text-lg font-semibold">{t('basic.title')}</h2>
                 <p className="text-sm text-muted-foreground">
-                  {t("basic.description")}
+                  {t('basic.description')}
                 </p>
               </div>
               <div className="grid gap-4">
@@ -104,12 +94,12 @@ export default function Setting() {
                   name="basic.name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("basic.form.name.label")}</FormLabel>
+                      <FormLabel>{t('basic.form.name.label')}</FormLabel>
                       <FormControl>
                         <Input {...field} maxLength={32} />
                       </FormControl>
                       <FormDescription>
-                        {t("basic.form.name.description")}
+                        {t('basic.form.name.description')}
                       </FormDescription>
                     </FormItem>
                   )}
@@ -119,7 +109,7 @@ export default function Setting() {
                   name="basic.title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("basic.form.title.label")}</FormLabel>
+                      <FormLabel>{t('basic.form.title.label')}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -131,7 +121,7 @@ export default function Setting() {
                   name="basic.base_url"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("basic.form.base_url.label")}</FormLabel>
+                      <FormLabel>{t('basic.form.base_url.label')}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -143,7 +133,7 @@ export default function Setting() {
                   name="basic.domain"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("basic.form.domain.label")}</FormLabel>
+                      <FormLabel>{t('basic.form.domain.label')}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -158,9 +148,9 @@ export default function Setting() {
           <Card className="bg-card/50 p-6">
             <div className="flex flex-col gap-6">
               <div>
-                <h2 className="text-lg font-semibold">{t("branding.title")}</h2>
+                <h2 className="text-lg font-semibold">{t('branding.title')}</h2>
                 <p className="text-sm text-muted-foreground">
-                  {t("branding.description")}
+                  {t('branding.description')}
                 </p>
               </div>
               <div className="grid gap-4">
@@ -170,7 +160,7 @@ export default function Setting() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        {t("branding.form.organization.label")}
+                        {t('branding.form.organization.label')}
                       </FormLabel>
                       <FormControl>
                         <Input {...field} />
@@ -183,7 +173,7 @@ export default function Setting() {
                   name="branding.slogan"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("branding.form.slogan.label")}</FormLabel>
+                      <FormLabel>{t('branding.form.slogan.label')}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -196,7 +186,7 @@ export default function Setting() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        {t("branding.form.description.label")}
+                        {t('branding.form.description.label')}
                       </FormLabel>
                       <FormControl>
                         <Textarea {...field} />
@@ -210,69 +200,10 @@ export default function Setting() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        {t("branding.form.copyright.label")}
+                        {t('branding.form.copyright.label')}
                       </FormLabel>
                       <FormControl>
                         <Input {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="assets.favicon"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("assets.form.favicon.label")}</FormLabel>
-                      <FormControl>
-                        <LogoImage
-                          value={field.value}
-                          onChange={(url) => field.onChange(url ?? "")}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="assets.ogImage"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("assets.form.ogImage.label")}</FormLabel>
-                      <FormControl>
-                        <LogoImage
-                          value={field.value}
-                          onChange={(url) => field.onChange(url ?? "")}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-          </Card>
-
-          {/* Assets */}
-          <Card className="bg-card/50 p-6">
-            <div className="flex flex-col gap-6">
-              <div>
-                <h2 className="text-lg font-semibold">{t("assets.title")}</h2>
-                <p className="text-sm text-muted-foreground">
-                  {t("assets.description")}
-                </p>
-              </div>
-              <div className="grid gap-4">
-                <FormField
-                  control={form.control}
-                  name="assets.logo"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("assets.form.logo.label")}</FormLabel>
-                      <FormControl>
-                        <LogoImage
-                          value={field.value}
-                          onChange={(url) => field.onChange(url ?? "")}
-                        />
                       </FormControl>
                     </FormItem>
                   )}
@@ -287,7 +218,7 @@ export default function Setting() {
               loading={isLoading}
               disabled={isLoading}
             >
-              {t("actions.save.button")}
+              {t('actions.save.button')}
             </ActionButton>
           </div>
         </form>
