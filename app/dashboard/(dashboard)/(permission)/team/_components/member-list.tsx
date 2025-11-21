@@ -52,33 +52,45 @@ export interface Role {
   name: string;
 }
 
-const filterStatuses: FilterStatus[] = ["all", MemberStatus.Review, MemberStatus.Joined, MemberStatus.Disabled]
+const filterStatuses: FilterStatus[] = [
+  MemberStatus.Review,
+  MemberStatus.Joined,
+  MemberStatus.Disabled,
+];
 
 export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
   const { data: session } = useSession();
-  const [filtering, setFiltering] = useState("");
-  const te = useTranslations("dashboard.permission.team");
-  const t = useTranslations("dashboard.permission.team.members");
+  const [filtering, setFiltering] = useState('');
+  const te = useTranslations('dashboard.permission.team');
+  const t = useTranslations('dashboard.permission.team.members');
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [filterStatus, setFilterStatus] = useState<FilterStatus>(filterStatuses[0]);
-  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
+  const [filterStatus, setFilterStatus] = useState<FilterStatus>(
+    filterStatuses[0]
+  );
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
 
-  const AllRoles: Role[] = [{ id: MemberStatus.Owner, name: MemberStatus.Owner }, ...roles]
+  // const AllRoles: Role[] = [{ id: MemberStatus.Owner, name: MemberStatus.Owner }, ...roles]
 
-  const showStatus = useCallback((member: string | null) => {
-    switch (member) {
-      case MemberStatus.Invited:
-        return <Badge status="blue">{t("statuses.invited")}</Badge>;
-      case MemberStatus.Disabled:
-        return <Badge status="hidden">{t("statuses.declined")}</Badge>;
-      case MemberStatus.Joined:
-        return <Badge status="green">{t("statuses.joined")}</Badge>;
-      case MemberStatus.Review:
-        return <Badge status="yellow">{t("statuses.review")}</Badge>;
-      default:
-        return member;
-    }
-  }, [t]);
+  const showStatus = useCallback(
+    (member: string | null) => {
+      switch (member) {
+        case MemberStatus.Invited:
+          return <Badge status="blue">{t('statuses.invited')}</Badge>;
+        case MemberStatus.Disabled:
+          return <Badge status="hidden">{t('statuses.declined')}</Badge>;
+        case MemberStatus.Joined:
+          return <Badge status="green">{t('statuses.joined')}</Badge>;
+        case MemberStatus.Review:
+          return <Badge status="yellow">{t('statuses.review')}</Badge>;
+        default:
+          return member;
+      }
+    },
+    [t]
+  );
 
   const columns: ColumnDef<Member>[] = [
     {
