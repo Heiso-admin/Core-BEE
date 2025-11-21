@@ -193,6 +193,7 @@
 				"weak": "Password is too weak."
 			}
 		},
+		"logout": "You have already logged in. Please log out first.",
 		"submit": "Create an account",
 		"error": "Something went wrong",
 		"mismatch": "Passwords do not match."
