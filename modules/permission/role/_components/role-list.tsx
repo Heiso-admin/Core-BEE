@@ -41,6 +41,7 @@ import { toast } from "sonner";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { LoginMethodEnum } from '@/modules/auth/_components/loginForm';
 import { useAccount } from '@/providers/account';
+import { usePathname } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
 
 export function RoleList({
@@ -111,6 +112,7 @@ function RoleItemCollapsible({
 }) {
   const t = useTranslations('dashboard.permission.role');
   const { isDeveloper } = useAccount();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedMenus, setSelectedMenus] = useState<string[]>(
@@ -378,7 +380,7 @@ function RoleItemCollapsible({
               </ActionButton>
             </>
           )}
-          {isDeveloper && (
+          {pathname.indexOf('dev-center') !== -1 && isDeveloper && (
             <DeleteConfirm id={role.id}>
               <Button
                 variant="ghost"
