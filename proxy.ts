@@ -22,12 +22,14 @@ export default auth(async (req) => {
   }
 
   // 已登入：若會員狀態非 joined，導向 /pending
-  const memberStatus = req.auth?.member?.status ?? null;
-  const pathname = req.nextUrl.pathname;
+  if (!req.auth.user.isDeveloper) {
+    const memberStatus = req.auth?.member?.status ?? null;
+    const pathname = req.nextUrl.pathname;
 
-  if (memberStatus && memberStatus !== 'joined' && pathname !== '/pending') {
-    const pendingUrl = new URL('/pending', req.url);
-    return NextResponse.redirect(pendingUrl);
+    if (memberStatus && memberStatus !== 'joined' && pathname !== '/pending') {
+      const pendingUrl = new URL('/pending', req.url);
+      return NextResponse.redirect(pendingUrl);
+    }
   }
 
   return NextResponse.next({
