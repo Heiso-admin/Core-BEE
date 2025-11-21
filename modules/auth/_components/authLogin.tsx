@@ -11,13 +11,18 @@ import {
 } from "@/components/ui/form";
 import { Input } from '@/components/ui/input';
 import { useTranslations } from 'next-intl';
-import { getLoginMethod, getMemberStatus, getUserLoginMethod } from '../_server/user.service';
+import {
+  isUserDeveloper,
+  getLoginMethod,
+  getMemberStatus,
+  getUserLoginMethod,
+} from '../_server/user.service';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type LoginStep, LoginStepEnum } from './loginForm';
 import { invite } from '@/app/dashboard/(dashboard)/(permission)/team/_server/team.service';
 import Header from './header';
-import config from "@/config";
+import config from '@/config';
 import { MemberStatus } from '@/app/dashboard/(dashboard)/(permission)/team/_components/member-list';
 import OAuthLoginButtons from './oAuthLoginButtons';
 import { oAuthLogin } from '@/server/services/auth';
@@ -36,8 +41,18 @@ interface AuthLoginProps {
   systemOauth?: string;
 }
 
-const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, anyUser, orgName, handleAuthMethod, systemOauth }: AuthLoginProps) => {
-  const t = useTranslations("auth.login");
+const AuthLogin = ({
+  error,
+  setError,
+  setLoginMethod,
+  setStep,
+  setUserEmail,
+  anyUser,
+  orgName,
+  handleAuthMethod,
+  systemOauth,
+}: AuthLoginProps) => {
+  const t = useTranslations('auth.login');
 
   const usedOrgName = orgName || config?.site?.organization;
   const [isLoading, startTransition] = useTransition();
@@ -60,9 +75,9 @@ const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, any
     if (!anyUser) {
       try {
         await invite({ email: values.email, role: 'owner' });
-        setError("");
+        setError('');
       } catch (e) {
-        console.error("Failed to send login link email", e);
+        console.error('Failed to send login link email', e);
         setError(t('error.general'));
       } finally {
         setStep(LoginStepEnum.Invite);
@@ -71,12 +86,22 @@ const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, any
     } else {
       startTransition(async () => {
         try {
+          const isDeveloper = await isUserDeveloper(values.email);
           const userAuth = await getUserLoginMethod(values.email);
           const loginMethod = await getLoginMethod(values.email); // 登入方式
           const memberStatus = await getMemberStatus(values.email); // 成員狀態
 
+          if (isDeveloper) {
+            const loginMethod = 'both';
+            setLoginMethod(loginMethod);
+            handleAuthMethod(loginMethod, values.email);
+            return;
+          }
+
           if (userAuth) {
-            return setError(t('error.userAuth', { oAuth: capitalize(systemOauth) || "" }));
+            return setError(
+              t('error.userAuth', { oAuth: capitalize(systemOauth) || '' })
+            );
           }
 
           if (!loginMethod || !memberStatus) {
@@ -117,27 +142,27 @@ const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, any
       case SystemOauth.google:
         return (
           <OAuthLoginButtons
-            icon='material-icon-theme:google'
+            icon="material-icon-theme:google"
             alt="Google"
-            onClick={() => oAuthLogin("google")}
+            onClick={() => oAuthLogin('google')}
           />
         );
 
       case SystemOauth.github:
         return (
           <OAuthLoginButtons
-            icon='akar-icons:github-fill'
+            icon="akar-icons:github-fill"
             alt="GitHub"
-            onClick={() => oAuthLogin("github")}
+            onClick={() => oAuthLogin('github')}
           />
         );
 
       case SystemOauth.microsoft:
         return (
           <OAuthLoginButtons
-            icon='logos:microsoft-icon'
+            icon="logos:microsoft-icon"
             alt="Microsoft"
-            onClick={() => oAuthLogin("microsoft-entra-id")}
+            onClick={() => oAuthLogin('microsoft-entra-id')}
           />
         );
 
@@ -146,16 +171,18 @@ const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, any
       default:
         return null;
     }
-  }
+  };
 
   return (
     <>
-      <Header title={anyUser ? t("title") : t("titleInvite", { organization: usedOrgName })} />
+      <Header
+        title={
+          anyUser ? t('title') : t('titleInvite', { organization: usedOrgName })
+        }
+      />
       {createAuthButton(systemOauth) && (
         <div className="mt-6">
-          <div className="my-6 space-y-2" >
-            {createAuthButton(systemOauth)}
-          </div>
+          <div className="my-6 space-y-2">{createAuthButton(systemOauth)}</div>
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t" />
@@ -167,7 +194,10 @@ const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, any
         </div>
       )}
       <Form {...emailForm}>
-        <form className="mt-8 space-y-6" onSubmit={emailForm.handleSubmit(handleEmailSubmit)}>
+        <form
+          className="mt-8 space-y-6"
+          onSubmit={emailForm.handleSubmit(handleEmailSubmit)}
+        >
           <div className="space-y-4">
             <div className="flex flex-col space-y-1">
               <FormField
@@ -176,18 +206,22 @@ const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, any
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>{t("email.label")}</FormLabel>
+                      <FormLabel>{t('email.label')}</FormLabel>
                       <FormControl>
                         <Input
                           id="email-address"
                           type="email"
                           autoComplete="email"
-                          placeholder={t("email.placeholder")}
+                          placeholder={t('email.placeholder')}
                           {...field}
                         />
                       </FormControl>
                       <FormMessage />
-                      {error && <p className="w-full text-destructive text-sm">{error}</p>}
+                      {error && (
+                        <p className="w-full text-destructive text-sm">
+                          {error}
+                        </p>
+                      )}
                     </FormItem>
                   );
                 }}
@@ -200,13 +234,13 @@ const AuthLogin = ({ error, setError, setLoginMethod, setStep, setUserEmail, any
               className="w-full bg-primary hover:bg-primary/80"
               loading={isLoading}
             >
-              {t("submit")}
+              {t('submit')}
             </ActionButton>
           </div>
         </form>
       </Form>
     </>
-  )
-}
+  );
+};
 
 export default AuthLogin

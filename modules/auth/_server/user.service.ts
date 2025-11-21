@@ -1,22 +1,31 @@
-"use server";
+'use server';
 
-import { and, eq } from "drizzle-orm";
-import { db } from "@/lib/db";
+import { and, eq } from 'drizzle-orm';
+import { db } from '@/lib/db';
 import {
   members,
   type TUserUpdate,
   users as usersTable,
-} from "@/lib/db/schema";
-import { hashPassword } from "@/lib/hash";
-import { generateInviteToken } from "@/lib/id-generator";
-import { sendInvite } from "@/app/dashboard/(dashboard)/(permission)/team/_server/team.service";
-import { hasAnyUser } from "@/server/services/auth";
+} from '@/lib/db/schema';
+import { hashPassword } from '@/lib/hash';
+import { generateInviteToken } from '@/lib/id-generator';
+import { sendInvite } from '@/app/dashboard/(dashboard)/(permission)/team/_server/team.service';
+import { hasAnyUser } from '@/server/services/auth';
 
 export async function getUsers() {
   const users = await db.query.users.findMany({
     // where: (table, { isNull }) => isNull(table.deletedAt),
   });
   return users;
+}
+
+export async function isUserDeveloper(email: string) {
+  const user = await db.query.users.findFirst({
+    where: (table, { eq }) => eq(table.email, email),
+    with: { developer: true },
+  });
+
+  return user?.developer || false;
 }
 
 export async function getUserLoginMethod(email: string) {
@@ -32,9 +41,10 @@ export async function getLoginMethod(email: string) {
   // 以 member 取得 roleId，然後查詢 role 的 loginMethod
   const membership = await db.query.members.findFirst({
     columns: { roleId: true, isOwner: true },
-    where: (t, { and, eq, isNull }) => and(eq(t.email, email), isNull(t.deletedAt)),
+    where: (t, { and, eq, isNull }) =>
+      and(eq(t.email, email), isNull(t.deletedAt)),
   });
-  // role: owner 
+  // role: owner
   if (membership?.isOwner) return 'both';
 
   // role: other
@@ -151,7 +161,7 @@ export async function resendInviteByEmail(email: string) {
   });
 
   if (!member) {
-    throw new Error("Member not found");
+    throw new Error('Member not found');
   }
 
   const inviteToken = generateInviteToken();
@@ -187,7 +197,10 @@ export async function ensureInviteTokenSilently(email: string) {
   });
 
   const now = Date.now();
-  const needsNewToken = !member?.inviteToken || !member?.tokenExpiredAt || (member.tokenExpiredAt.getTime() < now);
+  const needsNewToken =
+    !member?.inviteToken ||
+    !member?.tokenExpiredAt ||
+    member.tokenExpiredAt.getTime() < now;
 
   if (!member) {
     const inviteToken = generateInviteToken();
@@ -212,7 +225,8 @@ export async function ensureInviteTokenSilently(email: string) {
     const [updated] = await db
       .update(members)
       .set({
-        inviteToken, tokenExpiredAt: inviteTokenExpiresAt,
+        inviteToken,
+        tokenExpiredAt: inviteTokenExpiresAt,
         status: 'review',
       })
       .where(eq(members.id, member.id))
@@ -227,12 +241,16 @@ export async function ensureInviteTokenSilently(email: string) {
  * 首次登入：確保建立/刷新 member 並將狀態設為 review，綁定 userId。
  * - 行為仿照 team invite 的儲存（生成/刷新 inviteToken 與到期時間）但不寄信
  */
-export async function ensureMemberReviewOnFirstLogin(email: string, userId?: string) {
+export async function ensureMemberReviewOnFirstLogin(
+  email: string,
+  userId?: string
+) {
   // 嘗試建立/刷新 invite token（若無 token 也不阻擋狀態更新）
   await ensureInviteTokenSilently(email);
 
   const member = await db.query.members.findFirst({
-    where: (t, { and, eq, isNull }) => and(eq(t.email, email), isNull(t.deletedAt)),
+    where: (t, { and, eq, isNull }) =>
+      and(eq(t.email, email), isNull(t.deletedAt)),
   });
 
   if (!member) return null;
@@ -245,11 +263,14 @@ export async function ensureMemberReviewOnFirstLogin(email: string, userId?: str
       updatedAt: new Date(),
     })
     .where(eq(members.id, member.id))
-    .returning({ userId: members.userId, status: members.status, email: members.email });
+    .returning({
+      userId: members.userId,
+      status: members.status,
+      email: members.email,
+    });
 
   return result ?? null;
 }
-
 
 // export async function findRoles(userId: string) {
 //   const result = await db

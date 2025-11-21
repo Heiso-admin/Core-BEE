@@ -8,7 +8,7 @@ import { auth } from './auth.config';
 import { revalidatePath } from 'next/cache';
 import { sendEmail } from '@/lib/email';
 import TwoFactorEmail from '@/emails/2fa';
-import { MemberStatus } from '@/app/dashboard/(dashboard)/(permission)/team/_components/member-list';
+import { getUser } from './user.service';
 
 export interface OTPGenerationResult {
   success: boolean;
@@ -34,45 +34,55 @@ function generateOTPCode(): string {
  */
 export async function generateOTP(email: string): Promise<OTPGenerationResult> {
   try {
-    // 查找用户
-    const member = await db.query.members.findFirst({
-      columns: {
-        id: true,
-        email: true,
-        status: true,
-        userId: true,
-      },
-      with: {
-        user: {
-          columns: {
-            id: true,
-            email: true,
-            name: true,
-            active: true,
-          },
-        },
-      },
-      where: (t, { eq }) => eq(t.email, email),
-    });
-
-
-    if (!member || !member.user) {
+    const user = await getUser(email);
+    if (!user) {
       return {
         success: false,
         message: 'userNotFound',
       };
     }
 
-    // Joined 狀態等於帳號啟用
-    if (member.status !== 'joined') {
-      return {
-        success: false,
-        message: 'notActive',
-      };
+    // 如果用户不是开发者，检查用户是否已加入组织
+    if (!user?.developer) {
+      // 查找用户
+      const member = await db.query.members.findFirst({
+        columns: {
+          id: true,
+          email: true,
+          status: true,
+          userId: true,
+        },
+        with: {
+          user: {
+            columns: {
+              id: true,
+              email: true,
+              name: true,
+              active: true,
+            },
+          },
+        },
+        where: (t, { eq }) => eq(t.email, email),
+      });
+
+      if (!member || !member.user) {
+        return {
+          success: false,
+          message: 'userNotFound',
+        };
+      }
+
+      // Joined 狀態等於帳號啟用
+      if (member.status !== 'joined') {
+        return {
+          success: false,
+          message: 'notActive',
+        };
+      }
     }
 
     // 清理该用户的过期验证码
-    await cleanupExpiredOTPs(member.user.id);
+    await cleanupExpiredOTPs(user.id);
 
     // 生成新的验证码
     const code = generateOTPCode();
@@ -80,7 +90,7 @@ export async function generateOTP(email: string): Promise<OTPGenerationResult> {
 
     // 保存到数据库
     await db.insert(user2faCode).values({
-      userId: member.user.id,
+      userId: user.id,
       code,
       used: false,
       expiresAt,
@@ -90,12 +100,12 @@ export async function generateOTP(email: string): Promise<OTPGenerationResult> {
     const { NOTIFY_EMAIL } = await settings();
     const emailResult = await sendEmail({
       from: NOTIFY_EMAIL as string,
-      to: [member.user.email],
+      to: [user.email],
       subject: 'Your Login Verification Code',
       body: TwoFactorEmail({
-        logoUrl: "https://cdn.heisoo.com/smartsight/MWcIZjeOLK.svg",
+        logoUrl: 'https://cdn.heisoo.com/smartsight/MWcIZjeOLK.svg',
         code,
-        username: member.user.name,
+        username: user.name,
         expiresInMinutes: 10,
       }),
     });
