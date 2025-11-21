@@ -53,6 +53,7 @@ export interface Role {
 }
 
 const filterStatuses: FilterStatus[] = [
+  'all',
   MemberStatus.Review,
   MemberStatus.Joined,
   MemberStatus.Disabled,
@@ -72,7 +73,10 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
     pageSize: 10,
   });
 
-  // const AllRoles: Role[] = [{ id: MemberStatus.Owner, name: MemberStatus.Owner }, ...roles]
+  const AllRoles: Role[] = [
+    { id: MemberStatus.Owner, name: MemberStatus.Owner },
+    ...roles,
+  ];
 
   const showStatus = useCallback(
     (member: string | null) => {

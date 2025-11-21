@@ -199,6 +199,10 @@
 			"successfully": "成功轉移所有權",
 			"failed": "未能完成所有權轉移"
 		},
+		"copyInvitationLink": {
+			"title": "複製邀請連結",
+			"success": "邀請連結已複製到剪貼簿"
+		},
 		"resetPassword": {
 			"action": "協助重設密碼",
 			"confirm": {

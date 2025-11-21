@@ -199,6 +199,10 @@
 			"successfully": "Ownership transferred successfully",
 			"failed": "Failed to transfer ownership"
 		},
+		"copyInvitationLink": {
+			"title": "Copy Invitation Link",
+			"success": "Invitation link copied to clipboard"
+		},
 		"resetPassword": {
 			"action": "Force Password Reset",
 			"confirm": {
