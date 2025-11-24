@@ -71,9 +71,9 @@ async function join(userId: string) {
     .update(members)
     .set({
       id: userId,
-      inviteToken: "",
+      inviteToken: '',
       tokenExpiredAt: null,
-      status: "review",
+      status: 'joined',
       updatedAt: new Date(),
     })
     .where(and(eq(members.id, userId), isNull(members.deletedAt)));
