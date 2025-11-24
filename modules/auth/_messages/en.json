@@ -316,6 +316,7 @@
 		"description": "You have successfully verified your email {email}.",
 		"passwordDesc": "Note: Password is optional. If you don't set one, you will be unable to sign in with a password.",
 		"joinSuccess": "Application for {email} submitted. Please sign in again.",
+		"notAllowed": "You({email}) are not on the system’s user list. Please contact the administrator.",
 		"submit": "Apply to Create Account",
 		"error": {
 			"invalidLink": "Invalid join link. Please check and try again.",

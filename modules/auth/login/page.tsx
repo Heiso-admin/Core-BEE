@@ -51,7 +51,7 @@ export default async function Page({
       // 非 joined：如無錯誤參數才導向 Pending；有錯誤時留在 login 顯示錯誤
       const err = searchParams?.error;
       if (!err) {
-        redirect('/pending');
+        redirect(`/pending?error=${err}`);
       }
     } else {
       // 無成員紀錄：第一次登入，建立/刷新 member 並設為 review，不寄送 email
