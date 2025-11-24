@@ -98,7 +98,7 @@ export function MemberActions({
       visible: member.status === MemberStatus.Invited,
       onClick: () => {
         if (member?.inviteToken) {
-          const invitationLink = `${BASE_HOST}/dashboard/join?token=${encodeURIComponent(member.inviteToken)}`;
+          const invitationLink = `${BASE_HOST}/join?token=${encodeURIComponent(member.inviteToken)}`;
           navigator.clipboard.writeText(invitationLink);
           toast.success(t('copyInvitationLink.success'));
         }

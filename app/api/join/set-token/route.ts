@@ -31,8 +31,8 @@ export async function GET(req: Request) {
   const target = next
     ? next
     : token
-      ? `/dashboard/join?token=${encodeURIComponent(token)}`
-      : "/dashboard/join";
+      ? `/join?token=${encodeURIComponent(token)}`
+      : '/join';
 
   const res = NextResponse.redirect(target);
 

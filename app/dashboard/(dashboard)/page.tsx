@@ -17,7 +17,7 @@ export default async function DashboardPage() {
   const joinToken = cookieStore.get('join-token');
 
   if (joinToken) {
-    redirect(`/dashboard/join?token=${joinToken.value}`);
+    redirect(`/join?token=${joinToken.value}`);
   }
 
   const session = await auth();

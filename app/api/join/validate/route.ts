@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getInviteToken } from '@/app/dashboard/(member)/join/_server/member.service';
+import { getInviteToken } from '@/app/(auth)/(member)/join/_server/member.service';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);

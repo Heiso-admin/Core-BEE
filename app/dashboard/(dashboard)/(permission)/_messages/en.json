@@ -33,7 +33,8 @@
 				"description": "Please select login method",
 				"otp": "OTP",
 				"email": "Password",
-				"both": "OTP / Password"
+				"both": "OTP / Password",
+				"sso": "SSO"
 			},
 			"menuTitle": "Menu",
 			"permissionTitle": "Manage permission access"

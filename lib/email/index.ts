@@ -50,7 +50,7 @@ export async function sendInviteUserEmail({
     : `${BASE_HOST}${siteLogo}`);
   const orgName = site?.branding?.organization || config?.site?.organization;
   const subject = `Verify Your Email Address for ${orgName}`
-  const inviteLink = `${BASE_HOST}/dashboard/join?token=${inviteToken}`
+  const inviteLink = `${BASE_HOST}/join?token=${inviteToken}`;
 
   const emailType = {
     logoUrl: derivedLogoUrl,

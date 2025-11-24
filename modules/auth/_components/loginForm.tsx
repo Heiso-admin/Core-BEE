@@ -19,14 +19,27 @@ export enum LoginStepEnum {
 
 // 資料庫登入狀態
 export enum LoginMethodEnum {
-  Both = 'both',   // 同时支持OTP和邮箱登录
-  Otp = 'otp',     // 仅支持OTP登录
+  Both = 'both', // 同时支持OTP和邮箱登录
+  Otp = 'otp', // 仅支持OTP登录
   Email = 'email', // 仅支持邮箱登录
+  SSO = 'sso', // 仅支持SSO登录
 }
 
 export type LoginStep = `${LoginStepEnum}`;
 
-function LoginForm({ email, anyUser, orgName, oAuthData, systemOauth }: { email?: string | null; anyUser: boolean; orgName?: string; oAuthData?: OAuthDataType; systemOauth?: string }) {
+function LoginForm({
+  email,
+  anyUser,
+  orgName,
+  oAuthData,
+  systemOauth,
+}: {
+  email?: string | null;
+  anyUser: boolean;
+  orgName?: string;
+  oAuthData?: OAuthDataType;
+  systemOauth?: string;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations('auth.login');
@@ -34,7 +47,7 @@ function LoginForm({ email, anyUser, orgName, oAuthData, systemOauth }: { email?
   const [loginMethod, setLoginMethod] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState('');
   const [step, setStep] = useState<LoginStep>(LoginStepEnum.Email);
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState<string>('');
   const [twoStep, setTwoStep] = useState<boolean>(false);
 
   // 若 NextAuth 阻擋了 OAuth 登入（例如 AccessDenied），提示『請使用 email 登入』
@@ -53,7 +66,7 @@ function LoginForm({ email, anyUser, orgName, oAuthData, systemOauth }: { email?
   };
 
   const handleVerifyOTP = async (authEmail: string) => {
-    if (authEmail === "") {
+    if (authEmail === '') {
       setError(t('error.general'));
       return;
     }
@@ -110,33 +123,39 @@ function LoginForm({ email, anyUser, orgName, oAuthData, systemOauth }: { email?
         );
 
       case LoginStepEnum.Invite:
-        return <EmailVerification email={userEmail || email} setStep={setStep} />;
+        return (
+          <EmailVerification email={userEmail || email} setStep={setStep} />
+        );
 
       case LoginStepEnum.Password:
-        return <LoginPassword
-          email={userEmail || email}
-          loginMethod={loginMethod}
-          setStep={setStep}
-          handleLoginSuccess={handleLoginSuccess}
-          twoStep={twoStep}
-        />;
+        return (
+          <LoginPassword
+            email={userEmail || email}
+            loginMethod={loginMethod}
+            setStep={setStep}
+            handleLoginSuccess={handleLoginSuccess}
+            twoStep={twoStep}
+          />
+        );
 
       case LoginStepEnum.Otp:
-        return <OTPLoginForm
-          email={userEmail || email}
-          setStep={setStep}
-          loginMethod={loginMethod}
-          error={error}
-          setError={setError}
-          handleLoginSuccess={handleLoginSuccess}
-        />;
+        return (
+          <OTPLoginForm
+            email={userEmail || email}
+            setStep={setStep}
+            loginMethod={loginMethod}
+            error={error}
+            setError={setError}
+            handleLoginSuccess={handleLoginSuccess}
+          />
+        );
 
       default:
         return null;
     }
   };
 
-  return renderStep()
+  return renderStep();
 }
 
 export default LoginForm;

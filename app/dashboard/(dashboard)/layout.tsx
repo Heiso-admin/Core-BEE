@@ -37,9 +37,9 @@ async function OrgLayoutWrap({ children }: { children: React.ReactNode }) {
   //   const cookieStore = await cookies();
   //   const joinToken = cookieStore.get('join-token');
   //   if (joinToken) {
-  //     redirect(`/dashboard/join?token=${joinToken.value}`);
+  //     redirect(`/join?token=${joinToken.value}`);
   //   }
-  //   redirect('/dashboard/join');
+  //   redirect('/join');
   // }
   const hasFullAccess =
     membership.isDeveloper === true ||

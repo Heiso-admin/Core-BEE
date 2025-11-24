@@ -1,24 +1,31 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation';
 import { auth } from '@/modules/auth/auth.config';
-import { Login } from "../_components";
-import { hasAnyUser } from "@/server/services/auth";
-import { getSiteSettings } from "@/server/services/system/setting";
-import config from "@/config";
-import { getMember, ensureMemberReviewOnFirstLogin } from '../_server/user.service';
+import { Login } from '../_components';
+import { hasAnyUser } from '@/server/services/auth';
+import { getSiteSettings } from '@/server/services/system/setting';
+import config from '@/config';
+import {
+  getMember,
+  ensureMemberReviewOnFirstLogin,
+} from '../_server/user.service';
 
 export type OAuthDataType = {
   userId: string | null;
   email: string | null;
   status: string | null;
-}
-export default async function Page({ searchParams }: { searchParams?: { join?: string; relogin?: string; error?: string } }) {
+};
+export default async function Page({
+  searchParams,
+}: {
+  searchParams?: { join?: string; relogin?: string; error?: string };
+}) {
   const anyUser = await hasAnyUser();
   const site = await getSiteSettings();
-  const orgName = (site as any)?.branding?.organization || config?.site?.organization;
+  const orgName =
+    (site as any)?.branding?.organization || config?.site?.organization;
 
   const session = await auth(); // oAuth 登入
-  let email = "";
+  let email = '';
   let oAuthData: OAuthDataType | undefined = undefined;
 
   // 使用 oAuth 有可能會遇到第三方不願意給 email
@@ -27,14 +34,20 @@ export default async function Page({ searchParams }: { searchParams?: { join?: s
     const userId = session.user.id ?? undefined;
     const sessionEmail = session.user.email ?? undefined;
 
+    // 開發人員直接進 Dashboard
+    if (session.user.isDeveloper) {
+      redirect('/dashboard');
+    }
+
     const member = await getMember({ id: userId, email: sessionEmail });
 
     if (member) {
       oAuthData = member;
       // 已加入：直接進 Dashboard
       if (member.status === 'joined') {
-        redirect("/dashboard");
+        redirect('/dashboard');
       }
+
       // 非 joined：如無錯誤參數才導向 Pending；有錯誤時留在 login 顯示錯誤
       const err = searchParams?.error;
       if (!err) {
@@ -59,7 +72,13 @@ export default async function Page({ searchParams }: { searchParams?: { join?: s
 
   return (
     <div className="w-full max-w-md space-y-10">
-      <Login email={email} anyUser={anyUser} orgName={orgName} oAuthData={oAuthData} systemOauth={site.system_oauth as string} />
+      <Login
+        email={email}
+        anyUser={anyUser}
+        orgName={orgName}
+        oAuthData={oAuthData}
+        systemOauth={site.system_oauth as string}
+      />
     </div>
   );
 }

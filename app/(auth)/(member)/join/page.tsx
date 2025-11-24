@@ -27,6 +27,11 @@ export default async function JoinPage({
   if (!token) return null;
 
   const membership = await getInviteToken({ token });
+  // 如果用戶已經登錄且邀請用戶不是當前用戶，則登出
+  if (session?.user && membership?.user?.id !== session.user.id) {
+    return <LogoutIfAuthenticated />;
+  }
+
   const user = membership
     ? {
         id: membership.id ?? '',

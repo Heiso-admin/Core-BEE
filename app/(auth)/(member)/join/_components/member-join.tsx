@@ -60,8 +60,6 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
       }
     );
 
-  console.log("user", user);
-
   const form = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
