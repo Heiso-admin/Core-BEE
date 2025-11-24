@@ -227,7 +227,7 @@ export async function ensureInviteTokenSilently(email: string) {
       .set({
         inviteToken,
         tokenExpiredAt: inviteTokenExpiresAt,
-        status: 'review',
+        status: 'invited',
       })
       .where(eq(members.id, member.id))
       .returning({ inviteToken: members.inviteToken });
@@ -259,7 +259,7 @@ export async function ensureMemberReviewOnFirstLogin(
     .update(members)
     .set({
       userId: member.userId ?? undefined,
-      status: 'review',
+      status: 'joined',
       updatedAt: new Date(),
     })
     .where(eq(members.id, member.id))
