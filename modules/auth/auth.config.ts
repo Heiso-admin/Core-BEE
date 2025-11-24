@@ -54,7 +54,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const existingMember = await db.query.members.findFirst({
           where: (t, ops) => and(eq(t.email, email), isNull(t.deletedAt)),
-          columns: { status: true, userId: true, roleId: true },
+          columns: { id: true, status: true, userId: true, roleId: true },
         });
 
         const existingUser = await db.query.users.findFirst({
@@ -67,15 +67,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         //   return false;
         // }
 
-        // 第二次登入 OAuth：若已存在 member 且狀態非 joined，直接拒絕
-        // if (
-        //   existingUser &&
-        //   existingMember &&
-        //   existingMember.status !== 'joined'
-        // ) {
-        //   // return false; // 讓 NextAuth 回傳 error=AccessDenied，回到 login 顯示提示
-        //   return '/login?error=under_review';
-        // }
+        // 第二次登入 OAuth：若已存在 member 且狀態為 invited，直接更新為 joined
+        if (
+          existingUser &&
+          existingMember &&
+          existingMember.status !== 'joined'
+        ) {
+          await db
+            .update(members)
+            .set({
+              inviteToken: '',
+              tokenExpiredAt: null,
+              status: 'joined',
+              updatedAt: new Date(),
+            })
+            .where(
+              and(eq(members.id, existingMember.id), isNull(members.deletedAt))
+            );
+          // return false; // 讓 NextAuth 回傳 error=AccessDenied，回到 login 顯示提示
+          // return '/login?error=under_review';
+        }
 
         return true;
       } catch (err) {
