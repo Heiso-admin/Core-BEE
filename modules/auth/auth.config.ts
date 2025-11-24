@@ -71,7 +71,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (
           existingUser &&
           existingMember &&
-          existingMember.status !== 'joined'
+          existingMember.status !== 'invited'
         ) {
           await db
             .update(members)
