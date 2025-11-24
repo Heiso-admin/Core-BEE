@@ -2,7 +2,9 @@
 
 import { auth } from '@/modules/auth/auth.config';
 import { db } from "@/lib/db";
-import type { TMenu, TPermission } from "@/lib/db/schema";
+import { menus, roleMenus } from '@/lib/db/schema';
+import { eq, and, isNull } from 'drizzle-orm';
+import type { TMenu, TPermission } from '@/lib/db/schema';
 
 // Types
 type AccessParams = {
@@ -11,7 +13,7 @@ type AccessParams = {
 };
 
 // Error messages
-const UNAUTHORIZED_ERROR = "Unauthorized";
+const UNAUTHORIZED_ERROR = 'Unauthorized';
 
 async function getUser() {
   const session = await auth();
@@ -77,14 +79,15 @@ async function getMyMenus({
 
   if (!roleId) return [];
 
-  const roleMenus = await db.query.roleMenus.findMany({
-    with: {
-      menus: true,
-    },
-    where: (t, { and, eq }) => and(eq(t.roleId, roleId)),
-  });
+  const roleMenusData = await db
+    .select({
+      menu: menus,
+    })
+    .from(roleMenus)
+    .leftJoin(menus, eq(roleMenus.menuId, menus.id))
+    .where(and(eq(roleMenus.roleId, roleId), isNull(menus.deletedAt)));
 
-  return roleMenus.map((item) => item.menus).filter(Boolean);
+  return roleMenusData.map((item) => item.menu).filter((i) => i !== null);
 }
 
 async function getMyOrgPermissions({

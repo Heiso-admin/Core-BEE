@@ -56,6 +56,8 @@ async function OrgLayoutWrap({ children }: { children: React.ReactNode }) {
     roleId: membership?.roleId,
   });
 
+  console.log('menu: ', menu);
+
   const navigation: Navigation = {
     rootPath: `/dashboard`,
     items: groupMenuItems(findMenus(menu, null, { level: 1 })),
