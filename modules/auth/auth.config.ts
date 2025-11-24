@@ -68,14 +68,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // }
 
         // 第二次登入 OAuth：若已存在 member 且狀態非 joined，直接拒絕
-        if (
-          existingUser &&
-          existingMember &&
-          existingMember.status !== 'joined'
-        ) {
-          // return false; // 讓 NextAuth 回傳 error=AccessDenied，回到 login 顯示提示
-          return '/login?error=under_review';
-        }
+        // if (
+        //   existingUser &&
+        //   existingMember &&
+        //   existingMember.status !== 'joined'
+        // ) {
+        //   // return false; // 讓 NextAuth 回傳 error=AccessDenied，回到 login 顯示提示
+        //   return '/login?error=under_review';
+        // }
 
         return true;
       } catch (err) {
