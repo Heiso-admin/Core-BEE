@@ -105,7 +105,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       try {
         const userId = token.sub;
         const email = (token as any).email as string | undefined;
-        const { findMembershipByUserOrEmail } = await import('@/modules/account/authentication/_server/auth.service');
+        const { findMembershipByUserOrEmail } = await import(
+          '@/modules/account/authentication/_server/auth.service'
+        );
         const membership = await findMembershipByUserOrEmail({ userId, email });
         (token as any).memberStatus = membership?.status ?? null;
       } catch (e) {
@@ -126,8 +128,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const userId = session.user?.id;
         const email = session.user?.email ?? undefined;
         if (userId || email) {
-          const { findMembershipByUserOrEmail } = await import('@/modules/account/authentication/_server/auth.service');
-          const membership = await findMembershipByUserOrEmail({ userId, email });
+          const { findMembershipByUserOrEmail } = await import(
+            '@/modules/account/authentication/_server/auth.service'
+          );
+          const membership = await findMembershipByUserOrEmail({
+            userId,
+            email,
+          });
 
           if (membership?.userId) {
             session.user.id = membership.userId;
@@ -156,13 +163,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!account || account.provider === 'credentials') return;
 
         // 取用 email：優先取 user.email；其次 profile.email
-        const email = (user?.email || (profile && (profile as any).email) || '').toString().trim();
+        const email = (user?.email || (profile && (profile as any).email) || '')
+          .toString()
+          .trim();
 
         // 紀錄 OAuth 登入資訊（偵測供應商）
         console.log('[OAuth signIn] provider:', account.provider);
 
         if (!email) {
-          console.warn('[OAuth signIn] missing email from provider, skip upsert');
+          console.warn(
+            '[OAuth signIn] missing email from provider, skip upsert'
+          );
           return;
         }
 
@@ -186,29 +197,43 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // 新用戶需要沒有 user and member 才可以建立
         if (!existingUser && !existingMember) {
           // 建立占位密碼（OAuth 用戶不需要實際密碼）
-          const placeholderPassword = await hashPassword(generateId(undefined, 32));
+          const placeholderPassword = await hashPassword(
+            generateId(undefined, 32)
+          );
 
-          const displayName = (user?.name || (profile && (profile as any).name) || email.split('@')[0]).toString();
-          const avatar = (user as any)?.image || (profile as any)?.avatar_url || (profile as any)?.picture || null;
+          const displayName = (
+            user?.name ||
+            (profile && (profile as any).name) ||
+            email.split('@')[0]
+          ).toString();
+          const avatar =
+            (user as any)?.image ||
+            (profile as any)?.avatar_url ||
+            (profile as any)?.picture ||
+            null;
 
-          const inserted = await db.insert(users).values({
-            email,
-            name: displayName,
-            password: placeholderPassword,
-            avatar: avatar ?? undefined,
-            active: false,
-            lastLoginAt: new Date(),
-            loginMethod: account.provider,
-            mustChangePassword: false,
-            updatedAt: new Date(),
-          }).returning();
+          const inserted = await db
+            .insert(users)
+            .values({
+              email,
+              name: displayName,
+              password: placeholderPassword,
+              avatar: avatar ?? undefined,
+              active: false,
+              lastLoginAt: new Date(),
+              loginMethod: account.provider,
+              mustChangePassword: false,
+              updatedAt: new Date(),
+            })
+            .returning();
 
           userId = inserted?.[0]?.id;
           console.log('[OAuth signIn] created user:', userId);
         } else {
           if (existingUser) {
             // 更新最後登入時間
-            await db.update(users)
+            await db
+              .update(users)
               .set({ lastLoginAt: new Date(), updatedAt: new Date() })
               .where(eq(users.id, existingUser.id));
             console.log('[OAuth signIn] existing user:', existingUser.id);
@@ -217,23 +242,33 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         // 再次登入，但未審核過，僅更新 updateAt
         if (existingMember) {
-          await db.update(members)
+          await db
+            .update(members)
             .set({
               userId: userId ?? existingMember.userId,
               updatedAt: new Date(),
             })
             .where(eq(members.id, existingMember.id));
-          console.log('[OAuth signIn] synced existing member without status change:', existingMember.id);
+          console.log(
+            '[OAuth signIn] synced existing member without status change:',
+            existingMember.id
+          );
         } else {
           // 首次 OAuth 登入：建立 member，狀態設為 review 以便導向 pending
-          const insertedMember = await db.insert(members).values({
-            email,
-            userId: userId ?? undefined,
-            loginMethod: account.provider,
-            status: 'review',
-            updatedAt: new Date(),
-          }).returning();
-          console.log('[OAuth signIn] created member in review status:', insertedMember?.[0]?.id);
+          const insertedMember = await db
+            .insert(members)
+            .values({
+              email,
+              userId: userId ?? undefined,
+              loginMethod: account.provider,
+              status: 'review',
+              updatedAt: new Date(),
+            })
+            .returning();
+          console.log(
+            '[OAuth signIn] created member in review status:',
+            insertedMember?.[0]?.id
+          );
         }
       } catch (err) {
         console.error('[OAuth signIn] member upsert failed:', err);
@@ -249,6 +284,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       clientId: process.env.AUTH_MICROSOFT_ENTRA_ID_ID,
       clientSecret: process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET,
       issuer: process.env.AUTH_MICROSOFT_ENTRA_ID_ISSUER,
+      authorization: {
+        params: {
+          prompt: 'login',
+        },
+      },
     }),
     Credentials({
       credentials: {
