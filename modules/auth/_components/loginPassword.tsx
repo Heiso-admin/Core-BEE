@@ -39,27 +39,27 @@ export default function LoginPassword({ email, loginMethod, setStep, handleLogin
   const router = useRouter();
 
   const formSchema = z.object({
-    email: z.string().email({ message: t("email.error") }),
-    password: z.string().min(6, { message: t("password.error") }),
+    email: z.email({ message: t('email.error') }),
+    password: z.string().min(6, { message: t('password.error') }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: email ?? "",
-      password: "",
+      email: email ?? '',
+      password: '',
     },
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setError("");
+    setError('');
     const { email, password } = values;
 
     // 若屬於兩步驟登入，先只驗證密碼，成功後導向 2steps 並寄送 OTP
     if (twoStep) {
       const ok = await verifyPasswordOnly(email, password);
       if (!ok) {
-        setError(t("error.errorPassword"));
+        setError(t('error.errorPassword'));
         return;
       }
       router.push(`/login/2steps?email=${encodeURIComponent(email)}`);
@@ -69,7 +69,7 @@ export default function LoginPassword({ email, loginMethod, setStep, handleLogin
     // 一般密碼登入：建立 Session 並導向 Dashboard
     const result = await login(email, password);
     if (!result) {
-      setError(t("error.errorPassword"));
+      setError(t('error.errorPassword'));
       return;
     }
     await update();
@@ -78,7 +78,7 @@ export default function LoginPassword({ email, loginMethod, setStep, handleLogin
 
   return (
     <>
-      <Header title={t("titlePassword")} />
+      <Header title={t('titlePassword')} />
       <Form {...form}>
         <form className="mt-8 space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <div className="space-y-4">
@@ -89,13 +89,13 @@ export default function LoginPassword({ email, loginMethod, setStep, handleLogin
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>{t("email.label")}</FormLabel>
+                      <FormLabel>{t('email.label')}</FormLabel>
                       <FormControl>
                         <Input
                           id="email-address"
                           type="email"
                           autoComplete="email"
-                          placeholder={t("email.placeholder")}
+                          placeholder={t('email.placeholder')}
                           {...field}
                         />
                       </FormControl>
@@ -113,25 +113,29 @@ export default function LoginPassword({ email, loginMethod, setStep, handleLogin
                   return (
                     <FormItem>
                       <FormLabel className="flex items-center">
-                        {t("password.label")}
+                        {t('password.label')}
                         <a
                           className="ml-auto inline-block text-sm text-sub-highlight hover:text-sub-highlight/60"
-                          href={`/auth/forgot-password?email=${encodeURIComponent(email || form.watch("email") || "")}`}
+                          href={`/auth/forgot-password?email=${encodeURIComponent(email || form.watch('email') || '')}`}
                           tabIndex={-1}
                         >
-                          {t("password.forgot")}
+                          {t('password.forgot')}
                         </a>
                       </FormLabel>
                       <FormControl>
                         <PasswordInput
                           id="password"
                           autoComplete="current-password"
-                          placeholder={t("password.placeholder")}
+                          placeholder={t('password.placeholder')}
                           {...field}
                         />
                       </FormControl>
                       <FormMessage />
-                      {error && <p className="w-full text-center text-destructive/80">{error}</p>}
+                      {error && (
+                        <p className="w-full text-center text-destructive/80">
+                          {error}
+                        </p>
+                      )}
                     </FormItem>
                   );
                 }}
@@ -143,7 +147,7 @@ export default function LoginPassword({ email, loginMethod, setStep, handleLogin
             className="w-full bg-primary hover:bg-primary/80"
             loading={form.formState.isSubmitting}
           >
-            {t("submit")}
+            {t('submit')}
           </ActionButton>
           <AuthRedirectHint>
             {t.rich('backToLogin', {

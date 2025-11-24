@@ -10,16 +10,6 @@ type PermissionConfigShape = {
 
 export const permissionsConfig = [
   {
-    "id": "pe_7fmbT7VF7D",
-    "resource": "qqq",
-    "action": "aaa",
-    "menu": {
-      "id": "xloztdCw76",
-      "title": "Article",
-      "path": "/article/post"
-    }
-  },
-  {
     "id": "pe_tBI88yvgLm",
     "resource": "article",
     "action": "download",

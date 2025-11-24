@@ -232,7 +232,7 @@
 			"code": "Can't find your code? <Link>Use password</Link>"
 		},
 		"back": "Back to home",
-		"backToLogin": "Need to change accounts? <Link>Go back<Link>"
+		"backToLogin": "Need to change accounts? <Link>Go back</Link>"
 	},
 	"forgotPassword": {
 		"title": "Forgot Password",
@@ -306,7 +306,7 @@
 			"code": "Can't find your code? <Link>Use password</Link>"
 		},
 		"backToPassword": "Sign in with password instead",
-		"backToLogin": "Need to change accounts? <Link>Go back<Link>",
+		"backToLogin": "Need to change accounts? <Link>Go back</Link>",
 		"back": "Back",
 		"loginBack": "Use Password",
 		"codeSentTo": "Verification code sent to"
