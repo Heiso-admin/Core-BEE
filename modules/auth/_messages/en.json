@@ -218,6 +218,7 @@
 		"error": {
 			"errorPassword": "We couldn’t find an account matching the email and password you entered. Please check your email and password and try again.",
 			"userNotFound": "Account not found with that email address. Please verify the email or contact your organization administrator.",
+			"onlySSOAllowed": "Only SSO login is allowed. Please contact your organization administrator.",
 			"review": "Account is currently under review. Please wait for final approval from your organization administrator.",
 			"invited": "Account Already Invited. Please check your inbox.",
 			"general": "An error occurred. Please try again or contact your organization administrator.",

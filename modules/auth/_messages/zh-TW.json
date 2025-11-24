@@ -60,7 +60,8 @@
 		"newUser": "{siteName} 新用戶？",
 		"signUp": "註冊",
 		"error": {
-			"general": "發生錯誤，請重試。"
+			"general": "發生錯誤，請重試。",
+			"userNotFound": "找不到使用此電子郵件的帳號。"
 		}
 	},
 	"emailVerification": {
@@ -208,6 +209,7 @@
 		"error": {
 			"errorPassword": "我們找不到與您輸入的電子郵件和密碼匹配的帳戶，請檢查您的電子郵件和密碼。",
 			"userNotFound": "找不到您的電子郵件帳號，請確認 Email 地址無誤，或聯繫您的組織管理員。",
+			"onlySSOAllowed": "只有 SSO 登入才被允許，請聯繫您的組織管理員。",
 			"review": "您的帳號仍在審核中，請耐心等候組織管理員的最終批准。",
 			"invited": "您的電子郵件已收到邀請信，請檢查您的收件箱。",
 			"general": "發生錯誤，請重試或聯繫您的組織管理員。",

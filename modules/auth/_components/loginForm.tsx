@@ -11,10 +11,11 @@ import { useTranslations } from 'next-intl';
 import type { OAuthDataType } from '../login/page';
 
 export enum LoginStepEnum {
-  Email = 'email',       // 邮箱登录步骤
+  Email = 'email', // 邮箱登录步骤
   Password = 'password', // 密码登录步骤
-  Otp = 'otp',           // OTP登录步骤
-  Invite = 'invite',     // 邀请登录步骤
+  Otp = 'otp', // OTP登录步骤
+  Invite = 'invite', // 邀请登录步骤
+  SSO = 'sso', // SSO登录步骤
 }
 
 // 資料庫登入狀態

@@ -104,6 +104,10 @@ const AuthLogin = ({
             );
           }
 
+          if (loginMethod === LoginStepEnum.SSO) {
+            return setError(t('error.onlySSOAllowed'));
+          }
+
           if (!loginMethod || !memberStatus) {
             return setError(t('error.userNotFound'));
           }
