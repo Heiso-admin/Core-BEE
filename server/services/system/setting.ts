@@ -3,12 +3,16 @@
 import { db } from "@/lib/db";
 import type { Settings } from "@/types/system";
 
-export async function getSettings(): Promise<Settings> {
+export async function getSettings(
+  withoutKey: boolean = false
+): Promise<Settings> {
   const settings = await db.query.settings.findMany({
     columns: { name: true, value: true },
-    where: (fields, { isNull }) =>
-      // and(eq(fields.isKey, false), isNull(fields.deletedAt)),
-      isNull(fields.deletedAt),
+    where: (fields, { and, eq, isNull }) =>
+      and(
+        withoutKey ? eq(fields.isKey, false) : undefined,
+        isNull(fields.deletedAt)
+      ),
   });
   const result: Record<string, unknown> = {};
   for (const { name, value } of settings) {

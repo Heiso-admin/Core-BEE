@@ -33,10 +33,22 @@ import {
 } from '@/components/ui/select';
 
 export const SystemOauth = {
-  none: 'none',
-  'Google SSO': 'google',
-  'Azure SSO': 'microsoft',
-  // 'Github SSO': 'github',
+  none: {
+    name: 'None',
+    value: 'none',
+  },
+  google: {
+    name: 'Google SSO',
+    value: 'google',
+  },
+  microsoft: {
+    name: 'Azure SSO',
+    value: 'microsoft',
+  },
+  // github: {
+  //   name: "Github SSO",
+  //   value: "github",
+  // },
 };
 
 const settingsSchema = z.object({
@@ -198,13 +210,11 @@ export default function Setting() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectGroup>
-                              {Object.entries(SystemOauth).map(
-                                ([key, value]) => (
-                                  <SelectItem key={key} value={value}>
-                                    {key}
-                                  </SelectItem>
-                                )
-                              )}
+                              {Object.values(SystemOauth).map((item) => (
+                                <SelectItem key={item.value} value={item.value}>
+                                  {item.name}
+                                </SelectItem>
+                              ))}
                             </SelectGroup>
                           </SelectContent>
                         </Select>

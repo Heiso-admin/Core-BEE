@@ -143,7 +143,7 @@ const AuthLogin = ({
 
   const createAuthButton = (value: string | undefined) => {
     switch (value) {
-      case SystemOauth.google:
+      case SystemOauth.google.value:
         return (
           <OAuthLoginButtons
             icon="material-icon-theme:google"
@@ -152,16 +152,16 @@ const AuthLogin = ({
           />
         );
 
-      case SystemOauth.github:
-        return (
-          <OAuthLoginButtons
-            icon="akar-icons:github-fill"
-            alt="GitHub"
-            onClick={() => oAuthLogin('github')}
-          />
-        );
+      // case SystemOauth.github.value:
+      //   return (
+      //     <OAuthLoginButtons
+      //       icon="akar-icons:github-fill"
+      //       alt="GitHub"
+      //       onClick={() => oAuthLogin('github')}
+      //     />
+      //   );
 
-      case SystemOauth.microsoft:
+      case SystemOauth.microsoft.value:
         return (
           <OAuthLoginButtons
             icon="logos:microsoft-icon"
@@ -170,7 +170,7 @@ const AuthLogin = ({
           />
         );
 
-      case SystemOauth.none:
+      case SystemOauth.none.value:
         return null;
       default:
         return null;

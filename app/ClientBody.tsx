@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { AccountProvider } from "@/providers/account";
 import { SiteProvider } from "@/providers/site";
+import { SettingProvider } from '@/providers/settings';
 
 export default function ClientBody({
   children,
@@ -15,7 +16,7 @@ export default function ClientBody({
   // Remove any extension-added classes during hydration
   useEffect(() => {
     // This runs only on the client after hydration
-    document.body.className = "antialiased";
+    document.body.className = 'antialiased';
   }, []);
 
   return (
@@ -25,14 +26,16 @@ export default function ClientBody({
       enableSystem
       disableTransitionOnChange
     >
-      <SiteProvider>
-        <SessionProvider>
-          <AccountProvider>
-            {children}
-            <Toaster richColors />
-          </AccountProvider>
-        </SessionProvider>
-      </SiteProvider>
+      <SettingProvider>
+        <SiteProvider>
+          <SessionProvider>
+            <AccountProvider>
+              {children}
+              <Toaster richColors />
+            </AccountProvider>
+          </SessionProvider>
+        </SiteProvider>
+      </SettingProvider>
     </ThemeProvider>
   );
 }

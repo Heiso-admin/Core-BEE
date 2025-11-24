@@ -36,8 +36,7 @@ import { useTranslations } from 'next-intl';
 import { EditMember } from './edit-member';
 import { useAccount } from '@/providers/account';
 import { MemberStatus, type Role } from './member-list';
-
-const { BASE_HOST } = await settings();
+import { useSettings } from '@/providers/settings';
 
 export function MemberActions({
   member,
@@ -53,6 +52,7 @@ export function MemberActions({
   const t = useTranslations('dashboard.permission.message');
   const { data: session } = useSession();
   const { isDeveloper } = useAccount();
+  const { settings } = useSettings();
   const [isRemovePending, startRemoveTransition] = useTransition();
   const [isResendPending, startResendTransition] = useTransition();
   const [isTransferPending, startTransferTransition] = useTransition();
@@ -97,8 +97,8 @@ export function MemberActions({
       Icon: Copy,
       visible: member.status === MemberStatus.Invited,
       onClick: () => {
-        if (member?.inviteToken) {
-          const invitationLink = `${BASE_HOST}/join?token=${encodeURIComponent(member.inviteToken)}`;
+        if (settings && member?.inviteToken) {
+          const invitationLink = `${settings['BASE_HOST']}/join?token=${encodeURIComponent(member.inviteToken)}`;
           navigator.clipboard.writeText(invitationLink);
           toast.success(t('copyInvitationLink.success'));
         }
