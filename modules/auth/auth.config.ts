@@ -43,7 +43,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // 僅處理 OAuth 供應商，略過 credentials
         if (!account || account.provider === 'credentials') return true;
 
-        const email = (user?.email || (profile && (profile as any).email) || '').toString().trim();
+        const email = (user?.email || (profile && (profile as any).email) || '')
+          .toString()
+          .trim();
         if (!email) return true;
 
         const { db } = await import('@/lib/db');
@@ -61,12 +63,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         });
 
         // 已有在 member 用戶，目前都會有 roleId，所以用 role 去判斷是不是新用戶
-        if (existingMember?.roleId) {
-          return false;
-        }
+        // if (existingMember?.roleId) {
+        //   return false;
+        // }
 
         // 第二次登入 OAuth：若已存在 member 且狀態非 joined，直接拒絕
-        if (existingUser && existingMember && existingMember.status !== "joined") {
+        if (
+          existingUser &&
+          existingMember &&
+          existingMember.status !== 'joined'
+        ) {
           // return false; // 讓 NextAuth 回傳 error=AccessDenied，回到 login 顯示提示
           return '/login?error=under_review';
         }
