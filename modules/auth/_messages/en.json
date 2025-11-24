@@ -315,7 +315,7 @@
 		"title": "Application Submitted",
 		"description": "You have successfully verified your email {email}.",
 		"passwordDesc": "Note: Password is optional. If you don't set one, you will be unable to sign in with a password.",
-		"joinSuccess": "Your {email} application has been submitted successfully. \n You will be able to access the system only after approval by the organization administrator.",
+		"joinSuccess": "Application for {email} submitted. Please sign in again.",
 		"submit": "Apply to Create Account",
 		"error": {
 			"invalidLink": "Invalid join link. Please check and try again.",
