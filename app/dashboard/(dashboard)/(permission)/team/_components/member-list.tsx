@@ -175,18 +175,18 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
         return (
           !isYou && (
             <div className="w-full flex items-center justify-center gap-2">
-              <ProtectedArea resource="member" action="edit">
-                <MemberActions
-                  member={row.original}
-                  currentMembers={data}
-                  roles={roles}
-                >
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <MoreHorizontal className="h-4 w-4" />
-                    <span className="sr-only">{t('more')}</span>
-                  </Button>
-                </MemberActions>
-              </ProtectedArea>
+              {/* <ProtectedArea resource="member" action="edit"> */}
+              <MemberActions
+                member={row.original}
+                currentMembers={data}
+                roles={roles}
+              >
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span className="sr-only">{t('more')}</span>
+                </Button>
+              </MemberActions>
+              {/* </ProtectedArea> */}
             </div>
           )
         );
@@ -231,16 +231,16 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
             onChange={(e) => setFiltering(e.target.value)}
             placeholder={t('searchMembers')}
           />
-          <ProtectedArea resource={'member'} action={'edit'}>
-            {/* <AddMember roles={AllRoles} /> */}
-            {!isDeveloper && (
-              <InviteMember userName={userName} roles={roles}>
-                <Button>
-                  <Plus className="h-4 w-4" /> {t('invite')}
-                </Button>
-              </InviteMember>
-            )}
-          </ProtectedArea>
+          {/* <ProtectedArea resource={'member'} action={'edit'}> */}
+          {/* <AddMember roles={AllRoles} /> */}
+          {!isDeveloper && (
+            <InviteMember userName={userName} roles={roles}>
+              <Button>
+                <Plus className="h-4 w-4" /> {t('invite')}
+              </Button>
+            </InviteMember>
+          )}
+          {/* </ProtectedArea> */}
         </div>
       </div>
       <RadioGroup

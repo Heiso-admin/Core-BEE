@@ -19,6 +19,7 @@ async function getAllPermissions() {
         },
       },
     },
+    where: (t, ops) => ops.isNull(t.deletedAt),
   });
 
   // console.log('permissions: ', permissions);
