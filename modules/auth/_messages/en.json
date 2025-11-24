@@ -320,7 +320,7 @@
 		"submit": "Apply to Create Account",
 		"error": {
 			"invalidLink": "Invalid join link. Please check and try again.",
-			"expiredLink": "Your sign in has expired. Please re-authenticate and return to this page.",
+			"expiredLink": "Your invitation link has expired. Please re-authenticate and return to this page.",
 			"userNotFound": "User not found with that email address. Please verify the email or contact your organization administrator.",
 			"review": "Account is currently under review. Please wait for final approval from your organization administrator.",
 			"invited": "Account Already Invited. Please check your inbox."

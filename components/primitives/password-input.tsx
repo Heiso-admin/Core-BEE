@@ -18,8 +18,8 @@ const PasswordInput = React.forwardRef<
   return (
     <div className="relative">
       <Input
-        type={showPassword ? "text" : "password"}
-        className={cn("hide-password-toggle pr-10", className)}
+        type={showPassword ? 'text' : 'password'}
+        className={cn('hide-password-toggle pr-10', className)}
         ref={ref}
         {...props}
       />
@@ -28,6 +28,7 @@ const PasswordInput = React.forwardRef<
         variant="ghost"
         size="sm"
         className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+        tabIndex={-1}
         onClick={() => {
           setShowPassword((prev) => !prev);
         }}
@@ -39,7 +40,7 @@ const PasswordInput = React.forwardRef<
           <EyeOffIcon className="h-4 w-4" aria-hidden="true" />
         )}
         <span className="sr-only">
-          {showPassword ? "Hide password" : "Show password"}
+          {showPassword ? 'Hide password' : 'Show password'}
         </span>
       </Button>
 
