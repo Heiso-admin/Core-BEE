@@ -36,7 +36,7 @@ import { updateMember } from "../_server/team.service";
 import type { Member } from "../_server/team.service";
 import { readableDateTime } from "@/lib/utils/format";
 import { MemberStatus, MemberUser } from "./member-list";
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 const updateMemberFormSchema = z.object({
   roleId: z.string(),
@@ -54,8 +54,14 @@ interface EditMemberProps {
   lastOwner: boolean;
 }
 
-export function EditMember({ open, onClose, member, roles, lastOwner }: EditMemberProps) {
-  const t = useTranslations("dashboard.permission.message.edit");
+export function EditMember({
+  open,
+  onClose,
+  member,
+  roles,
+  lastOwner,
+}: EditMemberProps) {
+  const t = useTranslations('dashboard.permission.message.edit');
   const [isLoading, setIsLoading] = useState(false);
   const isRole = roles.find((role) => role.id === member.roleId)?.id;
 
@@ -64,7 +70,7 @@ export function EditMember({ open, onClose, member, roles, lastOwner }: EditMemb
     defaultValues: {
       roleId: isRole || undefined,
       isOwner: member.isOwner, // 這個只是用來一開始的狀態
-      status: member.status || "active", // 預設為啟用狀態
+      status: member.status || 'active', // 預設為啟用狀態
     },
   });
 
@@ -81,11 +87,11 @@ export function EditMember({ open, onClose, member, roles, lastOwner }: EditMemb
           status: values.status,
         },
       });
-      toast.success(t("successfully"));
+      toast.success(t('successfully'));
       onClose(false);
     } catch (error) {
-      console.error("Failed to update member:", error);
-      toast.error(t("failed"));
+      console.error('Failed to update member:', error);
+      toast.error(t('failed'));
     } finally {
       setIsLoading(false);
     }
@@ -94,19 +100,19 @@ export function EditMember({ open, onClose, member, roles, lastOwner }: EditMemb
   const showDescription = () => {
     switch (true) {
       case member.status === MemberStatus.Invited:
-        return t("invitedDescription");
+        return t('invitedDescription');
       case lastOwner:
-        return t("lastOwnerDescription");
+        return t('lastOwnerDescription');
       default:
-        return "";
+        return '';
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogTitle>{t('title')}</DialogTitle>
           <DialogDescription>{showDescription()}</DialogDescription>
         </DialogHeader>
 
@@ -116,24 +122,30 @@ export function EditMember({ open, onClose, member, roles, lastOwner }: EditMemb
 
         {/* Role Edit Form */}
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className={cn("space-y-4",
-            lastOwner && "pointer-events-none opacity-60",
-          )}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className={cn(
+              'space-y-4',
+              lastOwner && 'pointer-events-none opacity-60'
+            )}
+          >
             <FormField
               control={form.control}
               name="roleId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("role")}</FormLabel>
+                  <FormLabel>{t('role')}</FormLabel>
                   <Select
                     onValueChange={(value) => field.onChange(value)}
                     value={field.value}
-                    disabled={form.watch("isOwner")}
                   >
                     <FormControl>
                       <SelectTrigger className="w-full">
-                        {form.watch("isOwner") ? <span>{MemberStatus.Owner}</span> :
-                          <SelectValue placeholder={t("selectRole")} />}
+                        {form.watch('isOwner') ? (
+                          <span>{MemberStatus.Owner}</span>
+                        ) : (
+                          <SelectValue placeholder={t('selectRole')} />
+                        )}
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="w-full">
@@ -153,18 +165,22 @@ export function EditMember({ open, onClose, member, roles, lastOwner }: EditMemb
               name="status"
               render={({ field }) => (
                 <FormItem className="flex flex-col items-start justify-between ">
-                  <FormLabel>
-                    {t("status")}
-                  </FormLabel>
+                  <FormLabel>{t('status')}</FormLabel>
                   <div className="space-y-0.5 rounded-lg border py-3 px-4 w-full flex items-center justify-between">
                     <div className="text-sm text-muted-foreground">
-                      {field.value === MemberStatus.Joined ? t("statuses.activate") : t("statuses.deactivate")}
+                      {field.value === MemberStatus.Joined
+                        ? t('statuses.activate')
+                        : t('statuses.deactivate')}
                     </div>
                     <FormControl>
                       <Switch
                         checked={field.value === MemberStatus.Joined}
                         onCheckedChange={(checked) => {
-                          field.onChange(checked ? MemberStatus.Joined : MemberStatus.Disabled);
+                          field.onChange(
+                            checked
+                              ? MemberStatus.Joined
+                              : MemberStatus.Disabled
+                          );
                         }}
                         disabled={member.status === MemberStatus.Invited}
                       />
@@ -175,9 +191,12 @@ export function EditMember({ open, onClose, member, roles, lastOwner }: EditMemb
             />
             {member.status !== MemberStatus.Invited && (
               <div>
-                <p className="text-sm text-foreground font-medium"> {t("lastLogin")} </p>
+                <p className="text-sm text-foreground font-medium">
+                  {' '}
+                  {t('lastLogin')}{' '}
+                </p>
                 <p className="text-sm text-muted-foreground pt-1">
-                  {member.updatedAt ? readableDateTime(member.updatedAt) : "-"}
+                  {member.updatedAt ? readableDateTime(member.updatedAt) : '-'}
                 </p>
               </div>
             )}
@@ -187,10 +206,10 @@ export function EditMember({ open, onClose, member, roles, lastOwner }: EditMemb
                 variant="outline"
                 onClick={() => onClose(false)}
               >
-                {t("cancel")}
+                {t('cancel')}
               </Button>
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? t("saving") : t("save")}
+                {isLoading ? t('saving') : t('save')}
               </Button>
             </div>
           </form>

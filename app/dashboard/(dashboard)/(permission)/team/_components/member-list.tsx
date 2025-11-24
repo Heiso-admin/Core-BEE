@@ -36,6 +36,7 @@ import { readableDate } from "@/lib/utils/format";
 import { RadioGroup } from '@/components/ui/radio-group';
 import { RadioTagGroupItem, RadioTagLabel } from '@/components/ui/radio-tag';
 import { capitalize } from 'lodash';
+import { useAccount } from '@/providers/account';
 
 export enum MemberStatus {
   Invited = "invited",        // 已邀請/待驗證
@@ -61,6 +62,7 @@ const filterStatuses: FilterStatus[] = [
 
 export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
   const { data: session } = useSession();
+  const { isDeveloper } = useAccount();
   const [filtering, setFiltering] = useState('');
   const te = useTranslations('dashboard.permission.team');
   const t = useTranslations('dashboard.permission.team.members');
@@ -231,11 +233,13 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
           />
           <ProtectedArea resource={'member'} action={'edit'}>
             {/* <AddMember roles={AllRoles} /> */}
-            <InviteMember userName={userName} roles={roles}>
-              <Button>
-                <Plus className="h-4 w-4" /> {t('invite')}
-              </Button>
-            </InviteMember>
+            {!isDeveloper && (
+              <InviteMember userName={userName} roles={roles}>
+                <Button>
+                  <Plus className="h-4 w-4" /> {t('invite')}
+                </Button>
+              </InviteMember>
+            )}
           </ProtectedArea>
         </div>
       </div>

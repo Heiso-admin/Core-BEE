@@ -34,6 +34,7 @@ import { ConfirmResetPassword } from './confirm-reset-password';
 import { ConfirmReviewMember } from './confirm-review-member';
 import { useTranslations } from 'next-intl';
 import { EditMember } from './edit-member';
+import { useAccount } from '@/providers/account';
 import { MemberStatus, type Role } from './member-list';
 
 const { BASE_HOST } = await settings();
@@ -51,6 +52,7 @@ export function MemberActions({
 }) {
   const t = useTranslations('dashboard.permission.message');
   const { data: session } = useSession();
+  const { isDeveloper } = useAccount();
   const [isRemovePending, startRemoveTransition] = useTransition();
   const [isResendPending, startResendTransition] = useTransition();
   const [isTransferPending, startTransferTransition] = useTransition();
@@ -85,7 +87,7 @@ export function MemberActions({
       key: 'edit' as const,
       label: t('edit.title'),
       Icon: Edit2,
-      visible: isUserNotReview,
+      visible: !isDeveloper && isUserNotReview,
       onClick: () => setOpenEditConfirm(true),
     },
     {
@@ -107,7 +109,8 @@ export function MemberActions({
       key: 'transfer' as const,
       label: t('transfer.title'),
       Icon: Crown,
-      visible: isCurrentUserOwner && canTransferTo && isUserNotReview,
+      visible:
+        !isDeveloper && isCurrentUserOwner && canTransferTo && isUserNotReview,
       onClick: () => setOpenTransferConfirm(true),
     },
     {
@@ -124,6 +127,7 @@ export function MemberActions({
       label: t('resetPassword.action'),
       Icon: RotateCcwKey,
       visible:
+        !isDeveloper &&
         isCurrentUserOwner &&
         member.status === MemberStatus.Joined &&
         isUserNotReview,
@@ -134,7 +138,7 @@ export function MemberActions({
       key: 'remove' as const,
       label: t('remove.action'),
       Icon: Trash2,
-      visible: isCurrentUserOwner,
+      visible: !isDeveloper && isCurrentUserOwner,
       onClick: () => setOpenRemoveConfirm(true),
     },
     // {

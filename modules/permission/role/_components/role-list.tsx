@@ -54,6 +54,9 @@ export function RoleList({
   permissions: any;
 }) {
   const t = useTranslations('dashboard.permission.role');
+  const { isDeveloper } = useAccount();
+  const pathname = usePathname();
+
   const [open, setOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Role | null>(null);
   const [isCollapsedClose, setIsListCollapsedClose] = useState<boolean>(false); //點擊一律關閉
@@ -78,10 +81,12 @@ export function RoleList({
           >
             <ListChevronsDownUp className="h-4 w-4" />
           </Button>
-          <Button onClick={() => setOpen(true)}>
-            <Plus className="h-4 w-4" />
-            {t('list.add_new')}
-          </Button>
+          {pathname.indexOf('dev-center') !== -1 && isDeveloper && (
+            <Button onClick={() => setOpen(true)}>
+              <Plus className="h-4 w-4" />
+              {t('list.add_new')}
+            </Button>
+          )}
         </div>
       </div>
       <div className="space-y-4">
