@@ -4,12 +4,12 @@ import { usePermission } from '@/hooks/use-permission';
 
 export const ProtectedArea = ({
   resource,
-  action = 'view',
+  action,
   tips,
   children,
 }: {
   resource: (typeof permissionsConfig)[number]['resource'];
-  action?: (typeof permissionsConfig)[number]['action'];
+  action: (typeof permissionsConfig)[number]['action'];
   // className?: string;
   tips?: React.ReactNode;
   children: React.ReactNode;

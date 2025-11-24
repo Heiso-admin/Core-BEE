@@ -5,14 +5,14 @@ import { usePermission } from '@/hooks/use-permission';
 export const ProtectedButton = ({
   className,
   resource,
-  action = 'view',
+  action,
   children,
   asChild = false,
   ...props
 }: {
   className?: string;
   resource: (typeof permissionsConfig)[number]['resource'];
-  action?: (typeof permissionsConfig)[number]['action'];
+  action: (typeof permissionsConfig)[number]['action'];
   asChild?: boolean;
   children?: React.ReactNode;
 }) => {
