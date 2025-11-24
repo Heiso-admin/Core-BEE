@@ -98,7 +98,9 @@ export async function signup({
         .select({ total: sql<number>`count(*)` })
         .from(usersTable);
 
-      const nextStatus = total === 1 ? "joined" : "review";
+      // const nextStatus = total === 1 ? "joined" : "review";
+      // 不需要審查，直接加入
+      const nextStatus = 'joined';
       await db
         .update(members)
         .set({ userId: user.id, status: nextStatus, updatedAt: new Date() })
