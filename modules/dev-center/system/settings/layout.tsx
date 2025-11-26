@@ -7,15 +7,15 @@ export default function PermissionLayout({
 }) {
   const subNavGroups = [
     {
-      title: "SETTING",
+      title: 'SETTING',
       items: [
         {
-          title: "Site setting",
-          href: "/site",
+          title: 'Site SEO',
+          href: '/site',
         },
         {
-          title: "General setting",
-          href: "/general",
+          title: 'General setting',
+          href: '/general',
         },
       ],
     },

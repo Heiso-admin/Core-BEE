@@ -1,6 +1,6 @@
 {
 	"site": {
-		"title": "Site Settings",
+		"title": "Site SEO",
 		"basic": {
 			"title": "Basic Information",
 			"description": "Configure your site's basic information.",
@@ -62,7 +62,7 @@
 			}
 		},
 		"toast": {
-			"success": "Site settings updated"
+			"success": "Site SEO settings updated"
 		},
 		"language": {
 			"title": "Language Settings",

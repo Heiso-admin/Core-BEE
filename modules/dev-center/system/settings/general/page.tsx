@@ -118,7 +118,7 @@ export default function Setting() {
     startTransition(async () => {
       await saveSiteSetting(data);
       refresh();
-      toast('Site settings updated');
+      toast('Site SEO settings updated');
     });
   }
 

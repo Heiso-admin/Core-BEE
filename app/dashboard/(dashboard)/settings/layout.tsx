@@ -15,7 +15,7 @@ export default async function Layout({
         //   active: true,
         // },
         {
-          title: 'Site Settings',
+          title: 'Site SEO',
           href: `/site`,
           active: true,
         },
