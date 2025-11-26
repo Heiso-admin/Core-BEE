@@ -53,13 +53,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const { and, eq, isNull } = await import('drizzle-orm');
 
         const existingMember = await db.query.members.findFirst({
-          where: (t, ops) => and(eq(t.email, email), isNull(t.deletedAt)),
+          where: (t, ops) =>
+            ops.and(ops.eq(t.email, email), ops.isNull(t.deletedAt)),
           columns: { id: true, status: true, userId: true, roleId: true },
         });
 
         const existingUser = await db.query.users.findFirst({
-          where: (t, ops) => eq(t.email, email),
-          columns: { loginMethod: true },
+          where: (t, ops) => ops.eq(t.email, email),
+          columns: { id: true, loginMethod: true },
         });
 
         // 已有在 member 用戶，目前都會有 roleId，所以用 role 去判斷是不是新用戶
@@ -73,6 +74,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           existingMember &&
           existingMember.status === 'invited'
         ) {
+          await db
+            .update(users)
+            .set({
+              mustChangePassword: false,
+              updatedAt: new Date(),
+            })
+            .where(and(eq(users.id, existingUser.id)));
+
           await db
             .update(members)
             .set({
