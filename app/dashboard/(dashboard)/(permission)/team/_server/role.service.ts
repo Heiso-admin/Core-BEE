@@ -7,6 +7,7 @@ async function getRoles() {
     columns: {
       id: true,
       name: true,
+      loginMethod: true,
     },
     where: (t, { isNull }) => isNull(t.deletedAt),
     orderBy: (t, { asc }) => [asc(t.createdAt)],

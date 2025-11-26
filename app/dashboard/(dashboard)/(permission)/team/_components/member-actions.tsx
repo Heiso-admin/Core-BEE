@@ -80,6 +80,8 @@ export function MemberActions({
     member.status === MemberStatus.Joined &&
     member.user?.id !== session?.user?.id;
   const isUserNotReview = member.status !== MemberStatus.Review;
+  const loginMethod =
+    roles.find((role) => role.id === member.roleId)?.loginMethod || null;
 
   const actionItems = [
     {
@@ -95,10 +97,10 @@ export function MemberActions({
       key: 'copyInvitationLink' as const,
       label: t('copyInvitationLink.title'),
       Icon: Copy,
-      visible: member.status === MemberStatus.Invited,
+      visible: loginMethod !== 'sso' && member.status === MemberStatus.Invited,
       onClick: () => {
         if (settings && member?.inviteToken) {
-          const invitationLink = `${settings['BASE_HOST']}/join?token=${encodeURIComponent(member.inviteToken)}`;
+          const invitationLink = `${settings.BASE_HOST}/join?token=${encodeURIComponent(member.inviteToken)}`;
           navigator.clipboard.writeText(invitationLink);
           toast.success(t('copyInvitationLink.success'));
         }
@@ -128,6 +130,7 @@ export function MemberActions({
       Icon: RotateCcwKey,
       visible:
         !isDeveloper &&
+        loginMethod !== 'sso' &&
         isCurrentUserOwner &&
         member.status === MemberStatus.Joined &&
         isUserNotReview,
