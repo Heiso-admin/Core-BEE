@@ -33,7 +33,7 @@
 				"description": "Please select login method",
 				"otp": "OTP",
 				"email": "Password",
-				"both": "OTP / Password",
+				"both": "2FA",
 				"sso": "SSO"
 			},
 			"menuTitle": "Menu",

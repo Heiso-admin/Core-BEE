@@ -33,7 +33,7 @@
 				"description": "請選擇成員驗證類型",
 				"otp": "OTP 驗證碼",
 				"email": "密碼",
-				"both": "OTP 驗證碼 / 密碼",
+				"both": "2FA",
 				"sso": "SSO 登入"
 			},
 			"menuTitle": "選單",
