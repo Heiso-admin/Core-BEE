@@ -144,13 +144,13 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
       sortingFn: 'basic',
       cell: ({ row }) => showStatus(row.original.status),
     },
-    {
-      header: t('signin'),
-      id: 'signin',
-      accessorFn: (row) => row.user?.loginMethod?.trim() || 'login',
-      sortingFn: 'text',
-      cell: ({ getValue }) => capitalize(String(getValue())),
-    },
+    // {
+    //   header: t('signin'),
+    //   id: 'signin',
+    //   accessorFn: (row) => row.user?.loginMethod?.trim() || 'login',
+    //   sortingFn: 'text',
+    //   cell: ({ getValue }) => capitalize(String(getValue())),
+    // },
     {
       header: t('createdDate'),
       accessorKey: 'createdAt',
