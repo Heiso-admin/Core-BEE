@@ -7,13 +7,16 @@ import { ImageUploader } from "@/components/primitives";
 export function LogoImage({
   value,
   onChange,
+  className,
 }: {
   value?: string;
   onChange?: (url: string | null) => void;
+  className?: string;
 }) {
   return (
-    <div className="border-dashed rounded-md space-y-2">
+    <div className={`border-dashed rounded-md space-y-2 `}>
       <ImageUploader
+        className={className}
         value={value}
         onUploadComplete={(file) => {
           console.log(file);

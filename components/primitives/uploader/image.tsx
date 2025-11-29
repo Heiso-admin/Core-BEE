@@ -67,11 +67,11 @@ export const ImageUploader = ({
   if (uploadedImage) {
     return (
       <div className={cn('relative inline-block', className)}>
-        <div className="relative group">
+        <div className="relative group w-full h-full">
           <img
             src={uploadedImage}
             alt={uploadedImage}
-            className="max-w-[200px] max-h-[200px] rounded-lg object-cover"
+            className="max-w-[200px] max-h-[200px] rounded-lg object-cover w-full h-full"
           />
           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 rounded-lg">
             <Button

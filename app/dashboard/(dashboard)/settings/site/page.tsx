@@ -228,6 +228,7 @@ export default function Setting() {
                         <LogoImage
                           value={field.value}
                           onChange={(url) => field.onChange(url ?? '')}
+                          className="h-12 w-auto"
                         />
                       </FormControl>
                     </FormItem>
