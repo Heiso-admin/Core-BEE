@@ -357,7 +357,7 @@ export function CreateApiKeyDialog({
                   {t('api_key')}
                 </label>
                 <div className="flex items-center space-x-2">
-                  <code className="flex-1 p-3 bg-gray-100 rounded border text-sm font-mono break-all">
+                  <code className="flex-1 p-3 bg-sub-background rounded border text-sm font-mono break-all">
                     {createdApiKey.key}
                   </code>
                   <Button
