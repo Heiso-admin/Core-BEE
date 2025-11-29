@@ -5,13 +5,23 @@ export function usePermission({
   resource,
   action,
 }: {
-  resource: string;
-  action: string;
+  resource?: string;
+  action?: string;
 }): boolean | null {
   const { can } = usePermissionContext();
   const [allowed, setAllowed] = useState<boolean | null>(null);
 
   useEffect(() => {
+    // If no resource/action provided, treat as allowed (no permission gate)
+    if (!resource && !action) {
+      setAllowed(true);
+      return;
+    }
+    // If only one provided, consider disallowed to avoid accidental leakage
+    if (!resource || !action) {
+      setAllowed(false);
+      return;
+    }
     can({ permissions: [{ resource, action }] }).then((res) => {
       setAllowed(res[0]);
     });
