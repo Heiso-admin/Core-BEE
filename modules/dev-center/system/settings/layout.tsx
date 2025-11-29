@@ -9,10 +9,10 @@ export default function PermissionLayout({
     {
       title: 'SETTING',
       items: [
-        {
-          title: 'Site SEO',
-          href: '/site',
-        },
+        // {
+        //   title: 'Site SEO',
+        //   href: '/site',
+        // },
         {
           title: 'General setting',
           href: '/general',

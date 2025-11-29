@@ -17,10 +17,10 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { useSite } from "@/providers/site";
-import { LogoImage } from "../_components/logo-image";
-import { saveSiteSetting } from "../_server/setting.service";
+import { Textarea } from '@/components/ui/textarea';
+import { useSite } from '@/providers/site';
+import { LogoImage } from '../_components/logo-image';
+import { saveSiteSetting } from '../_server/setting.service';
 
 const settingsSchema = z.object({
   basic: z.object({
@@ -34,6 +34,11 @@ const settingsSchema = z.object({
     organization: z.string().optional(),
     description: z.string().optional(),
     copyright: z.string().optional(),
+  }),
+  assets: z.object({
+    favicon: z.string().optional(),
+    logo: z.string().optional(),
+    ogImage: z.string().optional(),
   }),
 });
 
@@ -52,6 +57,11 @@ const defaultValues: SettingsFormValues = {
     organization: '',
     description: '',
     copyright: '',
+  },
+  assets: {
+    favicon: '',
+    logo: '',
+    ogImage: '',
   },
 };
 
@@ -204,6 +214,65 @@ export default function Setting() {
                       </FormLabel>
                       <FormControl>
                         <Input {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="assets.favicon"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('assets.form.favicon.label')}</FormLabel>
+                      <FormControl>
+                        <LogoImage
+                          value={field.value}
+                          onChange={(url) => field.onChange(url ?? '')}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="assets.ogImage"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('assets.form.ogImage.label')}</FormLabel>
+                      <FormControl>
+                        <LogoImage
+                          value={field.value}
+                          onChange={(url) => field.onChange(url ?? '')}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+          </Card>
+
+          {/* Assets */}
+          <Card className="bg-card/50 p-6">
+            <div className="flex flex-col gap-6">
+              <div>
+                <h2 className="text-lg font-semibold">{t('assets.title')}</h2>
+                <p className="text-sm text-muted-foreground">
+                  {t('assets.description')}
+                </p>
+              </div>
+              <div className="grid gap-4">
+                <FormField
+                  control={form.control}
+                  name="assets.logo"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('assets.form.logo.label')}</FormLabel>
+                      <FormControl>
+                        <LogoImage
+                          value={field.value}
+                          onChange={(url) => field.onChange(url ?? '')}
+                        />
                       </FormControl>
                     </FormItem>
                   )}

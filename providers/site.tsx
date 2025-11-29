@@ -15,7 +15,7 @@ const SiteContext = createContext<SiteContextType>({
   site: null,
   isLoading: false,
   error: null,
-  refresh: () => {},
+  refresh: () => { },
 });
 
 export function SiteProvider({ children }: { children: React.ReactNode }) {
