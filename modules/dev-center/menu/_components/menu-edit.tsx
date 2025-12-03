@@ -3,6 +3,7 @@
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { MenuForm, type MenuItem, MenuTree } from "@/components/primitives";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +27,7 @@ export function MenuEdit({
   items: MenuItem[];
   count: number;
 }) {
+  const router = useRouter();
   const [menuItems, setMenuItems] = useState<MenuItem[]>(items);
   const [isDeleting, startTransition] = useTransition();
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
@@ -41,6 +43,21 @@ export function MenuEdit({
   useEffect(() => {
     setMenuItems(items);
   }, [items]);
+
+  // 將樹狀 items 扁平化為資料庫更新所需的 { id, parentId, order } 列表
+  const flattenTreeToUpdates = (
+    list: MenuItem[],
+    parentId: string | null = null,
+  ): { id: string; parentId: string | null; order: number }[] => {
+    const updates: { id: string; parentId: string | null; order: number }[] = [];
+    list.forEach((item, index) => {
+      updates.push({ id: item.id, parentId, order: index });
+      if (item.children && item.children.length > 0) {
+        updates.push(...flattenTreeToUpdates(item.children, item.id));
+      }
+    });
+    return updates;
+  };
 
   const handleAddItem = () => {
     setOpenCreateOrEditPanel(true);
@@ -66,6 +83,18 @@ export function MenuEdit({
   const handleRemoveItem = async () => {
     startRemoveTransition(async () => {
       await removeMenu({ id: removeItemId });
+      const removeFromTree = (items: MenuItem[], id: string): MenuItem[] => {
+        return items
+          .filter((item) => item.id !== id)
+          .map((item) => ({
+            ...item,
+            children: item.children ? removeFromTree(item.children, id) : item.children,
+          }));
+      };
+      setMenuItems((prev) => removeFromTree(prev, removeItemId));
+      router.refresh();
+      setOpenRemoveConfirm(false);
+      setRemoveItemId("");
     });
   };
 
@@ -184,6 +213,12 @@ export function MenuEdit({
 
     newItems = insertItem(newItems, hoverId, position);
     setMenuItems(newItems);
+
+    // 拖移完成後即時保存排序到資料庫
+    startTransition(async () => {
+      const updates = flattenTreeToUpdates(newItems);
+      await updateMenusOrder(updates);
+    });
   };
 
   return (
