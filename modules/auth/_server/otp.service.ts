@@ -96,14 +96,20 @@ export async function generateOTP(email: string): Promise<OTPGenerationResult> {
       expiresAt,
     });
 
+    const assets = await db.query.siteSettings.findFirst({
+      where: (t, { eq }) => eq(t.name, 'assets'),
+    });
+
+    const { logo } = assets?.value as Record<string, string>;
+
     // 发送邮件
     const { NOTIFY_EMAIL } = await settings();
-    const emailResult = await sendEmail({
+    await sendEmail({
       from: NOTIFY_EMAIL as string,
       to: [user.email],
       subject: 'Your Login Verification Code',
       body: TwoFactorEmail({
-        logoUrl: 'https://cdn.heisoo.com/smartsight/MWcIZjeOLK.svg',
+        logoUrl: logo,
         code,
         username: user.name,
         expiresInMinutes: 10,
