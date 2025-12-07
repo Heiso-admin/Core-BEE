@@ -22,6 +22,7 @@ import { getLanguageInfo } from "@/i18n/config";
 import { useSite } from "@/providers/site";
 import { getUserLocale } from "@/server/locale";
 import { saveSiteSetting } from "../../_server/setting.service";
+import { saveDefaultLanguage } from "../../_server/general.service";
 import { useTranslations } from 'next-intl';
 import {
   Select,
@@ -260,7 +261,13 @@ export default function Setting() {
               <LanguageSwitcher
                 className="border rounded-md w-48 h-12"
                 lang={currentLocale}
-                onChange={setCurrentLocale}
+                onChange={(value) => {
+                  setCurrentLocale(value);
+                  startTransition(async () => {
+                    await saveDefaultLanguage(value);
+                    toast('Language settings saved');
+                  });
+                }}
               >
                 {getLanguageInfo(currentLocale ?? 'en')?.nativeName}
               </LanguageSwitcher>
