@@ -52,7 +52,7 @@ async function saveSiteSetting(data: SiteSetting) {
     );
 
     // 生成並儲存 JSON-LD（不顯示在頁面上）
-    const baseUrl = (data.basic?.base_url ?? '').replace(/\/$/, '');
+    const domainUrl = (data.basic?.domain ?? '').replace(/\/$/, '');
     const orgName = data.branding?.organization ?? data.basic?.name ?? '';
     const logo = data.assets?.logo ?? '';
     const description = data.branding?.description ?? data.branding?.slogan ?? '';
@@ -79,15 +79,15 @@ async function saveSiteSetting(data: SiteSetting) {
       '@context': 'https://schema.org',
       '@type': 'Organization',
       name: orgName,
-      url: baseUrl || undefined,
+      url: domainUrl || undefined,
       logo: logo || undefined,
       description: description || undefined,
       sameAs,
-      contactPoint: baseUrl
+      contactPoint: domainUrl
         ? {
           '@type': 'ContactPoint',
           contactType: 'customer service',
-          url: `${baseUrl}/contact`,
+          url: `${domainUrl}/contact`,
         }
         : undefined,
     };
