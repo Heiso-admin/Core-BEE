@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 import { defaultLocale, type Locale } from "@/i18n/config";
-import { getGeneralSettings } from "@/server/services/system/setting";
+import { getSiteSettings } from "@/server/services/system/setting";
 
 const COOKIE_NAME = "_LOCALE";
 
@@ -12,8 +12,8 @@ export async function getUserLocale() {
   if (fromCookie) return fromCookie;
 
   try {
-    const general = await getGeneralSettings();
-    const configured = (general?.language as any)?.default as Locale | undefined;
+    const site = await getSiteSettings();
+    const configured = (site?.language as any)?.default as Locale | undefined;
     return (configured || defaultLocale) as Locale;
   } catch {
     return defaultLocale;
