@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import { siteSettings } from "@/lib/db/schema";
 import type { Settings } from "@/types/system";
+import type { Locale } from "@/i18n/config";
 import type { SiteSetting } from "../settings/general/page";
 
 async function getSettings(): Promise<Settings> {
@@ -54,3 +55,20 @@ async function saveSiteSetting(data: SiteSetting) {
 }
 
 export { getSettings, saveSetting, saveSiteSetting };
+
+// 將系統預設語言存入 site_settings.language = { default: <locale> }
+export async function saveDefaultLanguage(locale: Locale) {
+  await db
+    .insert(siteSettings)
+    .values({
+      name: "language",
+      value: { default: locale },
+    })
+    .onConflictDoUpdate({
+      target: siteSettings.name,
+      set: {
+        name: "language",
+        value: { default: locale },
+      },
+    });
+}
