@@ -13,7 +13,9 @@
 		"Rotator": "Rotator",
 		"Team": "Team",
 		"Role": "Role",
-		"Settings": "Settings"
+		"Settings": "Settings",
+		"Site-SEO": "Site-SEO",
+		"HomePage": "HP Builder"
 	},
 	"overview": {
 		"navigation": "Navigation",

@@ -50,6 +50,55 @@ async function saveSiteSetting(data: SiteSetting) {
           });
       }),
     );
+
+    // 生成並儲存 JSON-LD（不顯示在頁面上）
+    const baseUrl = (data.basic?.base_url ?? '').replace(/\/$/, '');
+    const orgName = data.branding?.organization ?? data.basic?.name ?? '';
+    const logo = data.assets?.logo ?? '';
+    const description = data.branding?.description ?? data.branding?.slogan ?? '';
+    const social = (data as any)?.social;
+    let sameAs: string[] = [];
+    if (Array.isArray(social)) {
+      // 向後相容：舊版為陣列格式
+      sameAs = social
+        .map((it: any) => (typeof it?.url === 'string' ? it.url.trim() : ''))
+        .filter((url: string) => !!url);
+    } else if (social && typeof social === 'object') {
+      const fixedUrls = [social.facebook, social.instagram, social.x_twitter]
+        .map((u: unknown) => (typeof u === 'string' ? u.trim() : ''))
+        .filter((url: string) => !!url);
+      const otherUrls = Array.isArray(social.others)
+        ? social.others
+          .map((it: any) => (typeof it?.url === 'string' ? it.url.trim() : ''))
+          .filter((url: string) => !!url)
+        : [];
+      sameAs = [...fixedUrls, ...otherUrls];
+    }
+
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: orgName,
+      url: baseUrl || undefined,
+      logo: logo || undefined,
+      description: description || undefined,
+      sameAs,
+      contactPoint: baseUrl
+        ? {
+          '@type': 'ContactPoint',
+          contactType: 'customer service',
+          url: `${baseUrl}/contact`,
+        }
+        : undefined,
+    };
+
+    await tx
+      .insert(siteSettings)
+      .values({ name: 'json-ld', value: jsonLd })
+      .onConflictDoUpdate({
+        target: siteSettings.name,
+        set: { name: 'json-ld', value: jsonLd },
+      });
   });
 }
 

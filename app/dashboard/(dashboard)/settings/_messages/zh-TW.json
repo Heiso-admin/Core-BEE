@@ -56,6 +56,37 @@
 				}
 			}
 		},
+		"social": {
+			"title": "社群",
+			"description": "管理外部行銷與社交平台連結。",
+			"form": {
+				"platform": { "label": "平台" },
+				"url": { "label": "連結" },
+				"add": "新增社群連結",
+				"remove": "移除",
+				"facebook": { "label": "Facebook" },
+				"instagram": { "label": "Instagram" },
+				"x_twitter": { "label": "X（Twitter）" }
+			}
+		},
+		"advanced": {
+			"title": "進階 SEO",
+			"description": "設定技術性標籤和規則，以幫助 Google 和其他搜尋引擎更有效率地爬取、理解並索引您的網站內容。",
+			"form": {
+				"google_verification": {
+					"label": "Google 網站管理員",
+					"description": "請貼上 <Link>Google Search Console</Link> 的驗證代碼。"
+				},
+				"google_analytics": {
+					"label": "Google 分析",
+					"description": "請貼上從 <Link>Google Analytics</Link> 取得的追蹤程式碼"
+				},
+				"robots_content": {
+					"label": "robots.txt 內容",
+					"placeholder": "User-agent: *\nDisallow: /admin\nDisallow: /config"
+				}
+			}
+		},
 		"actions": {
 			"save": {
 				"button": "保存更改"
