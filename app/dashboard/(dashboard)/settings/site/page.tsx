@@ -240,7 +240,7 @@ export default function Setting() {
                     </FormItem>
                   )}
                 />
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="basic.domain"
                   render={({ field }) => (
@@ -251,7 +251,7 @@ export default function Setting() {
                       </FormControl>
                     </FormItem>
                   )}
-                />
+                /> */}
               </div>
             </div>
           </Card>
@@ -412,7 +412,7 @@ export default function Setting() {
                     </FormItem>
                   )}
                 />
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="seo_advanced.google_analytics"
                   render={({ field }) => (
@@ -440,7 +440,7 @@ export default function Setting() {
                       </FormDescription>
                     </FormItem>
                   )}
-                />
+                /> */}
                 {/* <FormField
                   control={form.control}
                   name="seo_advanced.robots_content"
