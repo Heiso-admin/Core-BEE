@@ -1,9 +1,7 @@
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { Suspense } from 'react';
+import { ClientRedirect } from '@/components/primitives/redirect.client';
 import { auth } from '@/modules/auth/auth.config';
-import { ProjectSkeleton } from '@/components/skeleton';
-import { Overview } from './_components/overview';
 import {
   getMyMembership,
   getMyMenus,
@@ -40,22 +38,12 @@ export default async function DashboardPage() {
   });
 
   if (
-    !hasFullAccess &&
     (pathname === '/dashboard' || pathname === '/dashboard/') &&
     menu?.length &&
     menu[0].path
   ) {
-    redirect(`/dashboard/${menu[0].path}`);
+    return <ClientRedirect url={`/dashboard/${menu[0].path}`} />;
   }
 
-  return (
-    <Suspense fallback={<ProjectSkeleton />}>
-      <ProjectOverview />
-    </Suspense>
-  );
-}
-
-async function ProjectOverview() {
-  // const overview = await getOverviewInfo();
-  return <Overview />;
+  return null;
 }
