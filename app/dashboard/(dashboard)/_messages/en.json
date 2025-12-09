@@ -3,7 +3,7 @@
 		"Overview": "Overview",
 		"OverAll": "Overview",
 		"Navigation": "Navigation",
-		"Page": "Page",
+		"Page": "Page tab",
 		"Article": "Article",
 		"Category": "Category",
 		"Institution": "Institution",
@@ -19,7 +19,7 @@
 	},
 	"overview": {
 		"navigation": "Navigation",
-		"pages": "Pages",
+		"pages": "Page tabs",
 		"article": "Article",
 		"articles": "Articles",
 		"institution": "Institution",
