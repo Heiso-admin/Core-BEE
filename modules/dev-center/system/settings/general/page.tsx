@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -18,10 +18,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import type { Locale } from "@/i18n/config";
-import { getLanguageInfo } from "@/i18n/config";
+import { defaultLocale, getLanguageInfo } from "@/i18n/config";
 import { useSite } from "@/providers/site";
-import { getUserLocale } from "@/server/locale";
-import { saveSiteSetting } from "../../_server/setting.service";
+import { saveSiteSetting, saveDefaultLanguage } from "../../_server/setting.service";
 import { useTranslations } from 'next-intl';
 import {
   Select,
@@ -81,38 +80,52 @@ export default function Setting() {
   const { site, refresh } = useSite();
   const [currentLocale, setCurrentLocale] = useState<Locale | undefined>();
 
-  // Get current locale
-  useEffect(() => {
-    const fetchLocale = async () => {
-      const locale = await getUserLocale();
-      setCurrentLocale(locale);
+  // 將 DB 讀取到的 site 物件映射到表單預設值，容忍 snake/camel 命名差異
+  const mapSiteToFormValues = useCallback((s: any | null | undefined): SettingsFormValues => {
+    const basic = s?.basic ?? {};
+    const branding = s?.branding ?? {};
+    const assets = s?.assets ?? {};
+    const system_oauth = s?.system_oauth ?? 'none';
+
+    return {
+      basic: {
+        name: basic?.name ?? '',
+        title: basic?.title ?? '',
+        // 同時支援 base_url 與 baseUrl
+        base_url: basic?.base_url ?? basic?.baseUrl ?? '',
+        domain: basic?.domain ?? '',
+      },
+      branding: {
+        slogan: branding?.slogan ?? '',
+        organization: branding?.organization ?? '',
+        description: branding?.description ?? '',
+        copyright: branding?.copyright ?? '',
+      },
+      assets: {
+        favicon: assets?.favicon ?? '',
+        logo: assets?.logo ?? '',
+        ogImage: assets?.ogImage ?? '',
+      },
+      system_oauth,
     };
-    fetchLocale();
   }, []);
+
+  // 以 DB 的 site_settings 為主，顯示系統預設語言
+  useEffect(() => {
+    const locale = (site as any)?.language?.default as Locale | undefined;
+    setCurrentLocale(locale ?? defaultLocale);
+  }, [site]);
 
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
-    defaultValues: {
-      basic: {
-        name: site?.basic?.name || '',
-        title: site?.basic?.title || '',
-        base_url: site?.basic?.base_url || '',
-        domain: site?.basic?.domain || '',
-      },
-      branding: {
-        slogan: site?.branding?.slogan || '',
-        organization: site?.branding?.organization || '',
-        description: site?.branding?.description || '',
-        copyright: site?.branding?.copyright || '',
-      },
-      assets: {
-        favicon: site?.assets?.favicon || '',
-        logo: site?.assets?.logo || '',
-        ogImage: site?.assets?.ogImage || '',
-      },
-      system_oauth: ((site as any)?.system_oauth as string) || 'none',
-    },
+    defaultValues: mapSiteToFormValues(site),
   });
+
+  // 當 site 資料載入後，重置表單以讀取 DB 值
+  useEffect(() => {
+    if (!site) return;
+    form.reset(mapSiteToFormValues(site));
+  }, [site, form, mapSiteToFormValues]);
 
   async function onSubmit(data: SettingsFormValues) {
     startTransition(async () => {
@@ -260,9 +273,15 @@ export default function Setting() {
               <LanguageSwitcher
                 className="border rounded-md w-48 h-12"
                 lang={currentLocale}
-                onChange={setCurrentLocale}
+                onChange={(value) => {
+                  setCurrentLocale(value);
+                  startTransition(async () => {
+                    await saveDefaultLanguage(value);
+                    toast('Language settings saved');
+                  });
+                }}
               >
-                {getLanguageInfo(currentLocale ?? 'en')?.nativeName}
+                {getLanguageInfo(currentLocale ?? defaultLocale)?.nativeName}
               </LanguageSwitcher>
             </div>
           </div>

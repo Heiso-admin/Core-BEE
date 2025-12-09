@@ -56,6 +56,37 @@
 				}
 			}
 		},
+		"social": {
+			"title": "Social",
+			"description": "Manage external marketing and social links.",
+			"form": {
+				"platform": { "label": "Platform" },
+				"url": { "label": "URL" },
+				"add": "Add Social Link",
+				"remove": "Remove",
+				"facebook": { "label": "Facebook" },
+				"instagram": { "label": "Instagram" },
+				"x_twitter": { "label": "X (Twitter)" }
+			}
+		},
+		"advanced": {
+			"title": "SEO Advanced",
+			"description": "Configure technical tags and rules to help Google and other search engines crawl, understand, and index your website content more efficiently.",
+			"form": {
+				"google_verification": {
+					"label": "Google Search Console",
+					"description": "Please paste the verification meta tag from <Link>Google Search Console</Link>."
+				},
+				"google_analytics": {
+					"label": "Google Analytics",
+					"description": "Paste your tracking script from <Link>Google Analytics</Link>."
+				},
+				"robots_content": {
+					"label": "robots.txt Content",
+					"placeholder": "User-agent: *\nDisallow: /admin\nDisallow: /config"
+				}
+			}
+		},
 		"actions": {
 			"save": {
 				"button": "Save Changes"
