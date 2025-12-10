@@ -3,7 +3,7 @@
 		"Overview": "概覽",
 		"OverAll": "概覽",
 		"Navigation": "選單",
-		"Page": "頁面",
+		"Page": "分頁",
 		"Article": "文章",
 		"Category": "分類",
 		"Institution": "機構",
@@ -15,11 +15,11 @@
 		"Role": "角色",
 		"Settings": "設定",
 		"Site-SEO": "網站 SEO",
-		"HomePage": "首頁建構器"
+		"HomePage": "首頁上稿工具"
 	},
 	"overview": {
 		"navigation": "選單",
-		"pages": "頁面",
+		"pages": "分頁",
 		"article": "文章",
 		"articles": "文章",
 		"institution": "機構",

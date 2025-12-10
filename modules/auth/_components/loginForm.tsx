@@ -85,15 +85,15 @@ function LoginForm({
   // 根据登录方法决定下一步
   const handleAuthMethod = (method: string, authEmail: string) => {
     switch (method) {
-      case LoginMethodEnum.Both:
-        // 兩步驟：先密碼，再導向 /login/2steps
-        setTwoStep(true);
-        setStep(LoginStepEnum.Password);
-        return;
+      // case LoginMethodEnum.Both:
+      //   // 兩步驟：先密碼，再導向 /login/2steps
+      //   setTwoStep(true);
+      //   setStep(LoginStepEnum.Password);
+      //   return;
 
-      case LoginMethodEnum.Otp:
-        handleVerifyOTP(authEmail);
-        return;
+      // case LoginMethodEnum.Otp:
+      //   handleVerifyOTP(authEmail);
+      //   return;
 
       case LoginMethodEnum.Email:
         setStep(LoginStepEnum.Password);
