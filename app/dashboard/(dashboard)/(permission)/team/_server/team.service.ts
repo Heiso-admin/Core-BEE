@@ -203,6 +203,7 @@ async function resendInvite(id: string) {
     isOwner: member.isOwner,
   });
 
+  revalidatePath('/dashboard/permission/team', 'page');
   return result;
 }
 

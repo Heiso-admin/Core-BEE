@@ -5,6 +5,7 @@ import {
   RotateCcwKey,
   BadgeCheck,
   Copy,
+  Send,
 } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { settings } from '@/config';
@@ -83,6 +84,11 @@ export function MemberActions({
   const loginMethod =
     roles.find((role) => role.id === member.roleId)?.loginMethod || null;
 
+  const InvitationExpired =
+    member.status === MemberStatus.Invited &&
+    member.tokenExpiredAt &&
+    member.tokenExpiredAt.getTime() < Date.now();
+
   const actionItems = [
     {
       // 編輯權限
@@ -97,13 +103,32 @@ export function MemberActions({
       key: 'copyInvitationLink' as const,
       label: t('copyInvitationLink.title'),
       Icon: Copy,
-      visible: loginMethod !== 'sso' && member.status === MemberStatus.Invited,
+      visible:
+        !InvitationExpired &&
+        loginMethod !== 'sso' &&
+        member.status === MemberStatus.Invited,
       onClick: () => {
         if (settings && member?.inviteToken) {
           const invitationLink = `${settings.BASE_HOST}/join?token=${encodeURIComponent(member.inviteToken)}`;
           navigator.clipboard.writeText(invitationLink);
           toast.success(t('copyInvitationLink.success'));
         }
+      },
+    },
+    {
+      // 重新發送邀請
+      key: 'resendInvitation' as const,
+      label: t('resendInvitation.title'),
+      Icon: Send,
+      visible:
+        InvitationExpired &&
+        loginMethod !== 'sso' &&
+        member.status === MemberStatus.Invited,
+      onClick: () => {
+        startResendTransition(async () => {
+          await resendInvite(member.id);
+          toast.success(t('resendInvitation.success'));
+        });
       },
     },
     {

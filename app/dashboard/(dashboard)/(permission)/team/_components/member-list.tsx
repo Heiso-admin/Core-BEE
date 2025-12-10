@@ -82,10 +82,22 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
   // ];
 
   const showStatus = useCallback(
-    (member: string | null) => {
+    (
+      member: string | null,
+      tokenExpiredAt?: Date | null,
+      loginMethod?: string | null
+    ) => {
       switch (member) {
         case MemberStatus.Invited:
-          return <Badge status="blue">{t('statuses.invited')}</Badge>;
+          return loginMethod !== 'sso' ? (
+            tokenExpiredAt && tokenExpiredAt.getTime() > Date.now() ? (
+              <Badge status="blue">{t('statuses.invited')}</Badge>
+            ) : (
+              <Badge status="red">{t('statuses.expired')}</Badge>
+            )
+          ) : (
+            <Badge status="blue">{t('statuses.invited')}</Badge>
+          );
         case MemberStatus.Disabled:
           return <Badge status="hidden">{t('statuses.declined')}</Badge>;
         case MemberStatus.Joined:
@@ -143,7 +155,13 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
       header: t('status'),
       accessorKey: 'status',
       sortingFn: 'basic',
-      cell: ({ row }) => showStatus(row.original.status),
+      cell: ({ row }) => {
+        return showStatus(
+          row.original.status,
+          row.original.tokenExpiredAt,
+          row.original.role?.loginMethod
+        );
+      },
     },
     // {
     //   header: t('signin'),
@@ -234,13 +252,13 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
           />
           {/* <ProtectedArea resource={'member'} action={'edit'}> */}
           {/* <AddMember roles={AllRoles} /> */}
-          {!isDeveloper && (
-            <InviteMember userName={userName} roles={roles}>
-              <Button>
-                <Plus className="h-4 w-4" /> {t('invite')}
-              </Button>
-            </InviteMember>
-          )}
+          {/* {!isDeveloper && ( */}
+          <InviteMember userName={userName} roles={roles}>
+            <Button>
+              <Plus className="h-4 w-4" /> {t('invite')}
+            </Button>
+          </InviteMember>
+          {/* )} */}
           {/* </ProtectedArea> */}
         </div>
       </div>
