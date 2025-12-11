@@ -3,7 +3,7 @@
 import { auth } from '@/modules/auth/auth.config';
 import { db } from "@/lib/db";
 import { menus, roleMenus } from '@/lib/db/schema';
-import { eq, and, isNull } from 'drizzle-orm';
+import { eq, and, isNull, asc } from 'drizzle-orm';
 import type { TMenu, TPermission } from '@/lib/db/schema';
 
 // Types
@@ -85,7 +85,8 @@ async function getMyMenus({
     })
     .from(roleMenus)
     .leftJoin(menus, eq(roleMenus.menuId, menus.id))
-    .where(and(eq(roleMenus.roleId, roleId), isNull(menus.deletedAt)));
+    .where(and(eq(roleMenus.roleId, roleId), isNull(menus.deletedAt)))
+    .orderBy(asc(menus.order));
 
   return roleMenusData.map((item) => item.menu).filter((i) => i !== null);
 }
