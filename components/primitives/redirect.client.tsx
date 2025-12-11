@@ -1,9 +1,14 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export function ClientRedirect({ url }: { url: string }) {
   const router = useRouter();
-  router.push(url);
+
+  useEffect(() => {
+    router.push(url);
+  }, [url, router]);
+
   return null;
 }
