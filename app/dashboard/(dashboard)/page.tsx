@@ -42,7 +42,7 @@ export default async function DashboardPage() {
     menu?.length &&
     menu[0].path
   ) {
-    return <ClientRedirect url={`/dashboard/${menu[0].path}`} />;
+    return <ClientRedirect url={`/dashboard${menu[0].path}`} />;
   }
 
   return null;
