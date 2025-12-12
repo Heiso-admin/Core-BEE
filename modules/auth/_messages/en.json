@@ -315,7 +315,7 @@
 		"title": "Application Submitted",
 		"description": "You have successfully verified your email {email}.",
 		"passwordDesc": "Note: Password is optional. If you don't set one, you will be unable to sign in with a password.",
-		"joinSuccess": "Application for {email} submitted. Please sign in again.",
+		"joinSuccess": "You {email} have successfully joined the system. Please return to sign in.",
 		"notAllowed": "You({email}) are not on the system’s user list. Please contact the administrator.",
 		"submit": "Apply to Create Account",
 		"error": {

@@ -302,7 +302,7 @@
 		"title": "申請已送出",
 		"description": "您的電子郵件 {email} 已成功驗證。",
 		"passwordDesc": "注意：可選填密碼，若未設定密碼，您將無法使用密碼登入",
-		"joinSuccess": "申請已提交至 {email}，請重新登入。",
+		"joinSuccess": "您 {email} 已經成功加入系統，請返回登入。",
 		"notAllowed": "您的電子郵件({email})不在系統用戶列表中。請聯繫系統管理員。",
 		"submit": "申請建立帳號",
 		"error": {
