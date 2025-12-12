@@ -1,4 +1,4 @@
-import { cookies, headers } from 'next/headers';
+import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { ClientRedirect } from '@/components/primitives/redirect.client';
 import { auth } from '@/modules/auth/auth.config';
@@ -9,14 +9,8 @@ import {
 } from './_server/membership.service';
 
 export default async function DashboardPage() {
-  const cookieStore = await cookies();
   const headerList = await headers();
   const pathname = headerList.get('x-current-pathname');
-  const joinToken = cookieStore.get('join-token');
-
-  if (joinToken) {
-    redirect(`/join?token=${joinToken.value}`);
-  }
 
   const session = await auth();
   if (!session?.user) return null;

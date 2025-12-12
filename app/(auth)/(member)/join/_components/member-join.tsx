@@ -31,10 +31,11 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
   const signupSchema = z
     .object({
       name: z.string().min(3, { message: t('name.error') }),
-      email: z.string().email({ message: t('email.error') }),
+      email: z.email().min(3, { message: t('email.error') }),
       password: z.string().min(8, t('password.error')).or(z.literal('')),
       confirmPassword: z.string(),
-    }).refine(
+    })
+    .refine(
       (v) => {
         // 只有在 password 不是空的時候，才檢查
         if (v.password) {
