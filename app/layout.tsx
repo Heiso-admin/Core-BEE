@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import ClientBody from "./ClientBody";
+import { getSiteSettings } from "@/server/site.service";
 import "./globals.css";
 
 const nunito = Nunito({
@@ -30,6 +31,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
+  const initialSite = await getSiteSettings().catch(() => null);
 
   return (
     <html
@@ -40,7 +42,7 @@ export default async function RootLayout({
       <body className="antialiased relative">
         <NextIntlClientProvider locale={locale}>
           <NuqsAdapter>
-            <ClientBody>{children}</ClientBody>
+            <ClientBody initialSite={initialSite}>{children}</ClientBody>
           </NuqsAdapter>
         </NextIntlClientProvider>
       </body>
