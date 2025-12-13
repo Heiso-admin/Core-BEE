@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
         hostname: 'cdn.heisoo.com',
         port: '',
 
-        pathname: '/core-bee/**',
+        pathname: '/**',
       },
     ],
   },

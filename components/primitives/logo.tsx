@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useSite } from "@/providers/site";
 // import config from '@/config';
 
@@ -29,17 +30,18 @@ export function Logo({
       className={classNames.main}
       title={title ?? site?.basic?.title ?? ""}
     >
-      <img
-        src={
-          site?.assets?.logo?.length ? site?.assets?.logo : "/images/logo.png"
-        }
-        className={classNames.img ?? "h-8 w-8 text-primary"}
+      <Image
+        src={site?.assets?.logo?.length ? site.assets.logo : "/images/logo.png"}
         alt={site?.basic?.title ?? site?.basic?.title ?? ""}
+        width={1000}
+        height={1000}
+        priority
+        className={classNames.img ?? "h-8 w-auto text-primary"}
       />
       {hasTitle && (
-          <div className={classNames.text ?? "text-lg font-bold"}>
-            {title ?? site?.basic?.title}
-          </div>
+        <div className={classNames.text ?? "text-lg font-bold"}>
+          {title ?? site?.basic?.title}
+        </div>
       )}
     </Link>
   );
