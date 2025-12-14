@@ -7,11 +7,14 @@ import { Toaster } from "@/components/ui/sonner";
 import { AccountProvider } from "@/providers/account";
 import { SiteProvider } from "@/providers/site";
 import { SettingProvider } from '@/providers/settings';
+import type { SiteSetting } from '@/modules/dev-center/system/settings/site/page';
 
 export default function ClientBody({
   children,
+  initialSite,
 }: {
   children: React.ReactNode;
+  initialSite?: SiteSetting | null;
 }) {
   // Remove any extension-added classes during hydration
   useEffect(() => {
@@ -27,7 +30,7 @@ export default function ClientBody({
       disableTransitionOnChange
     >
       <SettingProvider>
-        <SiteProvider>
+        <SiteProvider initialSite={initialSite}>
           <SessionProvider>
             <AccountProvider>
               {children}

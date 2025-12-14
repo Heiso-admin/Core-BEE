@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import type { SiteSetting } from '@/modules/dev-center/system/settings/site/page';
 import { getSiteSettings } from '@/server/site.service';
 
@@ -18,12 +18,12 @@ const SiteContext = createContext<SiteContextType>({
   refresh: () => { },
 });
 
-export function SiteProvider({ children }: { children: React.ReactNode }) {
-  const [site, setSite] = useState<SiteSetting | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export function SiteProvider({ children, initialSite }: { children: React.ReactNode; initialSite?: SiteSetting | null }) {
+  const [site, setSite] = useState<SiteSetting | null>(initialSite ?? null);
+  const [isLoading, setIsLoading] = useState(!initialSite);
   const [error, setError] = useState<Error | null>(null);
 
-  async function fetchSite() {
+  const fetchSite = useCallback(async () => {
     try {
       setIsLoading(true);
       const data = await getSiteSettings();
@@ -35,15 +35,17 @@ export function SiteProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [setIsLoading, setSite, setError]);
 
   useEffect(() => {
-    fetchSite();
-  }, []);
+    if (!initialSite) {
+      void fetchSite();
+    }
+  }, [initialSite, fetchSite]);
 
-  const refresh = () => {
-    fetchSite();
-  };
+  const refresh = useCallback(() => {
+    void fetchSite();
+  }, [fetchSite]);
 
   return (
     <SiteContext.Provider value={{ site, isLoading, error, refresh }}>
