@@ -15,6 +15,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  reactCompiler: true,
+  experimental: {
+    turbopackFileSystemCacheForDev: true,
+  },
 };
 
 const withNextIntl = createNextIntlPlugin();
