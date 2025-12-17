@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/modules/auth/auth.config';
 import { Login } from '../_components';
 import { hasAnyUser } from '@/server/services/auth';
-import { getSiteSettings } from '@/server/services/system/setting';
+import { getGeneralSettings, getSiteSettings } from '@/server/services/system/setting';
 import config from '@/config';
 import {
   getMember,
@@ -20,6 +20,7 @@ export default async function Page({
   searchParams?: Promise<{ join?: string; relogin?: string; error?: string }>;
 }) {
   const anyUser = await hasAnyUser();
+  const general = await getGeneralSettings();
   const site = await getSiteSettings();
   const orgName =
     (site as any)?.branding?.organization || config?.site?.organization;
@@ -77,7 +78,7 @@ export default async function Page({
         anyUser={anyUser}
         orgName={orgName}
         oAuthData={oAuthData}
-        systemOauth={site.system_oauth as string}
+        systemOauth={general.system_oauth as string}
       />
     </div>
   );

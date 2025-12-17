@@ -11,7 +11,6 @@ import { Card } from "@/components/ui/card";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -19,8 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import type { Locale } from "@/i18n/config";
 import { defaultLocale, getLanguageInfo } from "@/i18n/config";
-import { useSite } from "@/providers/site";
-import { saveSiteSetting, saveDefaultLanguage } from "../../_server/setting.service";
+import { getGeneralSettings, saveGeneralSetting, saveDefaultLanguage } from "../../_server/general.service";
 import { useTranslations } from 'next-intl';
 import {
   Select,
@@ -77,8 +75,21 @@ export type SiteSetting = SettingsFormValues;
 export default function Setting() {
   const t = useTranslations('dashboard.settings.site');
   const [isLoading, startTransition] = useTransition();
-  const { site, refresh } = useSite();
+  const [generalSettings, setGeneralSettings] = useState<any>(null);
   const [currentLocale, setCurrentLocale] = useState<Locale | undefined>();
+
+  const fetchSettings = useCallback(async () => {
+    try {
+      const data = await getGeneralSettings();
+      setGeneralSettings(data);
+    } catch (error) {
+      console.error("Failed to fetch general settings", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
 
   // 將 DB 讀取到的 site 物件映射到表單預設值，容忍 snake/camel 命名差異
   const mapSiteToFormValues = useCallback((s: any | null | undefined): SettingsFormValues => {
@@ -91,7 +102,6 @@ export default function Setting() {
       basic: {
         name: basic?.name ?? '',
         title: basic?.title ?? '',
-        // 同時支援 base_url 與 baseUrl
         base_url: basic?.base_url ?? basic?.baseUrl ?? '',
         domain: basic?.domain ?? '',
       },
@@ -110,28 +120,28 @@ export default function Setting() {
     };
   }, []);
 
-  // 以 DB 的 site_settings 為主，顯示系統預設語言
+  // 以 DB 的 general_settings 為主，顯示系統預設語言
   useEffect(() => {
-    const locale = (site as any)?.language?.default as Locale | undefined;
+    const locale = (generalSettings as any)?.language?.default as Locale | undefined;
     setCurrentLocale(locale ?? defaultLocale);
-  }, [site]);
+  }, [generalSettings]);
 
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
-    defaultValues: mapSiteToFormValues(site),
+    defaultValues: mapSiteToFormValues(generalSettings),
   });
 
-  // 當 site 資料載入後，重置表單以讀取 DB 值
+  // 當 generalSettings 資料載入後，重置表單以讀取 DB 值
   useEffect(() => {
-    if (!site) return;
-    form.reset(mapSiteToFormValues(site));
-  }, [site, form, mapSiteToFormValues]);
+    if (!generalSettings) return;
+    form.reset(mapSiteToFormValues(generalSettings));
+  }, [generalSettings, form, mapSiteToFormValues]);
 
   async function onSubmit(data: SettingsFormValues) {
     startTransition(async () => {
-      await saveSiteSetting(data);
-      refresh();
-      toast('Site SEO settings updated');
+      await saveGeneralSetting(data);
+      await fetchSettings();
+      toast.success('General settings updated');
     });
   }
 
@@ -147,14 +157,14 @@ export default function Setting() {
           {/* Basic Information */}
           <Card className="bg-card/50 p-6">
             <div className="flex flex-col gap-6">
-              <div>
+              {/* <div>
                 <h2 className="text-lg font-semibold">{t('basic.title')}</h2>
                 <p className="text-sm text-muted-foreground">
                   {t('basic.description')}
                 </p>
-              </div>
+              </div> */}
               <div className="grid gap-4">
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="basic.name"
                   render={({ field }) => (
@@ -192,7 +202,7 @@ export default function Setting() {
                       </FormControl>
                     </FormItem>
                   )}
-                />
+                /> */}
                 <FormField
                   control={form.control}
                   name="basic.domain"
@@ -277,6 +287,7 @@ export default function Setting() {
                   setCurrentLocale(value);
                   startTransition(async () => {
                     await saveDefaultLanguage(value);
+                    await fetchSettings();
                     toast('Language settings saved');
                   });
                 }}
