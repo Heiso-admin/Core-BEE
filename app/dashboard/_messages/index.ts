@@ -8,13 +8,9 @@ export async function getDashboardMessages(locale: Locale) {
     await import(`../(dashboard)/(permission)/_messages/${locale}.json`)
   ).default;
 
-  const settings = (
-    await import(`../(dashboard)/settings/_messages/${locale}.json`)
-  ).default;
 
   return {
     ...dashboard,
     permission,
-    settings,
   };
 }

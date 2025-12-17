@@ -31,7 +31,7 @@ import type { Member } from "../_server/team.service";
 import { InviteMember } from "./invite-member";
 import { MemberActions } from "./member-actions";
 import { SearchInput } from "@/components/ui/search-input";
-import { CaptionTotal } from '@/components/ui/caption-total';
+import { CaptionTotal } from '@/components/shared/caption-total';
 import { readableDate } from "@/lib/utils/format";
 import { RadioGroup } from '@/components/ui/radio-group';
 import { RadioTagGroupItem, RadioTagLabel } from '@/components/ui/radio-tag';
@@ -301,9 +301,9 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}
