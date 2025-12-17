@@ -34,7 +34,7 @@ import type { TMenu } from "@/lib/db/schema";
 import type { Role } from "../_server/role.service";
 import { createRole, deleteRole, updateRole } from "../_server/role.service";
 import { assignMenus, assignPermissions } from "../_server/assign.service";
-import { CaptionTotal } from '@/components/ui/caption-total';
+import { CaptionTotal } from '@/components/shared/caption-total';
 import { Plus, ChevronDown, ChevronRight, Pencil, Trash, ListChevronsDownUp } from 'lucide-react';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { toast } from "sonner";
