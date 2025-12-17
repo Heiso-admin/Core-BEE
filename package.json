@@ -125,6 +125,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "babel-plugin-react-compiler": "^1.0.0",
     "drizzle-kit": "^0.31.5",
     "tailwindcss": "^4",
     "tsx": "^4.20.6",
