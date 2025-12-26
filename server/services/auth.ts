@@ -47,15 +47,14 @@ export async function verifyPasswordOnly(email: string, password: string): Promi
   }
 }
 
-export async function signup({
-  name,
-  email,
-  password,
-}: {
+export async function signup(input: {
   name?: string;
   email: string;
   password: string;
 }): Promise<{ id: string; name: string } | null> {
+  const name = input.name?.trim();
+  const email = input.email.trim();
+  const { password } = input;
   try {
     // 先檢查是否已存在 user（可能由邀請流程預先建立）
     const existing = await db.query.users.findFirst({

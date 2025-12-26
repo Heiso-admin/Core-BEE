@@ -76,9 +76,9 @@ export function InviteMember({
     startTransition(async () => {
       try {
         await invite({
-          email: data.email,
+          email: data.email.replace(/\s/g, ''),
           role: data.role,
-          name: data.name,
+          name: data.name?.trim(),
         });
         toast.success(t("form.success", { email: data.email }));
         form.reset();
