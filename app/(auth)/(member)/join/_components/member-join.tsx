@@ -30,7 +30,7 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
 
   const signupSchema = z
     .object({
-      name: z.string().min(3, { message: t('name.error') }),
+      name: z.string().trim().min(3, { message: t('name.error') }),
       email: z.email().min(3, { message: t('email.error') }),
       password: z.string().min(8, t('password.error')).or(z.literal('')),
       confirmPassword: z.string(),
