@@ -10,23 +10,23 @@ type PermissionConfigShape = {
 
 export const permissionsConfig = [
   {
-    "id": "pe_mCRXwVcqvv",
-    "resource": "member",
-    "action": "view",
+    "id": "pe_tBI88yvgLm",
+    "resource": "article",
+    "action": "download",
     "menu": {
-      "id": "JiZgDz80U6",
-      "title": "Team",
-      "path": "/team"
+      "id": "xloztdCw76",
+      "title": "Article",
+      "path": "/article/post"
     }
   },
   {
-    "id": "pe_7tb7zg9lo7",
-    "resource": "member",
-    "action": "edit",
+    "id": "pe_UqlEYkrke1",
+    "resource": "report",
+    "action": "download",
     "menu": {
-      "id": "JiZgDz80U6",
-      "title": "Team",
-      "path": "/team"
+      "id": "ch5jNymL2t",
+      "title": "Overview",
+      "path": ""
     }
   }
 ] as const satisfies readonly PermissionConfigShape[];
