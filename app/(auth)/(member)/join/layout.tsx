@@ -1,6 +1,6 @@
 "use client";
 
-import { Logo } from "@/components/primitives";
+import { Logo } from "@heiso/core/components/primitives";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (

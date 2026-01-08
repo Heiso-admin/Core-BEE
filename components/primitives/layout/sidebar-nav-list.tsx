@@ -1,19 +1,17 @@
 "use client";
 
-import type React from "react";
-import { useTranslations } from "next-intl";
-import { Ellipsis, SquarePlus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@heiso/core/components/ui/button";
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+  DropdownMenuTrigger,
+} from "@heiso/core/components/ui/dropdown-menu";
+import { cn } from "@heiso/core/lib/utils";
+import { Ellipsis, SquarePlus } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
+import type React from "react";
 import { useState } from "react";
 
 type SidebarNavListProps = {
@@ -33,23 +31,21 @@ export function SidebarNavList({
   actionSlot,
   onAddClick,
 }: SidebarNavListProps) {
-
   return (
     <div className={cn("w-64 min-w-3xs flex flex-col", className)}>
       <h3 className="h-12 flex items-center justify-between px-4 text-lg font-semibold">
         {title}
-        {actionSlot ?? (
-          onAddClick ? (
+        {actionSlot ??
+          (onAddClick ? (
             <Button
               variant="ghost"
               className="ml-auto -mr-4"
-              size='icon_sm'
+              size="icon_sm"
               onClick={onAddClick}
             >
               <SquarePlus className="w-4 h-4" />
             </Button>
-          ) : null
-        )}
+          ) : null)}
       </h3>
       <div className="space-y-2 border-t flex-1 overflow-auto py-3">
         {children}
@@ -88,7 +84,7 @@ export function SidebarNavItem({
   menuOpen?: boolean;
   onMenuOpenChange?: (open: boolean) => void;
 }) {
-  const t = useTranslations('components.sidebarNavList');
+  const t = useTranslations("components.sidebarNavList");
   const [internalOpen, setInternalOpen] = useState(false);
   const open = menuOpen ?? internalOpen;
   const handleOpenChange = (next: boolean) => {
@@ -107,14 +103,10 @@ export function SidebarNavItem({
       {...props}
     >
       {children}
-      { icon !== "" &&
+      {icon !== "" && (
         <DropdownMenu open={open} onOpenChange={handleOpenChange}>
           <DropdownMenuTrigger asChild {...dropdownButtonProps}>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-current"
-            >
+            <Button variant="ghost" size="icon" className="text-current">
               {icon}
             </Button>
           </DropdownMenuTrigger>
@@ -146,7 +138,7 @@ export function SidebarNavItem({
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-      }
+      )}
       {afterButton}
     </div>
   );
@@ -169,7 +161,7 @@ export function SidebarItemLink({
       className={cn(
         "flex-1 block px-3 py-1 text-sm truncate text-muted-foreground group-hover:text-current",
         active && "text-current",
-        className
+        className,
       )}
       {...props}
     >

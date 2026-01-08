@@ -1,8 +1,8 @@
 "use server";
 
+import { db } from "@heiso/core/lib/db";
+import { users } from "@heiso/core/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { db } from "@/lib/db";
-import { users } from "@/lib/db/schema";
 
 export async function updateAvatar(userId: string, avatar: string) {
   try {

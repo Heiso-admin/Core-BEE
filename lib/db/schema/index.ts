@@ -1,9 +1,9 @@
 // user & authorization
-export * from './auth';
+export * from "./auth";
 // features
-export * from './features';
+export * from "./features";
 // permissions
-export * from './permissions';
+export * from "./permissions";
 
 // system
-export * from './system';
+export * from "./system";

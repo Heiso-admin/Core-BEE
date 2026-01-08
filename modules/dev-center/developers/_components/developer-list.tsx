@@ -1,25 +1,7 @@
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  type ColumnDef,
-  type FilterFn,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import { MoreHorizontal, Trash2, X } from 'lucide-react';
-import { useSession } from 'next-auth/react';
-import { useTranslations } from 'next-intl';
-import { useState, useTransition } from 'react';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import * as z from 'zod';
-import { ActionButton } from '@/components/primitives';
-import { Avatar } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { ActionButton } from "@heiso/core/components/primitives";
+import { Badge } from "@heiso/core/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -28,13 +10,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from "@heiso/core/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@heiso/core/components/ui/dropdown-menu";
 import {
   Form,
   FormControl,
@@ -42,8 +24,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+} from "@heiso/core/components/ui/form";
+import { Input } from "@heiso/core/components/ui/input";
 import {
   Table,
   TableBody,
@@ -51,11 +33,27 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import type { Developer } from '../_server/developer.service';
-import { addDeveloper, removeDeveloper } from '../_server/developer.service';
+} from "@heiso/core/components/ui/table";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  type ColumnDef,
+  type FilterFn,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { MoreHorizontal, Trash2 } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+import type { Developer } from "../_server/developer.service";
+import { addDeveloper, removeDeveloper } from "../_server/developer.service";
 
-const fuzzyFilter: FilterFn<Developer> = (row, columnId, filterValue) => {
+const fuzzyFilter: FilterFn<Developer> = (row, _columnId, filterValue) => {
   const searchValue = filterValue.toLowerCase();
   const user = row.original.user;
 
@@ -69,13 +67,13 @@ export function DeveloperList({ data }: { data: Developer[] }) {
   const { data: session } = useSession();
   const [isPending, startTransition] = useTransition();
   const [isRemovePending, startRemoveTransition] = useTransition();
-  const [filtering, setFiltering] = useState('');
+  const [filtering, setFiltering] = useState("");
   const [open, setOpen] = useState(false);
-  const t = useTranslations('devCenter.developers');
+  const t = useTranslations("devCenter.developers");
 
   const columns: ColumnDef<Developer>[] = [
     {
-      header: t('columns.name'),
+      header: t("columns.name"),
       cell: ({ row }) => {
         const { id, name } = row.original.user;
         const isYou = session?.user?.id === id;
@@ -84,8 +82,8 @@ export function DeveloperList({ data }: { data: Developer[] }) {
             <div className="flex gap-2">
               <span>{name}</span>
               {isYou && (
-                <Badge variant={'outline'} className="text-xs">
-                  {t('columns.youBadge')}
+                <Badge variant={"outline"} className="text-xs">
+                  {t("columns.youBadge")}
                 </Badge>
               )}
             </div>
@@ -94,7 +92,7 @@ export function DeveloperList({ data }: { data: Developer[] }) {
       },
     },
     {
-      header: t('columns.email'),
+      header: t("columns.email"),
       cell: ({ row }) => {
         const { email } = row.original.user;
         return (
@@ -107,7 +105,7 @@ export function DeveloperList({ data }: { data: Developer[] }) {
       },
     },
     {
-      id: 'actions',
+      id: "actions",
       cell: ({ row }) => {
         return (
           <div className="flex items-center justify-end gap-2">
@@ -121,7 +119,7 @@ export function DeveloperList({ data }: { data: Developer[] }) {
                   disabled={isRemovePending}
                 >
                   <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">{t('actions.moreActions')}</span>
+                  <span className="sr-only">{t("actions.moreActions")}</span>
                 </ActionButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -134,7 +132,7 @@ export function DeveloperList({ data }: { data: Developer[] }) {
                   }}
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
-                  {t('actions.remove')}
+                  {t("actions.remove")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -147,7 +145,7 @@ export function DeveloperList({ data }: { data: Developer[] }) {
   const form = useForm<FormValues>({
     resolver: zodResolver(inviteFormSchema(t)),
     defaultValues: {
-      email: '',
+      email: "",
     },
   });
 
@@ -169,12 +167,12 @@ export function DeveloperList({ data }: { data: Developer[] }) {
         await addDeveloper({
           email: data.email,
         });
-        toast.success(t('notifications.addSuccess'));
+        toast.success(t("notifications.addSuccess"));
         setOpen(false);
         form.reset();
       } catch (error) {
-        toast.error(t('notifications.addError'));
-        console.error('Error adding administrator:', error);
+        toast.error(t("notifications.addError"));
+        console.error("Error adding administrator:", error);
       }
     });
   };
@@ -185,7 +183,7 @@ export function DeveloperList({ data }: { data: Developer[] }) {
         <div className="flex items-center gap-2">
           <Input
             type="text"
-            placeholder={t('search.inputPlaceholder')}
+            placeholder={t("search.inputPlaceholder")}
             className="h-9 w-[240px]"
             value={filtering}
             onChange={(e) => setFiltering(e.target.value)}
@@ -198,14 +196,14 @@ export function DeveloperList({ data }: { data: Developer[] }) {
               disabled={isPending}
               loading={isPending}
             >
-              {t('add.buttonLabel')}
+              {t("add.buttonLabel")}
             </ActionButton>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{t('add.dialogTitle')}</DialogTitle>
+              <DialogTitle>{t("add.dialogTitle")}</DialogTitle>
               <DialogDescription>
-                {t('add.dialogDescription')}
+                {t("add.dialogDescription")}
               </DialogDescription>
             </DialogHeader>
             <Form {...form}>
@@ -218,10 +216,10 @@ export function DeveloperList({ data }: { data: Developer[] }) {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('add.emailLabel')}</FormLabel>
+                      <FormLabel>{t("add.emailLabel")}</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder={t('add.emailPlaceholder')}
+                          placeholder={t("add.emailPlaceholder")}
                           {...field}
                         />
                       </FormControl>
@@ -235,7 +233,7 @@ export function DeveloperList({ data }: { data: Developer[] }) {
                     loading={isPending}
                     disabled={isPending}
                   >
-                    {isPending ? t('add.savingButton') : t('add.saveButton')}
+                    {isPending ? t("add.savingButton") : t("add.saveButton")}
                   </ActionButton>
                 </DialogFooter>
               </form>
@@ -257,7 +255,7 @@ export function DeveloperList({ data }: { data: Developer[] }) {
                           ? null
                           : flexRender(
                               header.column.columnDef.header,
-                              header.getContext()
+                              header.getContext(),
                             )}
                       </TableHead>
                     ))}
@@ -271,7 +269,7 @@ export function DeveloperList({ data }: { data: Developer[] }) {
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}
@@ -282,7 +280,7 @@ export function DeveloperList({ data }: { data: Developer[] }) {
           </div>
 
           <div className="py-2 border-t text-start text-sm">
-            {t('table.totalCount', {
+            {t("table.totalCount", {
               count: table.getFilteredRowModel().rows.length,
             })}
           </div>
@@ -294,7 +292,7 @@ export function DeveloperList({ data }: { data: Developer[] }) {
 
 const inviteFormSchema = (t: ReturnType<typeof useTranslations>) =>
   z.object({
-    email: z.string().email(t('validation.emailInvalid')),
+    email: z.string().email(t("validation.emailInvalid")),
   });
 
 type FormValues = z.infer<ReturnType<typeof inviteFormSchema>>;

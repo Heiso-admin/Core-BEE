@@ -1,14 +1,13 @@
 "use client";
 
-import Header from "./header";
+import { ActionButton } from "@heiso/core/components/primitives/action-button";
+import { Button } from "@heiso/core/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { ActionButton } from "@/components/primitives/action-button";
 import { resendInviteByEmail } from "../_server/user.service";
-import AuthRedirectHint from './authRedirectHint';
-import Link from 'next/link';
-import { LoginStepEnum, type LoginStep } from './loginForm';
-import { Button } from '@/components/ui/button';
+import AuthRedirectHint from "./authRedirectHint";
+import Header from "./header";
+import { type LoginStep, LoginStepEnum } from "./loginForm";
 
 const EmailVerification = ({
   email,
@@ -43,7 +42,11 @@ const EmailVerification = ({
         <div className="text-center mt-6 mb-8 text-md text-muted-foreground">
           {t("emailDescription", { email: email || "email" })}
         </div>
-        <ActionButton className="w-full" onClick={handleResend} loading={isResending}>
+        <ActionButton
+          className="w-full"
+          onClick={handleResend}
+          loading={isResending}
+        >
           {t("actions.emailResend")}
         </ActionButton>
         <p className="mt-4 text-sm text-sub-highlight">{message}</p>
@@ -59,6 +62,6 @@ const EmailVerification = ({
       </AuthRedirectHint>
     </>
   );
-}
+};
 
-export default EmailVerification
+export default EmailVerification;

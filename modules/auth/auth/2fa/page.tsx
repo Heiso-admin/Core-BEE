@@ -1,8 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@heiso/core/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,8 +8,10 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+} from "@heiso/core/components/ui/card";
+import { Input } from "@heiso/core/components/ui/input";
+import { useTranslations } from "next-intl";
+import { useEffect, useRef, useState } from "react";
 
 export default function TwoFactorAuth() {
   const t = useTranslations("auth.2fa");

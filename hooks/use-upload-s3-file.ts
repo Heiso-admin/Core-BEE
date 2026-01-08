@@ -1,7 +1,7 @@
+import { generateId } from "@heiso/core/lib/id-generator";
+import { getPreSignedUrl } from "@heiso/core/lib/s3";
+import type { FileRouter, UploadedFile } from "@heiso/core/lib/upload-router";
 import * as React from "react";
-import { generateId } from "@/lib/id-generator";
-import { getPreSignedUrl } from "@/lib/s3";
-import type { FileRouter, UploadedFile } from "@/lib/upload-router";
 
 type ProgressVerboseEvent = {
   loaded: number;

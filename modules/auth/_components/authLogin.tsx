@@ -1,6 +1,6 @@
-import { ActionButton } from '@/components/primitives/action-button';
-import { useTransition } from 'react'
-import { z } from "zod";
+import { MemberStatus } from "@heiso/core/app/dashboard/(dashboard)/(permission)/team/_components/member-list";
+import { invite } from "@heiso/core/app/dashboard/(dashboard)/(permission)/team/_server/team.service";
+import { ActionButton } from "@heiso/core/components/primitives/action-button";
 import {
   Form,
   FormControl,
@@ -8,26 +8,26 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from '@/components/ui/input';
-import { useTranslations } from 'next-intl';
+} from "@heiso/core/components/ui/form";
+import { Input } from "@heiso/core/components/ui/input";
+import config from "@heiso/core/config";
+import { SystemOauth } from "@heiso/core/modules/dev-center/system/settings/general/page";
+import { oAuthLogin } from "@heiso/core/server/services/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { capitalize } from "lodash";
+import { useTranslations } from "next-intl";
+import { useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import {
-  isUserDeveloper,
   getLoginMethod,
   getMemberStatus,
   getUserLoginMethod,
-} from '../_server/user.service';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { type LoginStep, LoginStepEnum } from './loginForm';
-import { invite } from '@/app/dashboard/(dashboard)/(permission)/team/_server/team.service';
-import Header from './header';
-import config from '@/config';
-import { MemberStatus } from '@/app/dashboard/(dashboard)/(permission)/team/_components/member-list';
-import OAuthLoginButtons from './oAuthLoginButtons';
-import { oAuthLogin } from '@/server/services/auth';
-import { SystemOauth } from '@/modules/dev-center/system/settings/general/page';
-import { capitalize } from 'lodash';
+  isUserDeveloper,
+} from "../_server/user.service";
+import Header from "./header";
+import { type LoginStep, LoginStepEnum } from "./loginForm";
+import OAuthLoginButtons from "./oAuthLoginButtons";
 
 interface AuthLoginProps {
   error: string;
@@ -52,19 +52,19 @@ const AuthLogin = ({
   handleAuthMethod,
   systemOauth,
 }: AuthLoginProps) => {
-  const t = useTranslations('auth.login');
+  const t = useTranslations("auth.login");
 
   const usedOrgName = orgName || config?.site?.organization;
   const [isLoading, startTransition] = useTransition();
 
   const emailSchema = z.object({
-    email: z.email({ message: t('email.error') }),
+    email: z.email({ message: t("email.error") }),
   });
 
   const emailForm = useForm<z.infer<typeof emailSchema>>({
     resolver: zodResolver(emailSchema),
     defaultValues: {
-      email: '',
+      email: "",
     },
   });
 
@@ -74,11 +74,11 @@ const AuthLogin = ({
     // 僅當系統「完全沒有任何使用者」時，才寄送登入連結
     if (!anyUser) {
       try {
-        await invite({ email: values.email, role: 'owner' });
-        setError('');
+        await invite({ email: values.email, role: "owner" });
+        setError("");
       } catch (e) {
-        console.error('Failed to send login link email', e);
-        setError(t('error.general'));
+        console.error("Failed to send login link email", e);
+        setError(t("error.general"));
       } finally {
         setStep(LoginStepEnum.Invite);
       }
@@ -92,7 +92,7 @@ const AuthLogin = ({
           const memberStatus = await getMemberStatus(values.email); // 成員狀態
 
           if (isDeveloper) {
-            const loginMethod = 'both';
+            const loginMethod = "both";
             setLoginMethod(loginMethod);
             handleAuthMethod(loginMethod, values.email);
             return;
@@ -100,31 +100,31 @@ const AuthLogin = ({
 
           if (userAuth) {
             return setError(
-              t('error.userAuth', { oAuth: capitalize(systemOauth) || '' })
+              t("error.userAuth", { oAuth: capitalize(systemOauth) || "" }),
             );
           }
 
           if (loginMethod === LoginStepEnum.SSO) {
-            return setError(t('error.onlySSOAllowed'));
+            return setError(t("error.onlySSOAllowed"));
           }
 
           if (!loginMethod || !memberStatus) {
-            return setError(t('error.userNotFound'));
+            return setError(t("error.userNotFound"));
           }
 
           if (memberStatus === MemberStatus.Invited) {
-            return setError(t('error.invited'));
+            return setError(t("error.invited"));
           }
 
           if (memberStatus === MemberStatus.Review) {
-            return setError(t('error.review'));
+            return setError(t("error.review"));
           }
 
           if (memberStatus !== MemberStatus.Joined) {
-            throw new Error('USER_NOT_ACTIVATED');
+            throw new Error("USER_NOT_ACTIVATED");
           }
 
-          if (loginMethod !== '') {
+          if (loginMethod !== "") {
             //  以下只有狀態是加入(啟用)狀態才可以處理
             setLoginMethod(loginMethod);
             handleAuthMethod(loginMethod, values.email);
@@ -134,8 +134,8 @@ const AuthLogin = ({
             setStep(LoginStepEnum.Password);
           }
         } catch (err) {
-          console.error('Error getting login method:', err);
-          setError(t('error.general'));
+          console.error("Error getting login method:", err);
+          setError(t("error.general"));
         }
       });
     }
@@ -148,7 +148,7 @@ const AuthLogin = ({
           <OAuthLoginButtons
             icon="material-icon-theme:google"
             alt="Google"
-            onClick={() => oAuthLogin('google')}
+            onClick={() => oAuthLogin("google")}
           />
         );
 
@@ -166,7 +166,7 @@ const AuthLogin = ({
           <OAuthLoginButtons
             icon="logos:microsoft-icon"
             alt="Microsoft"
-            onClick={() => oAuthLogin('microsoft-entra-id')}
+            onClick={() => oAuthLogin("microsoft-entra-id")}
           />
         );
 
@@ -181,7 +181,7 @@ const AuthLogin = ({
     <>
       <Header
         title={
-          anyUser ? t('title') : t('titleInvite', { organization: usedOrgName })
+          anyUser ? t("title") : t("titleInvite", { organization: usedOrgName })
         }
       />
       {createAuthButton(systemOauth) && (
@@ -210,13 +210,13 @@ const AuthLogin = ({
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>{t('email.label')}</FormLabel>
+                      <FormLabel>{t("email.label")}</FormLabel>
                       <FormControl>
                         <Input
                           id="email-address"
                           type="email"
                           autoComplete="email"
-                          placeholder={t('email.placeholder')}
+                          placeholder={t("email.placeholder")}
                           {...field}
                         />
                       </FormControl>
@@ -238,7 +238,7 @@ const AuthLogin = ({
               className="w-full bg-primary hover:bg-primary/80"
               loading={isLoading}
             >
-              {t('submit')}
+              {t("submit")}
             </ActionButton>
           </div>
         </form>
@@ -247,4 +247,4 @@ const AuthLogin = ({
   );
 };
 
-export default AuthLogin
+export default AuthLogin;

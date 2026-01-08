@@ -1,9 +1,9 @@
 "use server";
 
-import { db } from "@/lib/db";
-import { generalSettings } from "@/lib/db/schema";
-import type { Settings } from "@/types/system";
-import type { Locale } from "@/i18n/config";
+import type { Locale } from "@heiso/core/i18n/config";
+import { db } from "@heiso/core/lib/db";
+import { generalSettings } from "@heiso/core/lib/db/schema";
+import type { Settings } from "@heiso/core/types/system";
 
 // 讀取 general_settings（系統級設定）
 async function getGeneralSettings(): Promise<Settings> {
@@ -38,7 +38,7 @@ async function saveGeneralSetting(data: Settings) {
               value,
             },
           });
-      })
+      }),
     );
   });
 }
@@ -61,4 +61,3 @@ async function saveDefaultLanguage(locale: Locale) {
 }
 
 export { getGeneralSettings, saveGeneralSetting, saveDefaultLanguage };
-

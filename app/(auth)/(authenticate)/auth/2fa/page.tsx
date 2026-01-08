@@ -1,1 +1,1 @@
-export { default } from '@/modules/auth/auth/2fa/page';
+export { default } from "@heiso/core/modules/auth/auth/2fa/page";

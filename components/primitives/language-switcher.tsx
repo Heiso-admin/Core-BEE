@@ -1,17 +1,16 @@
 "use client";
 
-import { Check, Languages } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@heiso/core/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import type { Locale } from "@/i18n/config";
-import { getSupportedLanguages } from "@/i18n/config";
-import { setUserLocale } from "@/server/locale";
+} from "@heiso/core/components/ui/dropdown-menu";
+import type { Locale } from "@heiso/core/i18n/config";
+import { getSupportedLanguages } from "@heiso/core/i18n/config";
+import { setUserLocale } from "@heiso/core/server/locale";
+import { Languages } from "lucide-react";
 
 export function LanguageSwitcher({
   lang,

@@ -30,7 +30,7 @@
         "label": "Site Name",
         "description": "Please use 32 characters at maximum."
       },
-      "title": {
+      "title_input": {
         "label": "Title"
       },
       "base_url": {
@@ -49,7 +49,7 @@
       "slogan": {
         "label": "Slogan"
       },
-      "description": {
+      "description_input": {
         "label": "Description"
       },
       "copyright": {

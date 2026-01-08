@@ -1,1 +1,1 @@
-export { default } from '@/modules/auth/auth/reset-password/page';
+export { default } from "@heiso/core/modules/auth/auth/reset-password/page";

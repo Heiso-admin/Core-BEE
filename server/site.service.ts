@@ -1,7 +1,7 @@
-'use server';
+"use server";
 
-import { db } from '@/lib/db';
-import type { SiteSetting } from '@/modules/dev-center/system/settings/general/page';
+import { db } from "@heiso/core/lib/db";
+import type { SiteSetting } from "@heiso/core/modules/dev-center/system/settings/general/page";
 
 export async function getSiteSettings(): Promise<SiteSetting> {
   const settings = await db.query.siteSettings.findMany({

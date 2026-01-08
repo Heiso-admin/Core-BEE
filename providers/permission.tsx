@@ -1,5 +1,7 @@
 "use client";
 
+import { getUserPermissions } from "@heiso/core/server/services/permission";
+import type { UserPermission } from "@heiso/core/server/services/role";
 import {
   createContext,
   useCallback,
@@ -7,8 +9,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import { getUserPermissions } from "@/server/services/permission";
-import type { UserPermission } from "@/server/services/role";
 
 interface Permission {
   resource: string;

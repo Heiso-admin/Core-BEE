@@ -1,10 +1,11 @@
 "use client";
 
-import { AlertCircle, ArrowRight, CheckCircle2, Mail } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@heiso/core/components/ui/alert";
+import { Button } from "@heiso/core/components/ui/button";
 import {
   Card,
   CardContent,
@@ -12,8 +13,11 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+} from "@heiso/core/components/ui/card";
+import { Input } from "@heiso/core/components/ui/input";
+import { AlertCircle, ArrowRight, CheckCircle2, Mail } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 export default function SignupEmailVerification() {
   const t = useTranslations("auth.emailVerification");

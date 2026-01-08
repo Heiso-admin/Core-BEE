@@ -1,3 +1,4 @@
+import { generateId } from "@heiso/core/lib/id-generator";
 import { relations } from "drizzle-orm";
 import {
   boolean,
@@ -12,37 +13,36 @@ import {
   createUpdateSchema,
 } from "drizzle-zod";
 import type zod from "zod";
-import { generateId } from "@/lib/id-generator";
 import { users } from "../auth";
 import { roles } from "./role";
 
 export const members = pgTable(
-  'members',
+  "members",
   {
-    id: varchar('id', { length: 20 })
+    id: varchar("id", { length: 20 })
       .primaryKey()
       .$default(() => generateId()),
-    userId: varchar('user_id', { length: 20 }).references(() => users.id),
-    email: varchar('email', { length: 100 }).notNull(),
-    roleId: varchar('role_id', { length: 20 }).references(() => roles.id),
-    inviteToken: varchar('invite_token', { length: 20 }),
-    tokenExpiredAt: timestamp('token_expired_at'),
-    isOwner: boolean('is_owner').notNull().default(false),
-    loginMethod: varchar('login_method', { length: 20 }),
-    status: varchar('status', { length: 20 }).default('invited'),
-    deletedAt: timestamp('deleted_at'),
-    createdAt: timestamp('created_at').notNull().defaultNow(),
-    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    userId: varchar("user_id", { length: 20 }).references(() => users.id),
+    email: varchar("email", { length: 100 }).notNull(),
+    roleId: varchar("role_id", { length: 20 }).references(() => roles.id),
+    inviteToken: varchar("invite_token", { length: 20 }),
+    tokenExpiredAt: timestamp("token_expired_at"),
+    isOwner: boolean("is_owner").notNull().default(false),
+    loginMethod: varchar("login_method", { length: 20 }),
+    status: varchar("status", { length: 20 }).default("invited"),
+    deletedAt: timestamp("deleted_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
   (table) => [
     // Index for foreign key lookups
-    index('org_members_user_id_idx').on(table.userId),
-    index('org_members_role_id_idx').on(table.roleId),
+    index("org_members_user_id_idx").on(table.userId),
+    index("org_members_role_id_idx").on(table.roleId),
     // Index for email lookups
-    index('org_members_email_idx').on(table.email),
+    index("org_members_email_idx").on(table.email),
     // Index for invite token lookups
-    index('org_members_invite_token_idx').on(table.inviteToken),
-  ]
+    index("org_members_invite_token_idx").on(table.inviteToken),
+  ],
 );
 
 export const orgMembersRelations = relations(members, ({ one }) => ({

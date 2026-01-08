@@ -1,17 +1,17 @@
-import withBundleAnalyzer from '@next/bundle-analyzer';
-import type { NextConfig } from 'next';
-import createNextIntlPlugin from 'next-intl/plugin';
+import withBundleAnalyzer from "@next/bundle-analyzer";
+import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
   images: {
-    formats: ['image/avif', 'image/webp'],
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'cdn.heisoo.com',
-        port: '',
+        protocol: "https",
+        hostname: "cdn.heisoo.com",
+        port: "",
 
-        pathname: '/**',
+        pathname: "/**",
       },
     ],
   },
@@ -24,6 +24,6 @@ const nextConfig: NextConfig = {
 const withNextIntl = createNextIntlPlugin();
 export default withNextIntl(
   withBundleAnalyzer({
-    enabled: process.env.ANALYZE === 'true',
-  })(nextConfig)
+    enabled: process.env.ANALYZE === "true",
+  })(nextConfig),
 );

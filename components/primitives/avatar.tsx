@@ -2,8 +2,8 @@ import {
   AvatarFallback,
   AvatarImage,
   Avatar as AvatarLayer,
-} from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+} from "@heiso/core/components/ui/avatar";
+import { cn } from "@heiso/core/lib/utils";
 import { RandomAvatar } from "./random-avatar";
 
 export function Avatar({

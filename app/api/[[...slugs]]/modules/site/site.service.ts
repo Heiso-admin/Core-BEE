@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { db } from "@heiso/core/lib/db";
 
 export async function getSiteSetting() {
   const settings = await db.query.siteSettings.findMany({

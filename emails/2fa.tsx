@@ -1,6 +1,5 @@
 import {
   Body,
-  Button,
   Container,
   Head,
   Heading,
@@ -23,7 +22,7 @@ interface TwoFactorEmailProps {
 export default function TwoFactorEmail({
   logoUrl,
   code,
-  username = '',
+  username = "",
   expiresInMinutes = 10,
 }: TwoFactorEmailProps) {
   return (

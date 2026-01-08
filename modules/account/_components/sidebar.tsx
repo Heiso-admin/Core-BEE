@@ -1,12 +1,12 @@
 "use client";
 
+import { Copyright, Logo, LucideIcon } from "@heiso/core/components/primitives";
+import { Button } from "@heiso/core/components/ui/button";
+import { ScrollArea } from "@heiso/core/components/ui/scroll-area";
+import config from "@heiso/core/config";
+import { cn } from "@heiso/core/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Copyright, Logo, LucideIcon } from "@/components/primitives";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import config from "@/config";
-import { cn } from "@/lib/utils";
 
 type MenuMeta = {
   url: string;

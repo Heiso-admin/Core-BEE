@@ -1,14 +1,12 @@
-import { type VariantProps } from "class-variance-authority";
-import React from "react";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button, type buttonVariants } from "@heiso/core/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@heiso/core/components/ui/tooltip";
+import type { VariantProps } from "class-variance-authority";
+import React from "react";
 import LoadingSpinner from "./spinner";
-
-
 
 type ActionButtonProps = React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {

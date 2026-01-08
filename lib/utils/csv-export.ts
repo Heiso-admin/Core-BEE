@@ -54,7 +54,9 @@ export const exportToCsv = <T extends Record<string, any>>(
     // Format dates
     if (dateFields.includes(key) || value instanceof Date) {
       const date = new Date(value);
-      return isNaN(date.getTime()) ? String(value) : date.toLocaleDateString();
+      return Number.isNaN(date.getTime())
+        ? String(value)
+        : date.toLocaleDateString();
     }
 
     return String(value);

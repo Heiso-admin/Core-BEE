@@ -3,8 +3,8 @@
 import type { UniqueIdentifier } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { cn } from "@heiso/core/lib/utils";
 import type { PropsWithChildren } from "react";
-import { cn } from "@/lib/utils";
 
 type Props = PropsWithChildren<{
   id: UniqueIdentifier;

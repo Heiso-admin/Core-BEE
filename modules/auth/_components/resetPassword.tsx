@@ -1,18 +1,22 @@
 "use client";
 
+import { PasswordInput } from "@heiso/core/components/primitives";
+import { Button } from "@heiso/core/components/ui/button";
+import { Label } from "@heiso/core/components/ui/label";
+import {
+  calcStrength,
+  Progress,
+  ProgressLabel,
+} from "@heiso/core/components/ui/progress";
+import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { calcStrength, Progress, ProgressLabel } from "@/components/ui/progress";
 import { resetPassword } from "../_server/password.service";
-import AuthRedirectHint from './authRedirectHint';
-import Header from './header';
-import { motion } from 'framer-motion';
-import { PasswordInput } from '@/components/primitives';
+import AuthRedirectHint from "./authRedirectHint";
+import Header from "./header";
 
 export default function ResetPasswordPage() {
   const t = useTranslations("auth.resetPassword");
@@ -67,7 +71,10 @@ export default function ResetPasswordPage() {
   if (isSubmitted) {
     return (
       <>
-        <Header title={t("success.title")} description={t("success.description")} />
+        <Header
+          title={t("success.title")}
+          description={t("success.description")}
+        />
         <Button onClick={() => router.push("/login")} className="w-full mt-8">
           {t("success.action")}
         </Button>
@@ -88,7 +95,7 @@ export default function ResetPasswordPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            {password !== "" &&
+            {password !== "" && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -97,7 +104,7 @@ export default function ResetPasswordPage() {
                 <Progress value={passwordStrength} className="w-full" />
                 <ProgressLabel passwordStrength={passwordStrength} />
               </motion.div>
-            }
+            )}
           </div>
           <div className="space-y-2 mb-8">
             <Label htmlFor="confirmPassword">{t("password.confirm")}</Label>
@@ -122,7 +129,9 @@ export default function ResetPasswordPage() {
         </div>
       </form>
       <AuthRedirectHint>
-        <Link href="/login" className='ml-2'>{t("cancel")}</Link>
+        <Link href="/login" className="ml-2">
+          {t("cancel")}
+        </Link>
       </AuthRedirectHint>
     </>
   );

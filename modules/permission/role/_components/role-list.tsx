@@ -1,15 +1,15 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { ActionButton, MenuTree } from "@/components/primitives";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { cn } from "@/lib/utils";
+import { ActionButton, MenuTree } from "@heiso/core/components/primitives";
+import { CaptionTotal } from "@heiso/core/components/shared/caption-total";
+import { Badge } from "@heiso/core/components/ui/badge";
+import { Button } from "@heiso/core/components/ui/button";
+import { Checkbox } from "@heiso/core/components/ui/checkbox";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@heiso/core/components/ui/collapsible";
 import {
   Dialog,
   DialogClose,
@@ -19,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@heiso/core/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -27,22 +27,48 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import type { TMenu } from "@/lib/db/schema";
+} from "@heiso/core/components/ui/form";
+import { Input } from "@heiso/core/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@heiso/core/components/ui/select";
+import { Separator } from "@heiso/core/components/ui/separator";
+import { Textarea } from "@heiso/core/components/ui/textarea";
+import type { TMenu } from "@heiso/core/lib/db/schema";
+import { cn } from "@heiso/core/lib/utils";
+import { LoginMethodEnum } from "@heiso/core/modules/auth/_components/loginForm";
+import { useAccount } from "@heiso/core/providers/account";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  ChevronDown,
+  ChevronRight,
+  ListChevronsDownUp,
+  Pencil,
+  Plus,
+  Trash,
+} from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+import { assignMenus, assignPermissions } from "../_server/assign.service";
 import type { Role } from "../_server/role.service";
 import { createRole, deleteRole, updateRole } from "../_server/role.service";
-import { assignMenus, assignPermissions } from "../_server/assign.service";
-import { CaptionTotal } from '@/components/shared/caption-total';
-import { Plus, ChevronDown, ChevronRight, Pencil, Trash, ListChevronsDownUp } from 'lucide-react';
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
-import { toast } from "sonner";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { LoginMethodEnum } from '@/modules/auth/_components/loginForm';
-import { useAccount } from '@/providers/account';
-import { usePathname } from 'next/navigation';
-import { Separator } from '@/components/ui/separator';
 
 export function RoleList({
   data,
@@ -53,7 +79,7 @@ export function RoleList({
   menus: TMenu[];
   permissions: any;
 }) {
-  const t = useTranslations('dashboard.permission.role');
+  const t = useTranslations("dashboard.permission.role");
   const { isDeveloper } = useAccount();
   const pathname = usePathname();
 
@@ -72,7 +98,7 @@ export function RoleList({
         data={selectedItem}
       />
       <div className="flex items-center justify-between mb-4">
-        <CaptionTotal title={t('title')} total={data.length} />
+        <CaptionTotal title={t("title")} total={data.length} />
         <div className="flex gap-2">
           <Button
             variant="outline"
@@ -81,10 +107,10 @@ export function RoleList({
           >
             <ListChevronsDownUp className="h-4 w-4" />
           </Button>
-          {pathname.indexOf('dev-center') !== -1 && isDeveloper && (
+          {pathname.indexOf("dev-center") !== -1 && isDeveloper && (
             <Button onClick={() => setOpen(true)}>
               <Plus className="h-4 w-4" />
-              {t('list.add_new')}
+              {t("list.add_new")}
             </Button>
           )}
         </div>
@@ -115,43 +141,43 @@ function RoleItemCollapsible({
   permissionGroups: any[];
   isCollapsedClose: boolean;
 }) {
-  const t = useTranslations('dashboard.permission.role');
+  const t = useTranslations("dashboard.permission.role");
   const { isDeveloper } = useAccount();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedMenus, setSelectedMenus] = useState<string[]>(
-    role.menus?.map((m: any) => m.menus.id) ?? []
+    role.menus?.map((m: any) => m.menus.id) ?? [],
   );
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>(
-    role.permissions?.map((p: any) => p.permission.id) ?? []
+    role.permissions?.map((p: any) => p.permission.id) ?? [],
   );
-  const [name, setName] = useState<string>(role.name || '');
+  const [name, setName] = useState<string>(role.name || "");
   const [description, setDescription] = useState<string>(
-    role.description || ''
+    role.description || "",
   );
   const [loginMethod, setLoginMethod] = useState<string>(
-    role.loginMethod || LoginMethodEnum.Both
+    role.loginMethod || LoginMethodEnum.Both,
   );
   const [fullAccessEditing, setFullAccessEditing] = useState<boolean>(
-    role.fullAccess ?? false
+    role.fullAccess ?? false,
   );
   const prevPermissionsRef = useRef<string[] | null>(null);
   const prevMenusRef = useRef<string[] | null>(null);
   const [isSaving, startTransition] = useTransition();
   const ItemColStyle = {
-    gridTemplateColumns: 'minmax(200px, 1fr) 3fr',
-    gap: '1rem',
+    gridTemplateColumns: "minmax(200px, 1fr) 3fr",
+    gap: "1rem",
   };
 
   // helpers: 取得角色預設的選單/權限 ID（穩定引用）
   const getRoleMenuIds = useCallback(
     (r: Role) => r.menus?.map((m: any) => m.menus.id) ?? [],
-    []
+    [],
   );
   const getRolePermissionIds = useCallback(
     (r: Role) => r.permissions?.map((p: any) => p.permission.id) ?? [],
-    []
+    [],
   );
 
   // helpers: 將狀態重置為角色目前資料（不改 isEditing）（穩定引用）
@@ -159,13 +185,13 @@ function RoleItemCollapsible({
     (r: Role) => {
       setSelectedMenus(getRoleMenuIds(r));
       setSelectedPermissions(getRolePermissionIds(r));
-      setName(r.name || '');
-      setDescription(r.description || '');
+      setName(r.name || "");
+      setDescription(r.description || "");
       setFullAccessEditing(r.fullAccess ?? false);
       prevPermissionsRef.current = null;
       prevMenusRef.current = null;
     },
-    [getRoleMenuIds, getRolePermissionIds]
+    [getRoleMenuIds, getRolePermissionIds],
   );
 
   // helpers: 記住原先選擇（僅在尚未記住時）（依賴目前選擇）
@@ -223,7 +249,7 @@ function RoleItemCollapsible({
   }, []);
 
   useEffect(() => {
-    if (typeof isCollapsedClose === 'boolean') {
+    if (typeof isCollapsedClose === "boolean") {
       setIsOpen(false);
     }
   }, [isCollapsedClose]);
@@ -270,7 +296,7 @@ function RoleItemCollapsible({
         roleId: role.id,
         permissions: selectedPermissions,
       });
-      toast.success(t('form.update_title'));
+      toast.success(t("form.update_title"));
       setIsEditing(false);
     });
   };
@@ -282,7 +308,7 @@ function RoleItemCollapsible({
     selectAllMenusAndPermissions();
   }, [fullAccessEditing, selectAllMenusAndPermissions]);
 
-  const handleToggleFullAccess = (checked: boolean | 'indeterminate') => {
+  const handleToggleFullAccess = (checked: boolean | "indeterminate") => {
     if (!isEditing) return;
     const isChecked = checked === true;
     setFullAccessEditing(isChecked);
@@ -301,7 +327,7 @@ function RoleItemCollapsible({
     >
       <div
         className="grid items-center gap-4"
-        style={{ gridTemplateColumns: 'minmax(200px, auto) 1fr auto' }}
+        style={{ gridTemplateColumns: "minmax(200px, auto) 1fr auto" }}
       >
         <CollapsibleTrigger asChild>
           <div className="flex items-center space-x-3 cursor-pointer">
@@ -314,7 +340,7 @@ function RoleItemCollapsible({
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder={t('form.name')}
+                placeholder={t("form.name")}
                 className="h-8 w-[220px]"
               />
             ) : (
@@ -327,11 +353,11 @@ function RoleItemCollapsible({
           {isEditing ? (
             <Select value={loginMethod} onValueChange={setLoginMethod}>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder={t('form.method.description')} />
+                <SelectValue placeholder={t("form.method.description")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>{t('form.method.title')}</SelectLabel>
+                  <SelectLabel>{t("form.method.title")}</SelectLabel>
                   {Object.values(LoginMethodEnum).map((methodValue) => (
                     <SelectItem key={methodValue} value={methodValue}>
                       {t(`form.method.${methodValue}`)}
@@ -369,7 +395,7 @@ function RoleItemCollapsible({
                   handleCancelEdit();
                 }}
               >
-                {t('form.cancel')}
+                {t("form.cancel")}
               </Button>
               <ActionButton
                 className="mr-2"
@@ -381,11 +407,11 @@ function RoleItemCollapsible({
                   handleSave();
                 }}
               >
-                {t('form.save')}
+                {t("form.save")}
               </ActionButton>
             </>
           )}
-          {pathname.indexOf('dev-center') !== -1 && isDeveloper && (
+          {pathname.indexOf("dev-center") !== -1 && isDeveloper && (
             <DeleteConfirm id={role.id}>
               <Button
                 variant="ghost"
@@ -408,11 +434,11 @@ function RoleItemCollapsible({
                 if (e.target.value.length <= 200)
                   setDescription(e.target.value);
               }}
-              placeholder={t('form.description')}
+              placeholder={t("form.description")}
               maxLength={200}
             />
           ) : (
-            <span className="text-sm">{`${t('form.description')} : ${role.description}`}</span>
+            <span className="text-sm">{`${t("form.description")} : ${role.description}`}</span>
           )}
         </span>
         <Separator />
@@ -429,22 +455,22 @@ function RoleItemCollapsible({
             <label
               htmlFor={`fullAccess-${role.id}`}
               className={cn(
-                'text-sm ml-2',
-                !isEditing ? 'text-muted-foreground' : ''
+                "text-sm ml-2",
+                !isEditing ? "text-muted-foreground" : "",
               )}
             >
               <h5 className="text-sm font-medium text-muted-foreground">
-                {t('form.menuTitle')}
+                {t("form.menuTitle")}
               </h5>
             </label>
             {(role.fullAccess || fullAccessEditing) && (
               <Badge className="ml-1" variant="outline">
-                {t('list.full_access')}
+                {t("list.full_access")}
               </Badge>
             )}
           </div>
           <h5 className="text-sm font-medium text-muted-foreground">
-            {t('form.permissionTitle')}
+            {t("form.permissionTitle")}
           </h5>
         </div>
 
@@ -458,7 +484,9 @@ function RoleItemCollapsible({
             onSelectionChange: (itemId, checked) => {
               if (!isEditing || fullAccessEditing) return;
               setSelectedMenus((prev) =>
-                checked ? [...prev, itemId] : prev.filter((id) => id !== itemId)
+                checked
+                  ? [...prev, itemId]
+                  : prev.filter((id) => id !== itemId),
               );
             },
           }}
@@ -470,7 +498,7 @@ function RoleItemCollapsible({
               setSelectedPermissions((prev) =>
                 checked
                   ? [...prev, permissionId]
-                  : prev.filter((id) => id !== permissionId)
+                  : prev.filter((id) => id !== permissionId),
               );
             },
           }}
@@ -648,9 +676,7 @@ function DeleteConfirm({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
-          <DialogDescription>
-            {t("description")}
-          </DialogDescription>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <DialogClose>

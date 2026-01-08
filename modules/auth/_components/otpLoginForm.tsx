@@ -1,26 +1,29 @@
-'use client';
+"use client";
 
-import { useState, useId, useEffect, useMemo } from 'react';
-import { ActionButton } from '@/components/primitives';
+import { ActionButton } from "@heiso/core/components/primitives";
+import { Button } from "@heiso/core/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '@/components/ui/form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { useSession } from 'next-auth/react';
-import { useTranslations } from 'next-intl';
-import { signIn } from 'next-auth/react';
-import { generateOTP, verifyOTP } from '../_server/otp.service';
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
-import Header from './header';
-import { LoginMethodEnum, LoginStepEnum, type LoginStep } from './loginForm';
-import AuthRedirectHint from './authRedirectHint';
-import { Button } from '@/components/ui/button';
+} from "@heiso/core/components/ui/form";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@heiso/core/components/ui/input-otp";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signIn, useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
+import { useId, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { generateOTP, verifyOTP } from "../_server/otp.service";
+import AuthRedirectHint from "./authRedirectHint";
+import Header from "./header";
+import { type LoginStep, LoginStepEnum } from "./loginForm";
 
 interface OTPLoginFormProps {
   email?: string | null;
@@ -31,43 +34,50 @@ interface OTPLoginFormProps {
   handleLoginSuccess: () => void;
 }
 
-const codeBoxMaxWidth = 6
-export default function OTPLoginForm({ email, setStep, loginMethod, error, setError, handleLoginSuccess }: OTPLoginFormProps) {
-  const t = useTranslations('auth.otp');
-  const [userEmail, setUserEmail] = useState(email || '');
+const codeBoxMaxWidth = 6;
+export default function OTPLoginForm({
+  email,
+  setStep,
+  loginMethod,
+  error,
+  setError,
+  handleLoginSuccess,
+}: OTPLoginFormProps) {
+  const t = useTranslations("auth.otp");
+  const [userEmail, setUserEmail] = useState(email || "");
   const [isLoading, setIsLoading] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const { update } = useSession();
   const baseSlotId = useId();
   const slotKeys = useMemo(
-    () => Array.from({ length: codeBoxMaxWidth }, (_, i) => `${baseSlotId}-${i}`),
-    [baseSlotId]
+    () =>
+      Array.from({ length: codeBoxMaxWidth }, (_, i) => `${baseSlotId}-${i}`),
+    [baseSlotId],
   );
 
   // 邮箱表单验证
   const emailFormSchema = z.object({
-    email: z.string().email({ message: t('email.error') }),
+    email: z.string().email({ message: t("email.error") }),
   });
 
   // 验证码表单验证
   const otpFormSchema = z.object({
-    code: z.string().length(6, { message: t('code.error') }),
+    code: z.string().length(6, { message: t("code.error") }),
   });
-
 
   const otpForm = useForm<z.infer<typeof otpFormSchema>>({
     resolver: zodResolver(otpFormSchema),
-    mode: 'onSubmit',
-    reValidateMode: 'onSubmit',
+    mode: "onSubmit",
+    reValidateMode: "onSubmit",
     defaultValues: {
-      code: '',
+      code: "",
     },
   });
 
   // 发送验证码
-  const handleSendOTP = async (values: z.infer<typeof emailFormSchema>) => {
-    console.log('submit email', values.email)
-    setError('');
+  const _handleSendOTP = async (values: z.infer<typeof emailFormSchema>) => {
+    console.log("submit email", values.email);
+    setError("");
     setIsLoading(true);
 
     try {
@@ -75,13 +85,13 @@ export default function OTPLoginForm({ email, setStep, loginMethod, error, setEr
 
       if (result.success) {
         setUserEmail(values.email);
-        console.log('success.codeSent', { email: values.email })
+        console.log("success.codeSent", { email: values.email });
         startCountdown();
       } else {
         setError(result.message);
       }
-    } catch (err) {
-      setError(t('error.general'));
+    } catch (_err) {
+      setError(t("error.general"));
     } finally {
       setIsLoading(false);
     }
@@ -89,7 +99,7 @@ export default function OTPLoginForm({ email, setStep, loginMethod, error, setEr
 
   // 验证 OTP 并登录
   const handleVerifyOTP = async (values: z.infer<typeof otpFormSchema>) => {
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
@@ -102,9 +112,9 @@ export default function OTPLoginForm({ email, setStep, loginMethod, error, setEr
 
       if (result.success && result.userId) {
         // 使用 NextAuth 的 signIn 进行登录
-        const signInResult = await signIn('credentials', {
+        const signInResult = await signIn("credentials", {
           email: userEmail,
-          otpVerified: 'true',
+          otpVerified: "true",
           userId: result.userId,
           redirect: false,
         });
@@ -113,13 +123,13 @@ export default function OTPLoginForm({ email, setStep, loginMethod, error, setEr
           await update();
           handleLoginSuccess();
         } else {
-          setError(t('error.login'));
+          setError(t("error.login"));
         }
       } else {
         setError(result.message);
       }
-    } catch (err) {
-      setError(t('error.general'));
+    } catch (_err) {
+      setError(t("error.general"));
     } finally {
       setIsLoading(false);
     }
@@ -129,22 +139,21 @@ export default function OTPLoginForm({ email, setStep, loginMethod, error, setEr
   const handleResendOTP = async () => {
     if (countdown > 0) return;
 
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
       const result = await generateOTP(userEmail);
-      console.log('generateOTP', result);
-
+      console.log("generateOTP", result);
 
       if (result.success) {
-        console.log('success.codeResent')
+        console.log("success.codeResent");
         startCountdown();
       } else {
         setError(result.message);
       }
-    } catch (err) {
-      setError(t('error.general'));
+    } catch (_err) {
+      setError(t("error.general"));
     } finally {
       setIsLoading(false);
     }
@@ -167,8 +176,8 @@ export default function OTPLoginForm({ email, setStep, loginMethod, error, setEr
   return (
     <>
       <Header
-        title={t('title')}
-        description={t('description', { email: email || 'email' })}
+        title={t("title")}
+        description={t("description", { email: email || "email" })}
       />
 
       <Form {...otpForm}>
@@ -186,7 +195,7 @@ export default function OTPLoginForm({ email, setStep, loginMethod, error, setEr
                     <InputOTP
                       value={field.value}
                       onChange={(val) => {
-                        otpForm.clearErrors('code');
+                        otpForm.clearErrors("code");
                         field.onChange(val);
                       }}
                       maxLength={codeBoxMaxWidth}
@@ -222,8 +231,8 @@ export default function OTPLoginForm({ email, setStep, loginMethod, error, setEr
               className="text-sm"
             >
               {countdown > 0
-                ? t('resend.countdown', { seconds: countdown })
-                : t('resend.action')}
+                ? t("resend.countdown", { seconds: countdown })
+                : t("resend.action")}
             </button>
           </div>
 
@@ -233,12 +242,12 @@ export default function OTPLoginForm({ email, setStep, loginMethod, error, setEr
               className="group relative flex w-full justify-center"
               loading={isLoading}
             >
-              {t('submit.verify')}
+              {t("submit.verify")}
             </ActionButton>
           </div>
         </form>
         <AuthRedirectHint>
-          {t.rich('backToLogin', {
+          {t.rich("backToLogin", {
             Link: (chunks) => (
               <Button
                 variant="link"

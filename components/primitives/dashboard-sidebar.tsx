@@ -1,12 +1,12 @@
 "use client";
 
+import { cn } from "@heiso/core/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronsLeft, ChevronsRight, Menu, X } from "lucide-react";
 import { DynamicIcon, type IconName } from "lucide-react/dynamic";
 import Link, { type LinkProps } from "next/link";
 import type React from "react";
 import { createContext, useContext, useState } from "react";
-import { cn } from "@/lib/utils";
 
 interface Links {
   title: string;
@@ -53,7 +53,9 @@ export const SidebarProvider = ({
   const setOpen = setOpenProp !== undefined ? setOpenProp : setOpenState;
 
   return (
-    <SidebarContext.Provider value={{ open, setOpen, animate, pinned, setPinned }}>
+    <SidebarContext.Provider
+      value={{ open, setOpen, animate, pinned, setPinned }}
+    >
       {children}
     </SidebarContext.Provider>
   );
@@ -125,7 +127,7 @@ export const DesktopSidebar = ({
       {...props}
     >
       {children}
-       <div className="flex items-center justify-end mb-2 border-t pt-2">
+      <div className="flex items-center justify-end mb-2 border-t pt-2">
         <button
           type="button"
           aria-label={pinned ? "Unpin sidebar" : "Pin sidebar"}
@@ -134,7 +136,11 @@ export const DesktopSidebar = ({
             "inline-flex items-center justify-center rounded-sm p-1 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
           )}
         >
-          {pinned ? <ChevronsLeft strokeWidth={1.5}/> : <ChevronsRight strokeWidth={1.5} /> }
+          {pinned ? (
+            <ChevronsLeft strokeWidth={1.5} />
+          ) : (
+            <ChevronsRight strokeWidth={1.5} />
+          )}
         </button>
       </div>
     </motion.div>
@@ -148,52 +154,50 @@ export const MobileSidebar = ({
 }: React.ComponentProps<"div">) => {
   const { open, setOpen } = useSidebar();
   return (
-    <>
-      <div
-        className={cn(
-          "h-10 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-neutral-100 dark:bg-neutral-800 w-full",
-        )}
-        {...props}
-      >
-        <div className="flex justify-end z-20 w-full">
-          <button
-            type="button"
-            aria-label={open ? "Close sidebar" : "Open sidebar"}
-            onClick={() => setOpen(!open)}
-            className="inline-flex items-center justify-center rounded-sm p-1 text-neutral-800 hover:bg-(--state-active) hover:text-(--state-active-text)"
-          >
-            <Menu />
-          </button>
-        </div>
-        <AnimatePresence>
-          {open && (
-            <motion.div
-              initial={{ x: "-100%", opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: "-100%", opacity: 0 }}
-              transition={{
-                duration: 0.3,
-                ease: "easeInOut",
-              }}
-              className={cn(
-                "fixed h-full w-full inset-0 bg-white dark:bg-neutral-900 p-10 z-[100] flex flex-col justify-between",
-                className,
-              )}
-            >
-              <button
-                type="button"
-                aria-label="Close sidebar"
-                onClick={() => setOpen(!open)}
-                className="absolute right-10 top-10 z-50 inline-flex items-center justify-center rounded-sm p-1 text-current dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700"
-              >
-                <X />
-              </button>
-              {children}
-            </motion.div>
-          )}
-        </AnimatePresence>
+    <div
+      className={cn(
+        "h-10 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-neutral-100 dark:bg-neutral-800 w-full",
+      )}
+      {...props}
+    >
+      <div className="flex justify-end z-20 w-full">
+        <button
+          type="button"
+          aria-label={open ? "Close sidebar" : "Open sidebar"}
+          onClick={() => setOpen(!open)}
+          className="inline-flex items-center justify-center rounded-sm p-1 text-neutral-800 hover:bg-(--state-active) hover:text-(--state-active-text)"
+        >
+          <Menu />
+        </button>
       </div>
-    </>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ x: "-100%", opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: "-100%", opacity: 0 }}
+            transition={{
+              duration: 0.3,
+              ease: "easeInOut",
+            }}
+            className={cn(
+              "fixed h-full w-full inset-0 bg-white dark:bg-neutral-900 p-10 z-[100] flex flex-col justify-between",
+              className,
+            )}
+          >
+            <button
+              type="button"
+              aria-label="Close sidebar"
+              onClick={() => setOpen(!open)}
+              className="absolute right-10 top-10 z-50 inline-flex items-center justify-center rounded-sm p-1 text-current dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700"
+            >
+              <X />
+            </button>
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 };
 

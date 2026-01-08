@@ -1,8 +1,8 @@
 "use server";
 
+import { defaultLocale, type Locale } from "@heiso/core/i18n/config";
+import { getSiteSettings } from "@heiso/core/server/services/system/setting";
 import { cookies } from "next/headers";
-import { defaultLocale, type Locale } from "@/i18n/config";
-import { getSiteSettings } from "@/server/services/system/setting";
 
 const COOKIE_NAME = "_LOCALE";
 

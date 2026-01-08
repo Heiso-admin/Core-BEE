@@ -1,17 +1,16 @@
 "use client";
 
-import type { DropdownMenuItemProps } from "@radix-ui/react-dropdown-menu";
-import type * as React from "react";
-
-import { buttonVariants } from "@/components/ui/button";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { buttonVariants } from "@heiso/core/components/ui/button";
+import { DropdownMenuItem } from "@heiso/core/components/ui/dropdown-menu";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+} from "@heiso/core/components/ui/tooltip";
+import { cn } from "@heiso/core/lib/utils";
+import type { DropdownMenuItemProps } from "@radix-ui/react-dropdown-menu";
+import type * as React from "react";
 
 export type TColor = {
   isBrightColor: boolean;

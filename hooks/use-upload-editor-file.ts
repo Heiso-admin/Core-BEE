@@ -1,4 +1,4 @@
-import { ourFileRouter } from "@/lib/upload-router";
+import { ourFileRouter } from "@heiso/core/lib/upload-router";
 import { useUploadS3File } from "./use-upload-s3-file";
 
 export const useUploadEditorFile = () => {

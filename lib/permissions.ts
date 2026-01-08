@@ -1,4 +1,4 @@
-import type { Permission } from "@/types/permission";
+import type { Permission } from "@heiso/core/types/permission";
 
 export function mergePermissions(
   rolePermissions: Permission[],

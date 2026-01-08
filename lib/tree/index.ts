@@ -30,12 +30,16 @@ export function groupByItems<
 
     // Recursively traverse children
     if (node.children && node.children.length > 0) {
-      node.children.forEach((child) => traverse(child));
+      node.children.forEach((child) => {
+        traverse(child);
+      });
     }
   }
 
   // Start traversal from root nodes
-  tree.forEach((node) => traverse(node));
+  tree.forEach((node) => {
+    traverse(node);
+  });
 
   return groups;
 }

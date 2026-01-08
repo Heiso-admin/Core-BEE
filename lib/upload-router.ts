@@ -1,5 +1,5 @@
-import { literalToByte } from "@/lib/format";
-import { saveFile } from "@/server/file.service";
+import { saveFile } from "@heiso/core/server/file.service";
+import { literalToByte } from "./format";
 
 export type UploadedFile = {
   url: string;

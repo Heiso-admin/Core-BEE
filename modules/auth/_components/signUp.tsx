@@ -1,12 +1,6 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { redirect } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { ActionButton, PasswordInput } from "@/components/primitives";
+import { ActionButton, PasswordInput } from "@heiso/core/components/primitives";
 import {
   Form,
   FormControl,
@@ -14,24 +8,34 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { signup } from "@/server/services/auth";
+} from "@heiso/core/components/ui/form";
+import { Input } from "@heiso/core/components/ui/input";
+import {
+  calcStrength,
+  Progress,
+  ProgressLabel,
+} from "@heiso/core/components/ui/progress";
+import { signup } from "@heiso/core/server/services/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { motion } from "framer-motion";
 import Link from "next/link";
-import { calcStrength, Progress, ProgressLabel } from "@/components/ui/progress";
+import { redirect } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import AuthRedirectHint from "./authRedirectHint";
-import { motion } from 'framer-motion';
-import Header from './header';
+import Header from "./header";
 
 export default function SignUp({ email }: { email?: string | null }) {
-  const t = useTranslations('auth.signup');
-  const p = useTranslations('auth.resetPassword.password.strength');
+  const t = useTranslations("auth.signup");
+  const p = useTranslations("auth.resetPassword.password.strength");
   const [error, setError] = useState("");
 
   const signupSchema = z
     .object({
-      name: z.string().min(3, { message: t('name.error') }),
-      password: z.string().min(8, t('password.error')).or(z.literal('')),
+      name: z.string().min(3, { message: t("name.error") }),
+      password: z.string().min(8, t("password.error")).or(z.literal("")),
       confirmPassword: z.string(),
     })
     .refine(
@@ -43,9 +47,9 @@ export default function SignUp({ email }: { email?: string | null }) {
         return true;
       },
       {
-        message: t('mismatch'),
-        path: ['confirmPassword'],
-      }
+        message: t("mismatch"),
+        path: ["confirmPassword"],
+      },
     )
     .refine(
       (v) => {
@@ -55,9 +59,9 @@ export default function SignUp({ email }: { email?: string | null }) {
         return true;
       },
       {
-        message: p('error'),
-        path: ['password'],
-      }
+        message: p("error"),
+        path: ["password"],
+      },
     );
 
   const form = useForm<z.infer<typeof signupSchema>>({
@@ -69,8 +73,8 @@ export default function SignUp({ email }: { email?: string | null }) {
     },
   });
 
-  const pwd = form.watch('password');
-  const strength = calcStrength(pwd ?? '');
+  const pwd = form.watch("password");
+  const strength = calcStrength(pwd ?? "");
 
   type SignupFormValues = z.infer<typeof signupSchema>;
 
@@ -80,7 +84,11 @@ export default function SignUp({ email }: { email?: string | null }) {
       setError(t("email.missing"));
       return;
     }
-    const user = await signup({ name: data.name, email: signupEmail, password: data.password });
+    const user = await signup({
+      name: data.name,
+      email: signupEmail,
+      password: data.password,
+    });
     console.log(user);
 
     if (!user) {
@@ -94,12 +102,15 @@ export default function SignUp({ email }: { email?: string | null }) {
   return (
     <>
       <Header
-        title={t('title')}
-        description={t('description', { email: email || "email" })}
+        title={t("title")}
+        description={t("description", { email: email || "email" })}
       />
       <p className="text-destructive text-sm w-full text-center">{error}</p>
       <Form {...form}>
-        <form className="mt-6 mb-4 space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+        <form
+          className="mt-6 mb-4 space-y-4"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
           <div className="space-y-4 mb-8">
             <div className="flex flex-col space-y-1">
               <FormField
@@ -144,17 +155,19 @@ export default function SignUp({ email }: { email?: string | null }) {
                         />
                       </FormControl>
                       <FormMessage />
-                      {pwd !== "" &&
+                      {pwd !== "" && (
                         <motion.div
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
                           className="space-y-2"
                         >
                           <Progress value={strength} className="w-full" />
-                          <ProgressLabel passwordStrength={strength} className="text-sm text-neutral" />
-
+                          <ProgressLabel
+                            passwordStrength={strength}
+                            className="text-sm text-neutral"
+                          />
                         </motion.div>
-                      }
+                      )}
                     </FormItem>
                   );
                 }}
@@ -192,14 +205,11 @@ export default function SignUp({ email }: { email?: string | null }) {
             {t("submit")}
           </ActionButton>
         </form>
-      </Form >
+      </Form>
       <AuthRedirectHint>
-        {t.rich('haveAccount', {
+        {t.rich("haveAccount", {
           link: (chunks) => (
-            <Link
-              href="/login"
-              className="underline ml-2"
-            >
+            <Link href="/login" className="underline ml-2">
               {chunks}
             </Link>
           ),

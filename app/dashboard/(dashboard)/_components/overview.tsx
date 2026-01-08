@@ -1,18 +1,6 @@
-'use client';
+"use client";
 
-import {
-  CalendarArrowUp,
-  Files,
-  Landmark,
-  Layers,
-  MapIcon,
-  MessageCircleQuestion,
-  Newspaper,
-} from 'lucide-react';
-import Link from 'next/link';
-import { useTranslations } from 'next-intl';
-import { Card, CardContent } from '@/components/ui/card';
-import { useSite } from '@/providers/site';
+import { useSite } from "@heiso/core/providers/site";
 // import type { OverviewInfo } from "../_server/overview.service";
 
 export function Overview() {
@@ -36,7 +24,7 @@ export function Overview() {
       <div className="border-b px-8 py-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-medium">{site?.basic?.name ?? ''}</h1>
+            <h1 className="text-2xl font-medium">{site?.basic?.name ?? ""}</h1>
           </div>
         </div>
       </div>

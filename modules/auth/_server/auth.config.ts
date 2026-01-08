@@ -1,13 +1,13 @@
-import NextAuth, { CredentialsSignin, type DefaultSession } from 'next-auth';
-import Credentials from 'next-auth/providers/credentials';
-import { getUser } from './user.service';
-import { verifyPassword } from '@/lib/hash';
+import { verifyPassword } from "@heiso/core/lib/hash";
+import NextAuth, { CredentialsSignin, type DefaultSession } from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+import { getUser } from "./user.service";
 
-declare module 'next-auth' {
+declare module "next-auth" {
   interface Session {
     user: {
       isDeveloper: boolean;
-    } & DefaultSession['user'];
+    } & DefaultSession["user"];
   }
   interface JWT {
     isDeveloper?: boolean;
@@ -19,7 +19,7 @@ declare module 'next-auth' {
 }
 
 class InvalidLoginError extends CredentialsSignin {
-  code = 'Invalid identifier or password';
+  code = "Invalid identifier or password";
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -45,15 +45,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
       credentials: {
-        username: { label: 'Username' },
-        password: { label: 'Password', type: 'password' },
-        email: { label: 'Email' },
-        otpVerified: { label: 'OTP Verified' },
-        userId: { label: 'User ID' },
+        username: { label: "Username" },
+        password: { label: "Password", type: "password" },
+        email: { label: "Email" },
+        otpVerified: { label: "OTP Verified" },
+        userId: { label: "User ID" },
       },
       async authorize(credentials) {
         // Handle OTP verification flow
-        if (credentials?.otpVerified === 'true' && credentials?.userId) {
+        if (credentials?.otpVerified === "true" && credentials?.userId) {
           const user = await getUser(credentials.email as string);
           if (!user || user.id !== credentials.userId) {
             throw new InvalidLoginError();

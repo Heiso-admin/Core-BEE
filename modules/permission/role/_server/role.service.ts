@@ -1,16 +1,16 @@
 "use server";
 
-import { and, eq, isNull } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
-import { db } from "@/lib/db";
+import { db } from "@heiso/core/lib/db";
 import type {
   TMenu,
   TPermission,
   TRole,
   TRoleInsert,
   TRoleUpdate,
-} from "@/lib/db/schema";
-import { roles } from "@/lib/db/schema";
+} from "@heiso/core/lib/db/schema";
+import { roles } from "@heiso/core/lib/db/schema";
+import { and, eq, isNull } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 
 export type Role = TRole & {
   menus: {

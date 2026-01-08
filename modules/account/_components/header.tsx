@@ -1,9 +1,9 @@
 "use client";
 
+import config from "@heiso/core/config";
 import { usePathname } from "next/navigation";
-import config from "@/config";
 
-// import { MenuItem, Menu } from '@/types';
+// import { MenuItem, Menu } from '@heiso/core/types';
 
 type MenuMeta = {
   url: string;

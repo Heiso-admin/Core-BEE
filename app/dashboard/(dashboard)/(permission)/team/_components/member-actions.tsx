@@ -1,43 +1,40 @@
 import {
-  Trash2,
-  Edit2,
-  Crown,
-  RotateCcwKey,
-  BadgeCheck,
-  Copy,
-  Send,
-} from 'lucide-react';
-import { useState, useTransition } from 'react';
-import { settings } from '@/config';
-import { toast } from 'sonner';
-import { useSession } from 'next-auth/react';
-import { signOut } from 'next-auth/react';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-
-import type { Member } from '../_server/team.service';
+} from "@heiso/core/components/ui/dropdown-menu";
+import { useAccount } from "@heiso/core/providers/account";
+import { useSettings } from "@heiso/core/providers/settings";
+import {
+  BadgeCheck,
+  Copy,
+  Crown,
+  Edit2,
+  RotateCcwKey,
+  Send,
+  Trash2,
+} from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
+import { useState, useTransition } from "react";
+import { toast } from "sonner";
+import type { Member } from "../_server/team.service";
 import {
   leaveTeam,
   resendInvite,
-  transferOwnership,
   resetMemberPassword,
-  updateMember,
   sendApproved,
-} from '../_server/team.service';
-import { ConfirmRemoveMember } from './confirm-remove-member';
-import { ConfirmResendInvitation } from './confirm-resend-invitation';
-import { ConfirmTransferOwner } from './confirm-transfer-owner';
-import { ConfirmResetPassword } from './confirm-reset-password';
-import { ConfirmReviewMember } from './confirm-review-member';
-import { useTranslations } from 'next-intl';
-import { EditMember } from './edit-member';
-import { useAccount } from '@/providers/account';
-import { MemberStatus, type Role } from './member-list';
-import { useSettings } from '@/providers/settings';
+  transferOwnership,
+  updateMember,
+} from "../_server/team.service";
+import { ConfirmRemoveMember } from "./confirm-remove-member";
+import { ConfirmResendInvitation } from "./confirm-resend-invitation";
+import { ConfirmResetPassword } from "./confirm-reset-password";
+import { ConfirmReviewMember } from "./confirm-review-member";
+import { ConfirmTransferOwner } from "./confirm-transfer-owner";
+import { EditMember } from "./edit-member";
+import { MemberStatus, type Role } from "./member-list";
 
 export function MemberActions({
   member,
@@ -50,7 +47,7 @@ export function MemberActions({
   roles: Role[];
   children: React.ReactNode;
 }) {
-  const t = useTranslations('dashboard.permission.message');
+  const t = useTranslations("dashboard.permission.message");
   const { data: session } = useSession();
   const { isDeveloper } = useAccount();
   const { settings } = useSettings();
@@ -74,7 +71,7 @@ export function MemberActions({
 
   // 檢查當前用戶是否為擁有者
   const currentUserMember = currentMembers.find(
-    (m) => m.user?.id === session?.user?.id
+    (m) => m.user?.id === session?.user?.id,
   );
   const isCurrentUserOwner = currentUserMember?.isOwner;
   const canTransferTo =
@@ -92,49 +89,49 @@ export function MemberActions({
   const actionItems = [
     {
       // 編輯權限
-      key: 'edit' as const,
-      label: t('edit.title'),
+      key: "edit" as const,
+      label: t("edit.title"),
       Icon: Edit2,
       visible: !isDeveloper && isUserNotReview,
       onClick: () => setOpenEditConfirm(true),
     },
     {
       // 复制邀请链接
-      key: 'copyInvitationLink' as const,
-      label: t('copyInvitationLink.title'),
+      key: "copyInvitationLink" as const,
+      label: t("copyInvitationLink.title"),
       Icon: Copy,
       visible:
         !InvitationExpired &&
-        loginMethod !== 'sso' &&
+        loginMethod !== "sso" &&
         member.status === MemberStatus.Invited,
       onClick: () => {
         if (settings && member?.inviteToken) {
           const invitationLink = `${settings.BASE_HOST}/join?token=${encodeURIComponent(member.inviteToken)}`;
           navigator.clipboard.writeText(invitationLink);
-          toast.success(t('copyInvitationLink.success'));
+          toast.success(t("copyInvitationLink.success"));
         }
       },
     },
     {
       // 重新發送邀請
-      key: 'resendInvitation' as const,
-      label: t('resendInvitation.title'),
+      key: "resendInvitation" as const,
+      label: t("resendInvitation.title"),
       Icon: Send,
       visible:
         InvitationExpired &&
-        loginMethod !== 'sso' &&
+        loginMethod !== "sso" &&
         member.status === MemberStatus.Invited,
       onClick: () => {
         startResendTransition(async () => {
           await resendInvite(member.id);
-          toast.success(t('resendInvitation.success'));
+          toast.success(t("resendInvitation.success"));
         });
       },
     },
     {
       // 只有當前用戶是擁有者且目標用戶是啟用狀態時才顯示轉移選項
-      key: 'transfer' as const,
-      label: t('transfer.title'),
+      key: "transfer" as const,
+      label: t("transfer.title"),
       Icon: Crown,
       visible:
         !isDeveloper && isCurrentUserOwner && canTransferTo && isUserNotReview,
@@ -142,20 +139,20 @@ export function MemberActions({
     },
     {
       // 審查用戶狀態，僅擁有者可操作
-      key: 'review' as const,
-      label: t('review.action'),
+      key: "review" as const,
+      label: t("review.action"),
       Icon: BadgeCheck,
       visible: isCurrentUserOwner && member.status === MemberStatus.Review,
       onClick: () => setOpenReviewConfirm(true),
     },
     {
       // 協助啟用的用戶重設密碼，僅擁有者可操作
-      key: 'resetPassword' as const,
-      label: t('resetPassword.action'),
+      key: "resetPassword" as const,
+      label: t("resetPassword.action"),
       Icon: RotateCcwKey,
       visible:
         !isDeveloper &&
-        loginMethod !== 'sso' &&
+        loginMethod !== "sso" &&
         isCurrentUserOwner &&
         member.status === MemberStatus.Joined &&
         isUserNotReview,
@@ -163,8 +160,8 @@ export function MemberActions({
     },
     {
       // 刪除成員，僅擁有者可操作
-      key: 'remove' as const,
-      label: t('remove.action'),
+      key: "remove" as const,
+      label: t("remove.action"),
       Icon: Trash2,
       visible: !isDeveloper && isCurrentUserOwner,
       onClick: () => setOpenRemoveConfirm(true),
@@ -190,7 +187,7 @@ export function MemberActions({
   const handleRemove = () => {
     startRemoveTransition(async () => {
       await leaveTeam(member.id);
-      toast.success(t('remove.success'));
+      toast.success(t("remove.success"));
     });
   };
 
@@ -205,14 +202,14 @@ export function MemberActions({
             status: MemberStatus.Joined,
           },
         });
-        toast.success(t('review.success'));
+        toast.success(t("review.success"));
         await sendApproved({
           email: member.email,
         });
         setOpenReviewConfirm(false);
       } catch (error) {
-        toast.error(t('review.failed'));
-        console.error('Approve review error:', error);
+        toast.error(t("review.failed"));
+        console.error("Approve review error:", error);
       }
     });
   };
@@ -224,11 +221,11 @@ export function MemberActions({
           id: member.id,
           data: { status: MemberStatus.Disabled },
         });
-        toast.success(t('review.success'));
+        toast.success(t("review.success"));
         setOpenReviewConfirm(false);
       } catch (error) {
-        toast.error(t('review.failed'));
-        console.error('Reject review error:', error);
+        toast.error(t("review.failed"));
+        console.error("Reject review error:", error);
       }
     });
   };
@@ -236,7 +233,7 @@ export function MemberActions({
   const handleResend = async () => {
     startResendTransition(async () => {
       await resendInvite(member.id);
-      toast.success('Invitation resend');
+      toast.success("Invitation resend");
     });
   };
 
@@ -249,18 +246,18 @@ export function MemberActions({
           newOwnerId: member.id,
           currentOwnerId: currentUserMember.id,
         });
-        toast.success(t('transfer.successfully'));
+        toast.success(t("transfer.successfully"));
         setOpenTransferConfirm(false);
 
         setTimeout(() => {
           signOut({
-            callbackUrl: '/login', // 轉移完成後登出當前用戶
+            callbackUrl: "/login", // 轉移完成後登出當前用戶
             redirect: true,
           });
         }, 1500);
       } catch (error) {
-        toast.error(t('transfer.failed'));
-        console.error('Transfer ownership error:', error);
+        toast.error(t("transfer.failed"));
+        console.error("Transfer ownership error:", error);
       }
     });
   };
@@ -270,21 +267,21 @@ export function MemberActions({
       startResetPasswordTransition(async () => {
         try {
           const result = await resetMemberPassword({
-            actorMemberId: currentUserMember?.id || '',
+            actorMemberId: currentUserMember?.id || "",
             targetMemberId: member.id,
             newPassword,
           });
           if (result?.success) {
-            toast.success(t('resetPassword.message.successfully'));
+            toast.success(t("resetPassword.message.successfully"));
             resolve();
             return;
           }
-          const code = result?.error ?? 'RESET_FAILED';
+          const code = result?.error ?? "RESET_FAILED";
           throw new Error(code);
         } catch (error) {
-          const code = (error as Error)?.message ?? 'RESET_FAILED';
-          toast.error(`${t('resetPassword.message.failed')} (${code})`);
-          console.error('Reset password error:', error);
+          const code = (error as Error)?.message ?? "RESET_FAILED";
+          toast.error(`${t("resetPassword.message.failed")} (${code})`);
+          console.error("Reset password error:", error);
           reject(error);
         }
       });

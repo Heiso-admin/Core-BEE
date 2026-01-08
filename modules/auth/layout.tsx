@@ -1,14 +1,12 @@
 "use client";
 
-import { ArrowLeftIcon } from "lucide-react";
-import Link from "next/link";
-import { Logo, ThemeSwitcher } from "@/components/primitives";
-import { useSite } from "@/providers/site";
+import { Logo, ThemeSwitcher } from "@heiso/core/components/primitives";
+import { useSite } from "@heiso/core/providers/site";
 
 import { useTranslations } from "next-intl";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const t = useTranslations("auth.login");
+  const _t = useTranslations("auth.login");
   const { site } = useSite();
 
   return (

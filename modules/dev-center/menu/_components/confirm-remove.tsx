@@ -1,6 +1,5 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,8 +9,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+} from "@heiso/core/components/ui/alert-dialog";
+import { useTranslations } from "next-intl";
 
 export function ConfirmRemove({
   title,
@@ -28,7 +27,7 @@ export function ConfirmRemove({
   onConfirm?: () => void;
   pending?: boolean;
 }) {
-  const t = useTranslations('devCenter.menu');
+  const t = useTranslations("devCenter.menu");
 
   return (
     <AlertDialog open={open} onOpenChange={onClose}>

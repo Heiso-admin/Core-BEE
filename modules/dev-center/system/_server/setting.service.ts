@@ -1,9 +1,9 @@
 "use server";
 
-import { db } from "@/lib/db";
-import { siteSettings } from "@/lib/db/schema";
-import type { Settings } from "@/types/system";
-import type { Locale } from "@/i18n/config";
+import type { Locale } from "@heiso/core/i18n/config";
+import { db } from "@heiso/core/lib/db";
+import { siteSettings } from "@heiso/core/lib/db/schema";
+import type { Settings } from "@heiso/core/types/system";
 import type { SiteSetting } from "../settings/general/page";
 
 async function getSettings(): Promise<Settings> {

@@ -4,22 +4,35 @@
   "private": true,
   "exports": {
     "./lib/*": "./lib/*.ts",
+    "./lib/db/schema/auth/*": "./lib/db/schema/auth/*.ts",
+    "./lib/db/schema/permissions/*": "./lib/db/schema/permissions/*.ts",
+    "./lib/db/schema/system/*": "./lib/db/schema/system/*.ts",
+    "./lib/db/schema/features/*": "./lib/db/schema/features/*.ts",
+    "./lib/db/schema/features/api-key": "./lib/db/schema/features/api-key/index.ts",
+    "./lib/db/schema/features/api-key/*": "./lib/db/schema/features/api-key/*.ts",
+    "./lib/db/schema/features/file": "./lib/db/schema/features/file/index.ts",
+    "./lib/db/schema/features/file/*": "./lib/db/schema/features/file/*.ts",
     "./components/*": "./components/*.tsx",
     "./types/*": "./types/*.ts",
-    "./modules": "./modules/index.ts",
-    "./modules/*": "./modules/*.ts"
+    "./modules/*": [
+      "./modules/*.ts",
+      "./modules/*.tsx"
+    ],
+    "./i18n/*": "./i18n/*.ts",
+    "./emails/*": "./emails/*.tsx",
+    "./globals.css": "./app/globals.css"
   },
   "scripts": {
     "dev": "bun run:permission && next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "biome check",
-    "format": "biome format --write",
     "db": "bun drizzle-kit generate",
     "db:push": "bun drizzle-kit push",
     "db:studio": "bun drizzle-kit studio",
     "run:permission": "bun scripts/fetchPermissionFromDb.ts",
-    "email:dev": "bun email dev"
+    "email:dev": "bun email dev",
+    "lint": "biome check",
+    "format": "biome format --write"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.22",
@@ -124,7 +137,7 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.0",
+    "@biomejs/biome": "2.2.5",
     "@react-email/preview-server": "4.3.2",
     "@tailwindcss/postcss": "^4",
     "@types/lodash": "^4.17.20",
@@ -148,6 +161,27 @@
       ],
       "modules/*": [
         "./modules/*"
+      ],
+      "lib/*": [
+        "./lib/*"
+      ],
+      "components/*": [
+        "./components/*"
+      ],
+      "hooks/*": [
+        "./hooks/*"
+      ],
+      "server/*": [
+        "./server/*"
+      ],
+      "config/*": [
+        "./config/*"
+      ],
+      "i18n/*": [
+        "./i18n/*"
+      ],
+      "emails/*": [
+        "./emails/*"
       ]
     }
   }

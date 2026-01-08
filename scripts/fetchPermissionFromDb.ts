@@ -1,7 +1,7 @@
-import 'dotenv-flow/config';
-import { closeDb, db } from '@/lib/db';
-import fs from 'node:fs/promises';
-import path from 'node:path';
+import "dotenv-flow/config";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { closeDb, db } from "@heiso/core/lib/db";
 
 async function getAllPermissions() {
   const permissions = await db.query.permissions.findMany({
@@ -62,17 +62,17 @@ async function writePermissionsToConfig() {
       }));
 
     const content = buildPermissionsConfigContent(list);
-    const targetPath = path.resolve(process.cwd(), 'config', 'permissions.ts');
-    await fs.writeFile(targetPath, content, 'utf8');
+    const targetPath = path.resolve(process.cwd(), "config", "permissions.ts");
+    await fs.writeFile(targetPath, content, "utf8");
     console.log(`Permissions config written to: ${targetPath}`);
   } catch (err) {
-    console.error('Failed to write permissions config:', err);
+    console.error("Failed to write permissions config:", err);
     process.exitCode = 1;
   } finally {
     // Always close DB connections so the process can exit cleanly
     try {
       await closeDb();
-    } catch (e) {
+    } catch (_e) {
       // ignore close errors
     }
   }

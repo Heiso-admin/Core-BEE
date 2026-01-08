@@ -1,6 +1,6 @@
 // import { Fragment } from 'react';
-import type { permissionsConfig } from '@/config/permissions';
-import { usePermission } from '@/hooks/use-permission';
+import type { permissionsConfig } from "@heiso/core/config/permissions";
+import { usePermission } from "@heiso/core/hooks/use-permission";
 
 export const ProtectedArea = ({
   resource,
@@ -8,8 +8,8 @@ export const ProtectedArea = ({
   tips,
   children,
 }: {
-  resource: (typeof permissionsConfig)[number]['resource'];
-  action: (typeof permissionsConfig)[number]['action'];
+  resource: (typeof permissionsConfig)[number]["resource"];
+  action: (typeof permissionsConfig)[number]["action"];
   // className?: string;
   tips?: React.ReactNode;
   children: React.ReactNode;

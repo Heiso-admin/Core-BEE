@@ -1,1 +1,1 @@
-export { default } from '@/modules/dev-center/permission/page';
+export { default } from "@heiso/core/modules/dev-center/permission/page";
