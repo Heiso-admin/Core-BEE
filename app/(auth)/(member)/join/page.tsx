@@ -1,10 +1,10 @@
 // Server Component
-import { AccountConfirmAlert } from './_components/account-confirm-alert';
-import { InvalidJoinToken } from './_components/invalid-join-token';
-import { LogoutIfAuthenticated } from './_components/logout-If-authenticated';
-import { MemberJoin } from './_components/member-join';
-import { getInviteToken } from './_server/member.service';
-import { auth } from '@/modules/auth/auth.config';
+
+import { auth } from "@heiso/core/modules/auth/auth.config";
+import { InvalidJoinToken } from "./_components/invalid-join-token";
+import { LogoutIfAuthenticated } from "./_components/logout-If-authenticated";
+import { MemberJoin } from "./_components/member-join";
+import { getInviteToken } from "./_server/member.service";
 
 export type JoinUser = {
   id: string;
@@ -34,16 +34,16 @@ export default async function JoinPage({
 
   const user = membership
     ? {
-        id: membership.id ?? '',
+        id: membership.id ?? "",
         name: membership.user?.name ?? null,
-        email: membership.email ?? '',
+        email: membership.email ?? "",
         avatar: membership.user?.avatar ?? null,
-        status: membership.status ?? '',
+        status: membership.status ?? "",
       }
     : null;
 
   // 只有邀請狀態的用戶才能加入，其他狀態的用戶都不能加入 (AccountConfirmAlert)
-  if (!membership || membership.status !== 'invited') {
+  if (!membership || membership.status !== "invited") {
     return <InvalidJoinToken />;
   }
 

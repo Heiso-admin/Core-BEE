@@ -1,10 +1,10 @@
 "use client";
 
+import { Button } from "@heiso/core/components/ui/button";
+import { cn } from "@heiso/core/lib/utils";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 export function ThemeSwitcher({ className }: { className?: string }) {
   const { setTheme, theme } = useTheme();

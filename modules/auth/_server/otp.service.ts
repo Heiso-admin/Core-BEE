@@ -1,14 +1,12 @@
-'use server';
+"use server";
 
-import { db } from '@/lib/db';
-import { user2faCode, users } from '@/lib/db/schema';
-import { eq, and, gt, isNull, lt } from 'drizzle-orm';
-import { settings } from '@/config/settings';
-import { auth } from './auth.config';
-import { revalidatePath } from 'next/cache';
-import { sendEmail } from '@/lib/email';
-import TwoFactorEmail from '@/emails/2fa';
-import { getUser } from './user.service';
+import { settings } from "@heiso/core/config/settings";
+import TwoFactorEmail from "@heiso/core/emails/2fa";
+import { db } from "@heiso/core/lib/db";
+import { user2faCode, users } from "@heiso/core/lib/db/schema";
+import { sendEmail } from "@heiso/core/lib/email";
+import { and, eq, gt, lt } from "drizzle-orm";
+import { getUser } from "./user.service";
 
 export interface OTPGenerationResult {
   success: boolean;
@@ -38,7 +36,7 @@ export async function generateOTP(email: string): Promise<OTPGenerationResult> {
     if (!user) {
       return {
         success: false,
-        message: 'userNotFound',
+        message: "userNotFound",
       };
     }
 
@@ -68,15 +66,15 @@ export async function generateOTP(email: string): Promise<OTPGenerationResult> {
       if (!member || !member.user) {
         return {
           success: false,
-          message: 'userNotFound',
+          message: "userNotFound",
         };
       }
 
       // Joined 狀態等於帳號啟用
-      if (member.status !== 'joined') {
+      if (member.status !== "joined") {
         return {
           success: false,
-          message: 'notActive',
+          message: "notActive",
         };
       }
     }
@@ -97,7 +95,7 @@ export async function generateOTP(email: string): Promise<OTPGenerationResult> {
     });
 
     const assets = await db.query.siteSettings.findFirst({
-      where: (t, { eq }) => eq(t.name, 'assets'),
+      where: (t, { eq }) => eq(t.name, "assets"),
     });
 
     const { logo } = assets?.value as Record<string, string>;
@@ -107,7 +105,7 @@ export async function generateOTP(email: string): Promise<OTPGenerationResult> {
     await sendEmail({
       from: NOTIFY_EMAIL as string,
       to: [user.email],
-      subject: 'Your Login Verification Code',
+      subject: "Your Login Verification Code",
       body: TwoFactorEmail({
         logoUrl: logo,
         code,
@@ -118,14 +116,14 @@ export async function generateOTP(email: string): Promise<OTPGenerationResult> {
 
     return {
       success: true,
-      message: 'OTP sent successfully',
+      message: "OTP sent successfully",
       expiresAt,
     };
   } catch (error) {
-    console.error('Failed to generating OTP:', error);
+    console.error("Failed to generating OTP:", error);
     return {
       success: false,
-      message: 'general',
+      message: "general",
     };
   }
 }
@@ -135,7 +133,7 @@ export async function generateOTP(email: string): Promise<OTPGenerationResult> {
  */
 export async function verifyOTP(
   email: string,
-  code: string
+  code: string,
 ): Promise<OTPVerificationResult> {
   try {
     // 查找用户
@@ -146,7 +144,7 @@ export async function verifyOTP(
     if (!user) {
       return {
         success: false,
-        message: 'userNotFound',
+        message: "userNotFound",
       };
     }
 
@@ -156,14 +154,14 @@ export async function verifyOTP(
         eq(user2faCode.userId, user.id),
         eq(user2faCode.code, code),
         eq(user2faCode.used, false),
-        gt(user2faCode.expiresAt, new Date())
+        gt(user2faCode.expiresAt, new Date()),
       ),
     });
 
     if (!otpRecord) {
       return {
         success: false,
-        message: 'invalidCode',
+        message: "invalidCode",
       };
     }
 
@@ -181,14 +179,14 @@ export async function verifyOTP(
 
     return {
       success: true,
-      message: 'OTP verified successfully',
+      message: "OTP verified successfully",
       userId: user.id,
     };
   } catch (error) {
-    console.error('Error verifying OTP:', error);
+    console.error("Error verifying OTP:", error);
     return {
       success: false,
-      message: 'Failed to verify OTP',
+      message: "Failed to verify OTP",
     };
   }
 }
@@ -205,14 +203,14 @@ export async function cleanupExpiredOTPs(userId?: string): Promise<void> {
       await db
         .delete(user2faCode)
         .where(
-          and(eq(user2faCode.userId, userId), lt(user2faCode.expiresAt, now))
+          and(eq(user2faCode.userId, userId), lt(user2faCode.expiresAt, now)),
         );
     } else {
       // 清理所有过期验证码
       await db.delete(user2faCode).where(lt(user2faCode.expiresAt, now));
     }
   } catch (error) {
-    console.error('Error cleaning up expired OTPs:', error);
+    console.error("Error cleaning up expired OTPs:", error);
   }
 }
 
@@ -233,13 +231,13 @@ export async function hasValidOTP(email: string): Promise<boolean> {
       where: and(
         eq(user2faCode.userId, user.id),
         eq(user2faCode.used, false),
-        gt(user2faCode.expiresAt, new Date())
+        gt(user2faCode.expiresAt, new Date()),
       ),
     });
 
     return !!validOTP;
   } catch (error) {
-    console.error('Error checking valid OTP:', error);
+    console.error("Error checking valid OTP:", error);
     return false;
   }
 }
@@ -261,7 +259,7 @@ export async function getOTPStatus(email: string) {
       where: and(
         eq(user2faCode.userId, user.id),
         eq(user2faCode.used, false),
-        gt(user2faCode.expiresAt, new Date())
+        gt(user2faCode.expiresAt, new Date()),
       ),
       orderBy: (table, { desc }) => [desc(table.createdAt)],
     });
@@ -272,7 +270,7 @@ export async function getOTPStatus(email: string) {
       twoFactorEnabled: user.twoFactorEnabled,
     };
   } catch (error) {
-    console.error('Error getting OTP status:', error);
+    console.error("Error getting OTP status:", error);
     return null;
   }
 }

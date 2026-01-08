@@ -2,7 +2,7 @@
 
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { settings } from "@/config";
+import { settings } from "@heiso/core/config";
 
 const kExpiresIn = 500;
 

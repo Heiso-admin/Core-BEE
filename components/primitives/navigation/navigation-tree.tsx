@@ -1,21 +1,16 @@
 "use client";
 
+import { Avatar, AvatarImage } from "@heiso/core/components/ui/avatar";
+import { Button } from "@heiso/core/components/ui/button";
+import { Checkbox } from "@heiso/core/components/ui/checkbox";
+import { cn } from "@heiso/core/lib/utils";
+import { useSite } from "@heiso/core/providers/site";
 import { Icon } from "@iconify/react";
-import {
-  Edit2,
-  Eye,
-  EyeOff,
-  Trash2,
-} from "lucide-react";
+import { Edit2, Eye, EyeOff, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { cn } from "@/lib/utils";
-import { useSite } from "@/providers/site";
 import type { NavigationItem } from ".";
 
 interface NavigationTreeProps {
@@ -119,7 +114,7 @@ function NavigationTreeItem({
   >(null);
 
   const { site } = useSite();
-  const siteEndpoint = `${process.env.NODE_ENV === "production" ? "https" : "http"}://${site?.basic.domain}`;
+  const _siteEndpoint = `${process.env.NODE_ENV === "production" ? "https" : "http"}://${site?.basic.domain}`;
   const maxLevel = editable?.maxLevel ?? 3;
   const readonly = !editable;
   const dragDisabled = readonly || editable?.disableDrag;
@@ -204,7 +199,7 @@ function NavigationTreeItem({
       // --- 1. 計算滑鼠位置 (不變) ---
       const hoverBoundingRect =
         dropContainerRef.current.getBoundingClientRect();
-      const hoverMiddleY =
+      const _hoverMiddleY =
         (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
       const clientOffset = monitor.getClientOffset();
       if (!clientOffset) return;
@@ -432,8 +427,7 @@ function NavigationTreeItem({
               )}
               {item.title}
             </div>
-            <span
-              className="capitalize text-gray-500 text-xs">
+            <span className="capitalize text-gray-500 text-xs">
               - {item.linkType}
             </span>
             {item.linkType && item.link !== "none" && (
@@ -453,7 +447,7 @@ function NavigationTreeItem({
 
         {/* Actions */}
         <div className="flex items-center transition-opacity">
-          <>{expands && expands(item)}</>
+          {expands?.(item)}
           {/* Enable/Disable Switch */}
           {editable?.onToggleEnabled && (
             <Button

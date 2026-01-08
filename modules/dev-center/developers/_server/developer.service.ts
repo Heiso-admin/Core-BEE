@@ -1,11 +1,11 @@
-'use server';
+"use server";
 
-import { eq } from 'drizzle-orm';
-import { revalidatePath } from 'next/cache';
-import { getTranslations } from 'next-intl/server';
-import { db } from '@/lib/db';
-import type { TDeveloper, TUser } from '@/lib/db/schema';
-import { developers } from '@/lib/db/schema';
+import { db } from "@heiso/core/lib/db";
+import type { TDeveloper, TUser } from "@heiso/core/lib/db/schema";
+import { developers } from "@heiso/core/lib/db/schema";
+import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 
 type Developer = TDeveloper & {
   user: TUser;
@@ -22,14 +22,14 @@ async function getDevelopers(): Promise<Developer[]> {
 }
 
 async function addDeveloper({ email }: { email: string }): Promise<TDeveloper> {
-  const t = await getTranslations('devCenter.developers');
+  const t = await getTranslations("devCenter.developers");
 
   const user = await db.query.users.findFirst({
     where: (t, { eq }) => eq(t.email, email),
   });
 
   if (!user) {
-    throw new Error(t('errors.user_not_found'));
+    throw new Error(t("errors.user_not_found"));
   }
 
   const [dev] = await db
@@ -39,12 +39,12 @@ async function addDeveloper({ email }: { email: string }): Promise<TDeveloper> {
     })
     .returning();
 
-  revalidatePath('./developers');
+  revalidatePath("./developers");
   return dev;
 }
 
 async function removeDeveloper({ id }: { id: string }): Promise<TDeveloper> {
-  const t = await getTranslations('devCenter.developers');
+  const t = await getTranslations("devCenter.developers");
 
   const [dev] = await db
     .delete(developers)
@@ -52,10 +52,10 @@ async function removeDeveloper({ id }: { id: string }): Promise<TDeveloper> {
     .returning();
 
   if (!dev) {
-    throw new Error(t('errors.developer_not_found'));
+    throw new Error(t("errors.developer_not_found"));
   }
 
-  revalidatePath('./developers');
+  revalidatePath("./developers");
   return dev;
 }
 

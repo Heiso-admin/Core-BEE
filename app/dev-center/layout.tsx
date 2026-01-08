@@ -1,1 +1,1 @@
-export { default } from '@/modules/dev-center/layout';
+export { default } from "@heiso/core/modules/dev-center/layout";

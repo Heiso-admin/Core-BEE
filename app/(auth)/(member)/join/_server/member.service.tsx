@@ -1,18 +1,18 @@
 "use server";
 
+import { db } from "@heiso/core/lib/db";
+import { members } from "@heiso/core/lib/db/schema";
+import { users } from "@heiso/core/lib/db/schema/auth/user";
+import { auth } from "@heiso/core/modules/auth/auth.config";
 import { and, eq, isNull } from "drizzle-orm";
 import { cookies } from "next/headers";
-import { auth } from '@/modules/auth/auth.config';
-import { db } from "@/lib/db";
-import { members } from "@/lib/db/schema";
-import { users } from "@/lib/db/schema/auth/user";
 
 async function getMembership() {
   const session = await auth();
   const userId = session?.user?.id;
 
   if (!userId) {
-    throw new Error('Unauthorized');
+    throw new Error("Unauthorized");
   }
 
   // Check if user is developer first
@@ -41,7 +41,7 @@ async function getMembership() {
         },
       },
     },
-    where: (t, { eq }) => and(eq(t.userId, userId), eq(t.status, 'joined')),
+    where: (t, { eq }) => and(eq(t.userId, userId), eq(t.status, "joined")),
   });
 
   return { isDeveloper, membership };
@@ -71,9 +71,9 @@ async function join(userId: string) {
     .update(members)
     .set({
       id: userId,
-      inviteToken: '',
+      inviteToken: "",
       tokenExpiredAt: null,
-      status: 'joined',
+      status: "joined",
       updatedAt: new Date(),
     })
     .where(and(eq(members.id, userId), isNull(members.deletedAt)));
@@ -115,19 +115,25 @@ export async function updateBasicProfile({
 }) {
   const session = await auth();
   if (!session?.user?.id || session.user.id !== userId) {
-    throw new Error('Unauthorized');
+    throw new Error("Unauthorized");
   }
 
-  const updates: Partial<{ name: string; email: string; avatar?: string | null; password: string; updatedAt: Date }> = {
+  const updates: Partial<{
+    name: string;
+    email: string;
+    avatar?: string | null;
+    password: string;
+    updatedAt: Date;
+  }> = {
     updatedAt: new Date(),
   };
-  if (typeof name === 'string' && name.trim()) updates.name = name.trim();
-  if (typeof email === 'string' && email.trim()) updates.email = email.trim();
-  if (typeof avatar === 'string') updates.avatar = avatar;
+  if (typeof name === "string" && name.trim()) updates.name = name.trim();
+  if (typeof email === "string" && email.trim()) updates.email = email.trim();
+  if (typeof avatar === "string") updates.avatar = avatar;
 
   // 若提供密碼，進行雜湊後更新（未提供則不更新密碼）
-  if (typeof password === 'string' && password.trim().length > 0) {
-    const { hashPassword } = await import('@/lib/hash');
+  if (typeof password === "string" && password.trim().length > 0) {
+    const { hashPassword } = await import("@heiso/core/lib/hash");
     updates.password = await hashPassword(password.trim());
   }
 
@@ -137,7 +143,7 @@ export async function updateBasicProfile({
   }
 
   // 同步 members.email（若提供 email）
-  if (typeof email === 'string' && email.trim()) {
+  if (typeof email === "string" && email.trim()) {
     await db
       .update(members)
       .set({ email: email.trim(), updatedAt: new Date() })

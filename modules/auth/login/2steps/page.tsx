@@ -1,16 +1,16 @@
 "use client";
 
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import OTPLoginForm from '../../_components/otpLoginForm';
-import { generateOTP } from '../../_server/otp.service';
+import OTPLoginForm from "../../_components/otpLoginForm";
+import { generateOTP } from "../../_server/otp.service";
 
 export default function TwoStepLogin() {
   const t = useTranslations("auth.otp");
   const router = useRouter();
   const params = useSearchParams();
-  const email = params.get('email') || '';
+  const email = params.get("email") || "";
   const [error, setError] = useState<string>("");
 
   // 進入 2steps 頁時，寄送 OTP Email
@@ -26,7 +26,7 @@ export default function TwoStepLogin() {
   }, [email, t]);
 
   const handleLoginSuccess = () => {
-    router.push('/dashboard');
+    router.push("/dashboard");
   };
 
   const backToLogin = () => {

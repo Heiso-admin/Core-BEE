@@ -1,7 +1,6 @@
 import {
   Body,
   Button,
-  Column,
   Container,
   Head,
   Heading,
@@ -10,7 +9,6 @@ import {
   Img,
   Link,
   Preview,
-  Row,
   Section,
   Tailwind,
   Text,
@@ -50,7 +48,8 @@ export const InviteOwnerEmail = ({
               You’re the first member and owner of this admin portal.
             </Text>
             <Text className="text-[14px] text-center text-black mt-[30px]">
-              Once you set up your account, you’ll be able to invite other team members and start managing your workspace.
+              Once you set up your account, you’ll be able to invite other team
+              members and start managing your workspace.
             </Text>
             <Section className="mt-[32px] mb-[32px] text-center">
               <Button
@@ -61,7 +60,8 @@ export const InviteOwnerEmail = ({
               </Button>
             </Section>
             <Text className="text-[14px] leading-[24px] text-black text-center">
-              URL into your browser:<br/>
+              URL into your browser:
+              <br />
               <Link href={inviteLink} className="text-blue-600 no-underline">
                 {inviteLink}
               </Link>

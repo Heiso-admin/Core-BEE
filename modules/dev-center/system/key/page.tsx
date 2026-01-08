@@ -1,13 +1,7 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import { useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import * as z from "zod";
-import { ActionButton } from "@/components/primitives";
-import { Card } from "@/components/ui/card";
+import { ActionButton } from "@heiso/core/components/primitives";
+import { Card } from "@heiso/core/components/ui/card";
 import {
   Form,
   FormControl,
@@ -15,12 +9,18 @@ import {
   FormField,
   FormItem,
   FormLabel,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@heiso/core/components/ui/form";
+import { Input } from "@heiso/core/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
 import { saveKeys } from "../_server/key.service";
 
 export default function Keys() {
-  const t = useTranslations('devCenter.keys');
+  const t = useTranslations("devCenter.keys");
 
   const keysSchema = z.object({
     openai: z.object({

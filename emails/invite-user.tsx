@@ -1,7 +1,6 @@
 import {
   Body,
   Button,
-  Column,
   Container,
   Head,
   Heading,
@@ -10,7 +9,6 @@ import {
   Img,
   Link,
   Preview,
-  Row,
   Section,
   Tailwind,
   Text,
@@ -47,10 +45,12 @@ export const InviteUserEmail = ({
               Welcome to <strong>{orgName}</strong> !
             </Heading>
             <Text className="mt-[8px] text-[14px] text-center font-bold text-black">
-              You've received a collaboration invitation to the {orgName} organization.
+              You've received a collaboration invitation to the {orgName}{" "}
+              organization.
             </Text>
             <Text className="text-[14px] text-center text-black mt-[30px]">
-              Click the button below to accept the invitation, set up your account, and start collaborating.
+              Click the button below to accept the invitation, set up your
+              account, and start collaborating.
             </Text>
             <Section className="mt-[32px] mb-[32px] text-center">
               <Button
@@ -61,7 +61,8 @@ export const InviteUserEmail = ({
               </Button>
             </Section>
             <Text className="text-[14px] leading-[24px] text-black text-center">
-              URL into your browser:<br/>
+              URL into your browser:
+              <br />
               <Link href={inviteLink} className="text-blue-600 no-underline">
                 {inviteLink}
               </Link>

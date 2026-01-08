@@ -1,321 +1,321 @@
 {
-	"roleSelect": {
-		"title": "請選擇您的角色以進入系統",
-		"dashboard": {
-			"title": "儀表板入口",
-			"description": "網站管理、選單、文章管理、表單管理"
-		},
-		"admin": {
-			"title": "系統管理入口",
-			"description": "用戶管理、系統配置、報表"
-		}
-	},
-	"2stepLogin": {
-		"title": "登入",
-		"description": {
-			"step1": "請輸入您的電子郵件以開始。",
-			"step2": "歡迎回來，{email}"
-		},
-		"email": {
-			"label": "電子郵件",
-			"placeholder": "請輸入您的電子郵件",
-			"error": "找不到使用此電子郵件的帳號。"
-		},
-		"password": {
-			"label": "密碼",
-			"placeholder": "請輸入您的密碼",
-			"error": "密碼錯誤，請重試。"
-		},
-		"submit": {
-			"next": "下一步",
-			"login": "登入",
-			"loading": {
-				"step1": "請稍候",
-				"step2": "登入中..."
-			}
-		},
-		"actions": {
-			"forgotPassword": "忘記密碼？",
-			"signup": "註冊"
-		}
-	},
-	"2fa": {
-		"title": "雙重認證",
-		"description": "請輸入認證碼。我們已將認證碼發送至您的電子郵件。",
-		"submit": "驗證",
-		"resend": "沒有收到？重新發送新的驗證碼。"
-	},
-	"loginNext": {
-		"title": "登入",
-		"titleStep2": "歡迎回來",
-		"description": "輸入您的電子郵件開始使用。",
-		"descriptionStep2": "正在以 {email} 登入",
-		"email": {
-			"label": "電子郵件",
-			"placeholder": "輸入您的電子郵件",
-			"error": "請輸入有效的電子郵件地址。"
-		},
-		"continue": "繼續",
-		"backToEmail": "使用其他電子郵件",
-		"newUser": "{siteName} 新用戶？",
-		"signUp": "註冊",
-		"error": {
-			"general": "發生錯誤，請重試。",
-			"userNotFound": "找不到使用此電子郵件的帳號。"
-		}
-	},
-	"emailVerification": {
-		"title": "驗證您的電子郵件",
-		"emailDescription": "我們已向您發送一封登入郵件，\n 請檢查您的收件箱 {email}。",
-		"codeDescription": "我們已發送驗證碼至 {email}",
-		"backToLogin": "返回登入",
-		"input": {
-			"placeholder": "請輸入驗證碼"
-		},
-		"error": {
-			"title": "錯誤",
-			"invalid": "驗證碼無效，請重試。"
-		},
-		"submit": {
-			"verifying": "驗證中...",
-			"verify": "驗證電子郵件"
-		},
-		"actions": {
-			"resending": "重新發送中...",
-			"codeResend": "重新發送驗證碼",
-			"emailResend": "重新發送驗證郵件",
-			"change": "更改電子郵件",
-			"emailResendSuccess": "驗證郵件已重新發送，請查收郵件。",
-			"emailResendError": "發送驗證郵件失敗，請重試。",
-			"codeResendSuccess": "驗證碼已重新發送，請查收郵件。",
-			"codeResendError": "發送驗證碼失敗，請重試。"
-		},
-		"spamNotice": "沒有收到郵件？請檢查您的垃圾郵件資料夾，或確認郵件地址是否正確。",
-		"success": {
-			"title": "電子郵件驗證成功！",
-			"description": "您的電子郵件已成功驗證。現在可以進入您的帳戶。",
-			"action": "前往帳戶"
-		}
-	},
-	"changePassword": {
-		"title": "更換密碼",
-		"description": "請在下方輸入您的新密碼，請確保密碼夠強且獨特。",
-		"password": {
-			"label": "新密碼",
-			"confirm": "確認新密碼",
-			"strength": {
-				"label": "密碼強度：",
-				"weak": "弱",
-				"fair": "一般",
-				"good": "良好",
-				"strong": "強"
-			}
-		},
-		"error": {
-			"title": "錯誤",
-			"mismatch": "密碼不相符",
-			"weak": "請選擇更強的密碼",
-			"short": "密碼長度必須至少為 8 個字元",
-			"generic": "發生錯誤，請稍後再試"
-		},
-		"submit": {
-			"default": "更換密碼",
-			"loading": "正在更換密碼..."
-		},
-		"success": {
-			"title": "密碼更換成功",
-			"description": "您的密碼已成功更換，現在可以使用新密碼登入。",
-			"action": "前往儀表板"
-		},
-		"cancel": "取消並返回登入"
-	},
-	"resetPassword": {
-		"title": "重設密碼",
-		"description": "請在下方輸入您的新密碼，請確保密碼夠強且獨特。",
-		"password": {
-			"label": "新密碼",
-			"confirm": "確認新密碼",
-			"strength": {
-				"error": "密碼強度不足",
-				"label": "密碼強度",
-				"weak": "弱",
-				"fair": "一般",
-				"good": "良好",
-				"strong": "強"
-			}
-		},
-		"error": {
-			"title": "錯誤",
-			"mismatch": "密碼不相符",
-			"weak": "請選擇更強的密碼",
-			"short": "密碼長度必須至少為 8 個字元",
-			"generic": "發生錯誤，請稍後再試"
-		},
-		"submit": {
-			"default": "重設密碼",
-			"loading": "正在重設密碼..."
-		},
-		"success": {
-			"title": "密碼重設成功",
-			"description": "您的密碼已成功重設，現在可以使用新密碼登入。",
-			"action": "前往登入"
-		},
-		"cancel": "取消並返回登入"
-	},
-	"signup": {
-		"title": "建立新帳號",
-		"description": "您的電子郵件 {email} 已成功驗證。",
-		"hint": "密碼長度至少為 15 個字元，或至少 8 個字元包含數字和小寫字母。",
-		"haveAccount": "已經有帳號嗎？<link>登入</link>",
-		"name": {
-			"label": "姓名",
-			"placeholder": "請輸入您的姓名",
-			"error": "請輸入姓名"
-		},
-		"email": {
-			"label": "電子郵件地址",
-			"placeholder": "請輸入您的電子郵件地址",
-			"error": "請輸入有效的電子郵件地址",
-			"missing": "遺失電子郵件"
-		},
-		"password": {
-			"label": "密碼",
-			"confirm": "確認新密碼",
-			"placeholder": "請輸入您的密碼",
-			"error": "密碼長度必須至少為 8 個字元",
-			"weak": "密碼強度不足"
-		},
-		"logout": "您已經登入了，請先退出登入。",
-		"submit": "建立帳號",
-		"error": "發生錯誤，請稍後再試",
-		"mismatch": "密碼不相符"
-	},
-	"login": {
-		"title": "登入您的帳號",
-		"titleInvite": "歡迎加入 {organization}",
-		"titlePassword": "輸入您的密碼",
-		"email": {
-			"label": "電子郵件地址",
-			"placeholder": "請輸入電子郵件地址",
-			"error": "無效的電子郵件地址"
-		},
-		"password": {
-			"label": "密碼",
-			"placeholder": "請輸入密碼",
-			"error": "密碼長度必須至少為 6 個字元",
-			"forgot": "忘記密碼？"
-		},
-		"submit": "登入",
-		"error": {
-			"errorPassword": "我們找不到與您輸入的電子郵件和密碼匹配的帳戶，請檢查您的電子郵件和密碼。",
-			"userNotFound": "找不到您的電子郵件帳號，請確認 Email 地址無誤，或聯繫您的組織管理員。",
-			"onlySSOAllowed": "只有 SSO 登入才被允許，請聯繫您的組織管理員。",
-			"review": "您的帳號仍在審核中，請耐心等候組織管理員的最終批准。",
-			"invited": "您的電子郵件已收到邀請信，請檢查您的收件箱。",
-			"general": "發生錯誤，請重試或聯繫您的組織管理員。",
-			"notActive": "您的帳號目前無法登入，請聯繫您的組織管理員尋求協助。",
-			"oAuthReview": "您的帳號已送出申請，請耐心等候組織管理員的最終批准。",
-			"useEmailLogin": "您的 Email 已註冊，請使用電子郵件登入。",
-			"userAuth": "您的帳號已存在於系統中，並設定為透過 {oAuth} 登入。請點擊對應的按鈕進入系統。"
-		},
-		"notFound": {
-			"password": "不想使用密碼？ <Link>驗證碼登入</Link>",
-			"code": "找不到驗證碼？ <Link>密碼登入</Link>"
-		},
-		"back": "返回首頁",
-		"backToLogin": "需要更改帳號？<Link>返回</Link>"
-	},
-	"forgotPassword": {
-		"title": "忘記密碼",
-		"description": "請輸入您的電子郵件地址，我們將發送重設密碼連結給您。",
-		"email": {
-			"label": "電子郵件",
-			"placeholder": "請輸入您的電子郵件地址"
-		},
-		"error": {
-			"title": "錯誤",
-			"invalidEmail": "請輸入有效的電子郵件地址。",
-			"generic": "發生錯誤，請稍後再試。"
-		},
-		"submit": {
-			"default": "發送重設連結",
-			"loading": "正在發送重設連結..."
-		},
-		"success": {
-			"title": "請查看您的電子郵件",
-			"description": "我們已將重設密碼連結發送至 {email}，請查看您的收件匣並按照指示重設密碼。"
-		},
-		"backToLogin": "返回登入",
-		"userNotFound": "找不到使用此電子郵件的帳號"
-	},
-	"otp": {
-		"title": "請檢查您的電子郵件",
-		"description": "我們已向您發送一組驗證碼，\n 請至 {email} 的收件箱查收。",
-		"email": {
-			"label": "電子郵件地址",
-			"placeholder": "請輸入您的電子郵件地址",
-			"error": "請輸入有效的電子郵件地址"
-		},
-		"code": {
-			"label": "驗證碼",
-			"placeholder": "請輸入 6 位數驗證碼",
-			"error": "請輸入有效的 6 位數驗證碼"
-		},
-		"submit": {
-			"sendCode": "發送驗證碼",
-			"verify": "驗證",
-			"loading": {
-				"sendCode": "正在發送驗證碼...",
-				"verify": "正在驗證..."
-			}
-		},
-		"resend": {
-			"text": "沒有收到驗證碼？",
-			"action": "重新發送驗證碼",
-			"countdown": "{seconds} 秒後可重新發送"
-		},
-		"success": {
-			"codeSent": "驗證碼已發送至 {email}",
-			"codeResent": "驗證碼已重新發送",
-			"verified": "驗證碼驗證成功"
-		},
-		"error": {
-			"userNotFound": "找不到您的電子郵件帳號。 請確認 Email 地址無誤，或聯繫您的組織管理員。",
-			"invalidCode": "驗證碼無效或已過期",
-			"tooManyAttempts": "嘗試次數過多，請稍後再試",
-			"sendFailed": "發送驗證碼失敗",
-			"verifyFailed": "驗證碼驗證失敗",
-			"login": "登入失敗，請重試",
-			"general": "發生錯誤，請稍後再試",
-			"missing": "遺失電子郵件"
-		},
-		"notFound": {
-			"password": "不想使用密碼？ <Link>使用驗證碼登入</Link>",
-			"code": "找不到驗證碼？ <Link>使用密碼登入</Link>"
-		},
-		"backToPassword": "改用密碼登入",
-		"backToLogin": "需要更改帳號？<Link>返回</Link>",
-		"back": "返回",
-		"codeSentTo": "驗證碼已發送至"
-	},
-	"join": {
-		"title": "申請已送出",
-		"description": "您的電子郵件 {email} 已成功驗證。",
-		"passwordDesc": "注意：可選填密碼，若未設定密碼，您將無法使用密碼登入",
-		"joinSuccess": "您 {email} 的密碼已設定成功。為確保帳戶安全，請重新登入",
-		"notAllowed": "您的電子郵件({email})不在系統用戶列表中。請聯繫系統管理員。",
-		"submit": "申請建立帳號",
-		"error": {
-			"invalidLink": "無效的加入連結，請檢查並重新輸入。",
-			"expiredLink": "您的邀請連結已逾時，請重新驗證身份並返回此頁面。",
-			"userNotFound": "找不到您的電子郵件帳號，請確認 Email 地址無誤，或聯繫您的組織管理員。",
-			"review": "您的帳號仍在審核中，請耐心等候組織管理員的最終批准。",
-			"invited": "您的電子郵件已收到邀請信，請檢查您的收件箱。",
-			"general": "發生錯誤，請重試或聯繫您的組織管理員。"
-		},
-		"action": {
-			"join": "送出申請",
-			"reLogin": "返回登入"
-		}
-	}
+  "roleSelect": {
+    "title": "請選擇您的角色以進入系統",
+    "dashboard": {
+      "title": "儀表板入口",
+      "description": "網站管理、選單、文章管理、表單管理"
+    },
+    "admin": {
+      "title": "系統管理入口",
+      "description": "用戶管理、系統配置、報表"
+    }
+  },
+  "2stepLogin": {
+    "title": "登入",
+    "description": {
+      "step1": "請輸入您的電子郵件以開始。",
+      "step2": "歡迎回來，{email}"
+    },
+    "email": {
+      "label": "電子郵件",
+      "placeholder": "請輸入您的電子郵件",
+      "error": "找不到使用此電子郵件的帳號。"
+    },
+    "password": {
+      "label": "密碼",
+      "placeholder": "請輸入您的密碼",
+      "error": "密碼錯誤，請重試。"
+    },
+    "submit": {
+      "next": "下一步",
+      "login": "登入",
+      "loading": {
+        "step1": "請稍候",
+        "step2": "登入中..."
+      }
+    },
+    "actions": {
+      "forgotPassword": "忘記密碼？",
+      "signup": "註冊"
+    }
+  },
+  "2fa": {
+    "title": "雙重認證",
+    "description": "請輸入認證碼。我們已將認證碼發送至您的電子郵件。",
+    "submit": "驗證",
+    "resend": "沒有收到？重新發送新的驗證碼。"
+  },
+  "loginNext": {
+    "title": "登入",
+    "titleStep2": "歡迎回來",
+    "description": "輸入您的電子郵件開始使用。",
+    "descriptionStep2": "正在以 {email} 登入",
+    "email": {
+      "label": "電子郵件",
+      "placeholder": "輸入您的電子郵件",
+      "error": "請輸入有效的電子郵件地址。"
+    },
+    "continue": "繼續",
+    "backToEmail": "使用其他電子郵件",
+    "newUser": "{siteName} 新用戶？",
+    "signUp": "註冊",
+    "error": {
+      "general": "發生錯誤，請重試。",
+      "userNotFound": "找不到使用此電子郵件的帳號。"
+    }
+  },
+  "emailVerification": {
+    "title": "驗證您的電子郵件",
+    "emailDescription": "我們已向您發送一封登入郵件，\n 請檢查您的收件箱 {email}。",
+    "codeDescription": "我們已發送驗證碼至 {email}",
+    "backToLogin": "返回登入",
+    "input": {
+      "placeholder": "請輸入驗證碼"
+    },
+    "error": {
+      "title": "錯誤",
+      "invalid": "驗證碼無效，請重試。"
+    },
+    "submit": {
+      "verifying": "驗證中...",
+      "verify": "驗證電子郵件"
+    },
+    "actions": {
+      "resending": "重新發送中...",
+      "codeResend": "重新發送驗證碼",
+      "emailResend": "重新發送驗證郵件",
+      "change": "更改電子郵件",
+      "emailResendSuccess": "驗證郵件已重新發送，請查收郵件。",
+      "emailResendError": "發送驗證郵件失敗，請重試。",
+      "codeResendSuccess": "驗證碼已重新發送，請查收郵件。",
+      "codeResendError": "發送驗證碼失敗，請重試。"
+    },
+    "spamNotice": "沒有收到郵件？請檢查您的垃圾郵件資料夾，或確認郵件地址是否正確。",
+    "success": {
+      "title": "電子郵件驗證成功！",
+      "description": "您的電子郵件已成功驗證。現在可以進入您的帳戶。",
+      "action": "前往帳戶"
+    }
+  },
+  "changePassword": {
+    "title": "更換密碼",
+    "description": "請在下方輸入您的新密碼，請確保密碼夠強且獨特。",
+    "password": {
+      "label": "新密碼",
+      "confirm": "確認新密碼",
+      "strength": {
+        "label": "密碼強度：",
+        "weak": "弱",
+        "fair": "一般",
+        "good": "良好",
+        "strong": "強"
+      }
+    },
+    "error": {
+      "title": "錯誤",
+      "mismatch": "密碼不相符",
+      "weak": "請選擇更強的密碼",
+      "short": "密碼長度必須至少為 8 個字元",
+      "generic": "發生錯誤，請稍後再試"
+    },
+    "submit": {
+      "default": "更換密碼",
+      "loading": "正在更換密碼..."
+    },
+    "success": {
+      "title": "密碼更換成功",
+      "description": "您的密碼已成功更換，現在可以使用新密碼登入。",
+      "action": "前往儀表板"
+    },
+    "cancel": "取消並返回登入"
+  },
+  "resetPassword": {
+    "title": "重設密碼",
+    "description": "請在下方輸入您的新密碼，請確保密碼夠強且獨特。",
+    "password": {
+      "label": "新密碼",
+      "confirm": "確認新密碼",
+      "strength": {
+        "error": "密碼強度不足",
+        "label": "密碼強度",
+        "weak": "弱",
+        "fair": "一般",
+        "good": "良好",
+        "strong": "強"
+      }
+    },
+    "error": {
+      "title": "錯誤",
+      "mismatch": "密碼不相符",
+      "weak": "請選擇更強的密碼",
+      "short": "密碼長度必須至少為 8 個字元",
+      "generic": "發生錯誤，請稍後再試"
+    },
+    "submit": {
+      "default": "重設密碼",
+      "loading": "正在重設密碼..."
+    },
+    "success": {
+      "title": "密碼重設成功",
+      "description": "您的密碼已成功重設，現在可以使用新密碼登入。",
+      "action": "前往登入"
+    },
+    "cancel": "取消並返回登入"
+  },
+  "signup": {
+    "title": "建立新帳號",
+    "description": "您的電子郵件 {email} 已成功驗證。",
+    "hint": "密碼長度至少為 15 個字元，或至少 8 個字元包含數字和小寫字母。",
+    "haveAccount": "已經有帳號嗎？<link>登入</link>",
+    "name": {
+      "label": "姓名",
+      "placeholder": "請輸入您的姓名",
+      "error": "請輸入姓名"
+    },
+    "email": {
+      "label": "電子郵件地址",
+      "placeholder": "請輸入您的電子郵件地址",
+      "error": "請輸入有效的電子郵件地址",
+      "missing": "遺失電子郵件"
+    },
+    "password": {
+      "label": "密碼",
+      "confirm": "確認新密碼",
+      "placeholder": "請輸入您的密碼",
+      "error": "密碼長度必須至少為 8 個字元",
+      "weak": "密碼強度不足"
+    },
+    "logout": "您已經登入了，請先退出登入。",
+    "submit": "建立帳號",
+    "error": "發生錯誤，請稍後再試",
+    "mismatch": "密碼不相符"
+  },
+  "login": {
+    "title": "登入您的帳號",
+    "titleInvite": "歡迎加入 {organization}",
+    "titlePassword": "輸入您的密碼",
+    "email": {
+      "label": "電子郵件地址",
+      "placeholder": "請輸入電子郵件地址",
+      "error": "無效的電子郵件地址"
+    },
+    "password": {
+      "label": "密碼",
+      "placeholder": "請輸入密碼",
+      "error": "密碼長度必須至少為 6 個字元",
+      "forgot": "忘記密碼？"
+    },
+    "submit": "登入",
+    "error": {
+      "errorPassword": "我們找不到與您輸入的電子郵件和密碼匹配的帳戶，請檢查您的電子郵件和密碼。",
+      "userNotFound": "找不到您的電子郵件帳號，請確認 Email 地址無誤，或聯繫您的組織管理員。",
+      "onlySSOAllowed": "只有 SSO 登入才被允許，請聯繫您的組織管理員。",
+      "review": "您的帳號仍在審核中，請耐心等候組織管理員的最終批准。",
+      "invited": "您的電子郵件已收到邀請信，請檢查您的收件箱。",
+      "general": "發生錯誤，請重試或聯繫您的組織管理員。",
+      "notActive": "您的帳號目前無法登入，請聯繫您的組織管理員尋求協助。",
+      "oAuthReview": "您的帳號已送出申請，請耐心等候組織管理員的最終批准。",
+      "useEmailLogin": "您的 Email 已註冊，請使用電子郵件登入。",
+      "userAuth": "您的帳號已存在於系統中，並設定為透過 {oAuth} 登入。請點擊對應的按鈕進入系統。"
+    },
+    "notFound": {
+      "password": "不想使用密碼？ <Link>驗證碼登入</Link>",
+      "code": "找不到驗證碼？ <Link>密碼登入</Link>"
+    },
+    "back": "返回首頁",
+    "backToLogin": "需要更改帳號？<Link>返回</Link>"
+  },
+  "forgotPassword": {
+    "title": "忘記密碼",
+    "description": "請輸入您的電子郵件地址，我們將發送重設密碼連結給您。",
+    "email": {
+      "label": "電子郵件",
+      "placeholder": "請輸入您的電子郵件地址"
+    },
+    "error": {
+      "title": "錯誤",
+      "invalidEmail": "請輸入有效的電子郵件地址。",
+      "generic": "發生錯誤，請稍後再試。"
+    },
+    "submit": {
+      "default": "發送重設連結",
+      "loading": "正在發送重設連結..."
+    },
+    "success": {
+      "title": "請查看您的電子郵件",
+      "description": "我們已將重設密碼連結發送至 {email}，請查看您的收件匣並按照指示重設密碼。"
+    },
+    "backToLogin": "返回登入",
+    "userNotFound": "找不到使用此電子郵件的帳號"
+  },
+  "otp": {
+    "title": "請檢查您的電子郵件",
+    "description": "我們已向您發送一組驗證碼，\n 請至 {email} 的收件箱查收。",
+    "email": {
+      "label": "電子郵件地址",
+      "placeholder": "請輸入您的電子郵件地址",
+      "error": "請輸入有效的電子郵件地址"
+    },
+    "code": {
+      "label": "驗證碼",
+      "placeholder": "請輸入 6 位數驗證碼",
+      "error": "請輸入有效的 6 位數驗證碼"
+    },
+    "submit": {
+      "sendCode": "發送驗證碼",
+      "verify": "驗證",
+      "loading": {
+        "sendCode": "正在發送驗證碼...",
+        "verify": "正在驗證..."
+      }
+    },
+    "resend": {
+      "text": "沒有收到驗證碼？",
+      "action": "重新發送驗證碼",
+      "countdown": "{seconds} 秒後可重新發送"
+    },
+    "success": {
+      "codeSent": "驗證碼已發送至 {email}",
+      "codeResent": "驗證碼已重新發送",
+      "verified": "驗證碼驗證成功"
+    },
+    "error": {
+      "userNotFound": "找不到您的電子郵件帳號。 請確認 Email 地址無誤，或聯繫您的組織管理員。",
+      "invalidCode": "驗證碼無效或已過期",
+      "tooManyAttempts": "嘗試次數過多，請稍後再試",
+      "sendFailed": "發送驗證碼失敗",
+      "verifyFailed": "驗證碼驗證失敗",
+      "login": "登入失敗，請重試",
+      "general": "發生錯誤，請稍後再試",
+      "missing": "遺失電子郵件"
+    },
+    "notFound": {
+      "password": "不想使用密碼？ <Link>使用驗證碼登入</Link>",
+      "code": "找不到驗證碼？ <Link>使用密碼登入</Link>"
+    },
+    "backToPassword": "改用密碼登入",
+    "backToLogin": "需要更改帳號？<Link>返回</Link>",
+    "back": "返回",
+    "codeSentTo": "驗證碼已發送至"
+  },
+  "join": {
+    "title": "申請已送出",
+    "description": "您的電子郵件 {email} 已成功驗證。",
+    "passwordDesc": "注意：可選填密碼，若未設定密碼，您將無法使用密碼登入",
+    "joinSuccess": "您 {email} 的密碼已設定成功。為確保帳戶安全，請重新登入",
+    "notAllowed": "您的電子郵件({email})不在系統用戶列表中。請聯繫系統管理員。",
+    "submit": "申請建立帳號",
+    "error": {
+      "invalidLink": "無效的加入連結，請檢查並重新輸入。",
+      "expiredLink": "您的邀請連結已逾時，請重新驗證身份並返回此頁面。",
+      "userNotFound": "找不到您的電子郵件帳號，請確認 Email 地址無誤，或聯繫您的組織管理員。",
+      "review": "您的帳號仍在審核中，請耐心等候組織管理員的最終批准。",
+      "invited": "您的電子郵件已收到邀請信，請檢查您的收件箱。",
+      "general": "發生錯誤，請重試或聯繫您的組織管理員。"
+    },
+    "action": {
+      "join": "送出申請",
+      "reLogin": "返回登入"
+    }
+  }
 }

@@ -6,7 +6,7 @@ export default async function Page({
   searchParams?: { email?: string };
 }) {
   const sp = await searchParams;
-  const email = sp?.email ?? '';
+  const email = sp?.email ?? "";
 
   return (
     <div className="w-full max-w-md space-y-10">

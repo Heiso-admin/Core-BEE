@@ -1,8 +1,6 @@
 "use client";
 
-import { ChevronDown, ChevronRight, Edit2, Plus, Trash2 } from "lucide-react";
-import * as React from "react";
-import { ActionButton } from "@/components/primitives";
+import { ActionButton } from "@heiso/core/components/primitives";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,8 +10,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+} from "@heiso/core/components/ui/alert-dialog";
+import { Button } from "@heiso/core/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -21,12 +19,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
+} from "@heiso/core/components/ui/dialog";
+import { Input } from "@heiso/core/components/ui/input";
+import { Label } from "@heiso/core/components/ui/label";
+import { ScrollArea } from "@heiso/core/components/ui/scroll-area";
+import { cn } from "@heiso/core/lib/utils";
+import { ChevronDown, ChevronRight, Edit2, Plus, Trash2 } from "lucide-react";
+import * as React from "react";
 
 type TreeNode = {
   id: string;

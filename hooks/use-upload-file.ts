@@ -1,4 +1,7 @@
-import { ourFileRouter, type UploadedFile } from "@/lib/upload-router";
+import {
+  ourFileRouter,
+  type UploadedFile,
+} from "@heiso/core/lib/upload-router";
 import { useUploadS3File } from "./use-upload-s3-file";
 
 interface UploadFileOptions {

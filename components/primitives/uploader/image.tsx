@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { ImageIcon, X } from 'lucide-react';
-import * as React from 'react';
-import { useFilePicker } from 'use-file-picker';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { useUploadFile } from '@/hooks/use-upload-file';
-import { cn } from '@/lib/utils';
+import { Button } from "@heiso/core/components/ui/button";
+import { Progress } from "@heiso/core/components/ui/progress";
+import { useUploadFile } from "@heiso/core/hooks/use-upload-file";
+import { cn } from "@heiso/core/lib/utils";
+import { ImageIcon, X } from "lucide-react";
+import * as React from "react";
+import { useFilePicker } from "use-file-picker";
 
 type ImageUploaderProps = {
   onUploadComplete?: (file: {
@@ -36,12 +36,12 @@ export const ImageUploader = ({
 }: ImageUploaderProps) => {
   const { uploadFile, progress, isUploading, cancel } = useUploadFile();
   const [uploadedImage, setUploadedImage] = React.useState<string | null>(
-    value ?? null
+    value ?? null,
   );
 
   const { openFilePicker, loading, clear } = useFilePicker({
-    readAs: 'DataURL',
-    accept: 'image/*',
+    readAs: "DataURL",
+    accept: "image/*",
     multiple: false,
     onFilesSelected: async ({ plainFiles }) => {
       if (plainFiles?.length) {
@@ -51,7 +51,7 @@ export const ImageUploader = ({
           setUploadedImage(uploadedFile.url);
           onUploadComplete?.(uploadedFile);
         } catch (error) {
-          console.error('Upload failed:', error);
+          console.error("Upload failed:", error);
         } finally {
           clear();
         }
@@ -66,8 +66,9 @@ export const ImageUploader = ({
 
   if (uploadedImage) {
     return (
-      <div className={cn('relative inline-block', className)}>
+      <div className={cn("relative inline-block", className)}>
         <div className="relative group w-full h-full">
+          {/* biome-ignore lint/performance/noImgElement: Local preview URL */}
           <img
             src={uploadedImage}
             alt={uploadedImage}
@@ -115,16 +116,16 @@ export const ImageUploader = ({
   }
 
   return (
-    <div className={cn('relative inline-block', className)}>
+    <div className={cn("relative inline-block", className)}>
       <Button
         variant="outline"
         type="button"
         onClick={openFilePicker}
         disabled={isUploading || loading || disabled}
         className={cn(
-          'gap-2',
-          isUploading && 'pointer-events-none opacity-50',
-          buttonClassName
+          "gap-2",
+          isUploading && "pointer-events-none opacity-50",
+          buttonClassName,
         )}
       >
         {children || (

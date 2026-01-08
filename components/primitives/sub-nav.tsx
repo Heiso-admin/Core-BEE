@@ -1,9 +1,9 @@
 "use client";
 
+import { cn } from "@heiso/core/lib/utils";
+import type { SubNavProps } from "@heiso/core/types/client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import type { SubNavProps } from "@/types/client";
 
 export function SubNav({ rootPath, className, title, groups }: SubNavProps) {
   const pathname = usePathname();

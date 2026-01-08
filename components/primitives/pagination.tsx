@@ -1,18 +1,18 @@
 "use client";
-import Link from "next/link";
-import React, { useEffect } from "react";
-import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Button } from "@heiso/core/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+} from "@heiso/core/components/ui/select";
+import { cn } from "@heiso/core/lib/utils";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import React, { useEffect } from "react";
 
 export default function Pagination({
   className,
@@ -37,7 +37,7 @@ export default function Pagination({
     pageList.push(i);
   }
 
-  const path = section ? "/" + section.path : "/";
+  const path = section ? `/${section.path}` : "/";
   const query = new URLSearchParams(section?.query ?? {});
 
   const getPageLink = (page: number) => {
@@ -60,18 +60,18 @@ export default function Pagination({
               }
               className="rounded-lg border border-primary px-2 py-2 text-dark"
             >
-                <span className="sr-only">Previous</span>
-                <ChevronLeft className="mt-1 h-5 w-5" />
+              <span className="sr-only">Previous</span>
+              <ChevronLeft className="mt-1 h-5 w-5" />
             </Link>
           ) : (
             <span className="rounded-lg border border-primary px-2 py-2 text-dark">
-                <span className="sr-only">Previous</span>
-                <ChevronLeft className="mt-1 h-5 w-5" />
+              <span className="sr-only">Previous</span>
+              <ChevronLeft className="mt-1 h-5 w-5" />
             </span>
           )}
 
           {/* page index */}
-          {pageList.map((pagination, i) => (
+          {pageList.map((pagination, _i) => (
             <React.Fragment key={`page-${pagination}`}>
               {pagination === currentPage ? (
                 <span
@@ -82,7 +82,11 @@ export default function Pagination({
                 </span>
               ) : (
                 <Link
-                  href={pagination === 1 ? path : `${path}?${getPageLink(pagination)}`}
+                  href={
+                    pagination === 1
+                      ? path
+                      : `${path}?${getPageLink(pagination)}`
+                  }
                   passHref
                   aria-current="page"
                   className={`rounded-lg border border-primary px-4 py-2 text-dark`}
@@ -99,13 +103,13 @@ export default function Pagination({
               href={`${path}?${getPageLink(currentPage + 1)}`}
               className="rounded-lg border border-primary px-2 py-2 text-dark"
             >
-                <span className="sr-only">Next</span>
-                <ChevronRight className="mt-1 h-5 w-5" />
+              <span className="sr-only">Next</span>
+              <ChevronRight className="mt-1 h-5 w-5" />
             </Link>
           ) : (
             <span className="rounded-lg border border-primary px-2 py-2 text-dark">
-                <span className="sr-only">Next</span>
-                <ChevronRight className="mt-1 h-5 w-5" />
+              <span className="sr-only">Next</span>
+              <ChevronRight className="mt-1 h-5 w-5" />
             </span>
           )}
         </nav>
@@ -114,14 +118,13 @@ export default function Pagination({
   );
 }
 
-export function DataPagination({  
+export function DataPagination({
   className,
-  section,
   total,
   inputPage,
   onInputPageChange,
   defaultRows,
-  rowsOptions=[10, 20, 30, 40, 50],
+  rowsOptions = [10, 20, 30, 40, 50],
   onChangeRows,
 }: {
   className?: string;
@@ -135,7 +138,7 @@ export function DataPagination({
   defaultRows?: number;
   rowsOptions?: number[];
   onChangeRows?: (rows: number) => void;
-  }) {
+}) {
   const t = useTranslations("components.pagination");
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -147,7 +150,9 @@ export function DataPagination({
 
   const defaultRowsValue = defaultRows ?? rowsOptions[0];
   const rowsRaw = Number(rowsParam ?? defaultRowsValue);
-  const pageSize = Number.isFinite(rowsRaw) ? Math.max(1, rowsRaw) : defaultRowsValue;
+  const pageSize = Number.isFinite(rowsRaw)
+    ? Math.max(1, rowsRaw)
+    : defaultRowsValue;
   const options = rowsOptions.includes(pageSize)
     ? rowsOptions
     : [...rowsOptions, pageSize].sort((a, b) => a - b);
@@ -158,7 +163,7 @@ export function DataPagination({
   const page = isPageControlled
     ? Math.max(1, Math.min(totalPages, Number(inputPage)))
     : pageFromUrl;
-  const totalItems = totalParam ? Math.max(0, Number(totalParam)) : undefined;
+  const _totalItems = totalParam ? Math.max(0, Number(totalParam)) : undefined;
 
   const start = (page - 1) * pageSize + 1;
   const end = Math.min(page * pageSize, total);
@@ -197,7 +202,9 @@ export function DataPagination({
   };
 
   // allow free typing; commit clamped value on blur/enter
-  const [localInput, setLocalInput] = React.useState<string>(String(inputPage ?? page));
+  const [localInput, setLocalInput] = React.useState<string>(
+    String(inputPage ?? page),
+  );
   useEffect(() => {
     setLocalInput(String(inputPage ?? page));
   }, [inputPage, page]);
@@ -217,9 +224,10 @@ export function DataPagination({
     }
   };
 
-
   return (
-    <div className={cn("flex items-center justify-between gap-4 py-2", className)}>
+    <div
+      className={cn("flex items-center justify-between gap-4 py-2", className)}
+    >
       <div className="text-sm text-muted-foreground">
         <span>
           {t("showingItems", {
@@ -299,4 +307,3 @@ export function DataPagination({
     </div>
   );
 }
-

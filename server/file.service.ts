@@ -1,10 +1,10 @@
 "use server";
 
+import { db } from "@heiso/core/lib/db";
+import { fileStorageCategories, files } from "@heiso/core/lib/db/schema";
+import { generateId } from "@heiso/core/lib/id-generator";
+import { auth } from "@heiso/core/modules/auth/auth.config";
 import { eq, sql } from "drizzle-orm";
-import { auth } from '@/modules/auth/auth.config';
-import { db } from "@/lib/db";
-import { fileStorageCategories, files } from "@/lib/db/schema";
-import { generateId } from "@/lib/id-generator";
 
 function detectFileType(rawType: string) {
   const mimeToType: Record<string, string> = {

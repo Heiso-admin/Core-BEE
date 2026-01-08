@@ -1,27 +1,23 @@
-'use server';
+"use server";
 
-import { db } from '@/lib/db';
-import { eq, and, desc, isNull, count } from 'drizzle-orm';
-import { apiKeys } from '@/lib/db/schema';
-import { auth } from '@/modules/auth/auth.config';
-import { revalidatePath } from 'next/cache';
-import { generateApiKey, hashApiKey } from '@/lib/hash';
-import type { TPublicApiKey } from '@/lib/db/schema';
+import { db } from "@heiso/core/lib/db";
+import type { TPublicApiKey } from "@heiso/core/lib/db/schema";
+import { apiKeys } from "@heiso/core/lib/db/schema";
+import { generateApiKey, hashApiKey } from "@heiso/core/lib/hash";
+import { auth } from "@heiso/core/modules/auth/auth.config";
+import { and, count, desc, eq, isNull } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 
 // Get API key prefix for display
 function getKeyPrefix(key: string): string {
-  return key.substring(0, 12) + '...';
+  return `${key.substring(0, 12)}...`;
 }
 
 type TApiKeyWithKeyPrefix = TPublicApiKey & { keyPrefix: string };
 
 // Get API Keys list
 export async function getApiKeysList(
-  options: {
-    search?: string;
-    start?: number;
-    limit?: number;
-  } = {}
+  options: { search?: string; start?: number; limit?: number } = {},
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -38,11 +34,10 @@ export async function getApiKeysList(
     ];
 
     if (search) {
-      whereConditions
-        .push
+      whereConditions.push(
         // Add search condition for name
         // Note: This is a simplified search, you might want to use ilike for case-insensitive search
-        ();
+      );
     }
 
     // Get total count
@@ -77,7 +72,7 @@ export async function getApiKeysList(
       (result) => ({
         ...result,
         keyPrefix: getKeyPrefix(result.keyPrefix),
-      })
+      }),
     );
 
     return {
@@ -85,14 +80,14 @@ export async function getApiKeysList(
       total: totalResult.count,
     };
   } catch (error) {
-    console.error('Error fetching API keys:', error);
+    console.error("Error fetching API keys:", error);
     return { apiKeys: [], total: 0 };
   }
 }
 
 // Get single API key
 export async function getApiKey(
-  id: string
+  id: string,
 ): Promise<TApiKeyWithKeyPrefix | null> {
   const session = await auth();
   if (!session?.user?.id) {
@@ -119,8 +114,8 @@ export async function getApiKey(
         and(
           eq(apiKeys.id, id),
           eq(apiKeys.userId, session.user.id),
-          isNull(apiKeys.deletedAt)
-        )
+          isNull(apiKeys.deletedAt),
+        ),
       )
       .limit(1);
 
@@ -134,7 +129,7 @@ export async function getApiKey(
       keyPrefix: getKeyPrefix(apiKey.keyPrefix),
     };
   } catch (error) {
-    console.error('Error fetching API key:', error);
+    console.error("Error fetching API key:", error);
     return null;
   }
 }
@@ -163,7 +158,7 @@ export async function createApiKey(data: CreateApiKeyInput): Promise<{
 }> {
   const session = await auth();
   if (!session?.user?.id) {
-    return { success: false, error: 'Unauthorized' };
+    return { success: false, error: "Unauthorized" };
   }
 
   try {
@@ -196,7 +191,7 @@ export async function createApiKey(data: CreateApiKeyInput): Promise<{
         updatedAt: apiKeys.updatedAt,
       });
 
-    revalidatePath('/dashboard/settings/api-keys', 'page');
+    revalidatePath("/dashboard/settings/api-keys", "page");
 
     return {
       success: true,
@@ -207,19 +202,19 @@ export async function createApiKey(data: CreateApiKeyInput): Promise<{
       },
     };
   } catch (error) {
-    console.error('Error creating API key:', error);
-    return { success: false, error: 'Failed to create API key' };
+    console.error("Error creating API key:", error);
+    return { success: false, error: "Failed to create API key" };
   }
 }
 
 // Update API key
 export async function updateApiKey(
   id: string,
-  data: UpdateApiKeyInput
+  data: UpdateApiKeyInput,
 ): Promise<{ success: boolean; data?: TApiKeyWithKeyPrefix; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) {
-    return { success: false, error: 'Unauthorized' };
+    return { success: false, error: "Unauthorized" };
   }
 
   try {
@@ -237,8 +232,8 @@ export async function updateApiKey(
         and(
           eq(apiKeys.id, id),
           eq(apiKeys.userId, session.user.id),
-          isNull(apiKeys.deletedAt)
-        )
+          isNull(apiKeys.deletedAt),
+        ),
       )
       .returning({
         id: apiKeys.id,
@@ -255,7 +250,7 @@ export async function updateApiKey(
       });
 
     if (result.length === 0) {
-      return { success: false, error: 'API key not found' };
+      return { success: false, error: "API key not found" };
     }
 
     const updatedApiKey: TApiKeyWithKeyPrefix = {
@@ -263,21 +258,21 @@ export async function updateApiKey(
       keyPrefix: getKeyPrefix(result[0].keyPrefix),
     };
 
-    revalidatePath('/dashboard/settings/api-keys', 'page');
+    revalidatePath("/dashboard/settings/api-keys", "page");
     return { success: true, data: updatedApiKey };
   } catch (error) {
-    console.error('Error updating API key:', error);
-    return { success: false, error: 'Failed to update API key' };
+    console.error("Error updating API key:", error);
+    return { success: false, error: "Failed to update API key" };
   }
 }
 
 // Delete API key (soft delete)
 export async function deleteApiKey(
-  id: string
+  id: string,
 ): Promise<{ success: boolean; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) {
-    return { success: false, error: 'Unauthorized' };
+    return { success: false, error: "Unauthorized" };
   }
 
   try {
@@ -291,20 +286,20 @@ export async function deleteApiKey(
         and(
           eq(apiKeys.id, id),
           eq(apiKeys.userId, session.user.id),
-          isNull(apiKeys.deletedAt)
-        )
+          isNull(apiKeys.deletedAt),
+        ),
       )
       .returning({ id: apiKeys.id });
 
     if (result.length === 0) {
-      return { success: false, error: 'API key not found' };
+      return { success: false, error: "API key not found" };
     }
 
-    revalidatePath('/dashboard/settings/api-keys', 'page');
+    revalidatePath("/dashboard/settings/api-keys", "page");
     return { success: true };
   } catch (error) {
-    console.error('Error deleting API key:', error);
-    return { success: false, error: 'Failed to delete API key' };
+    console.error("Error deleting API key:", error);
+    return { success: false, error: "Failed to delete API key" };
   }
 }
 
@@ -333,8 +328,8 @@ export async function verifyApiKey(key: string): Promise<{
         and(
           eq(apiKeys.key, hashedKey),
           eq(apiKeys.isActive, true),
-          isNull(apiKeys.deletedAt)
-        )
+          isNull(apiKeys.deletedAt),
+        ),
       )
       .limit(1);
 
@@ -361,18 +356,18 @@ export async function verifyApiKey(key: string): Promise<{
       apiKeyId: apiKey.id,
     };
   } catch (error) {
-    console.error('Error verifying API key:', error);
+    console.error("Error verifying API key:", error);
     return { valid: false };
   }
 }
 
 // Toggle API key status
 export async function toggleApiKeyStatus(
-  id: string
+  id: string,
 ): Promise<{ success: boolean; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) {
-    return { success: false, error: 'Unauthorized' };
+    return { success: false, error: "Unauthorized" };
   }
 
   try {
@@ -384,13 +379,13 @@ export async function toggleApiKeyStatus(
         and(
           eq(apiKeys.id, id),
           eq(apiKeys.userId, session.user.id),
-          isNull(apiKeys.deletedAt)
-        )
+          isNull(apiKeys.deletedAt),
+        ),
       )
       .limit(1);
 
     if (!currentApiKey) {
-      return { success: false, error: 'API key not found' };
+      return { success: false, error: "API key not found" };
     }
 
     // Toggle status
@@ -404,14 +399,14 @@ export async function toggleApiKeyStatus(
         and(
           eq(apiKeys.id, id),
           eq(apiKeys.userId, session.user.id),
-          isNull(apiKeys.deletedAt)
-        )
+          isNull(apiKeys.deletedAt),
+        ),
       );
 
-    revalidatePath('/dashboard/settings/api-keys', 'page');
+    revalidatePath("/dashboard/settings/api-keys", "page");
     return { success: true };
   } catch (error) {
-    console.error('Error toggling API key status:', error);
-    return { success: false, error: 'Failed to toggle API key status' };
+    console.error("Error toggling API key status:", error);
+    return { success: false, error: "Failed to toggle API key status" };
   }
 }

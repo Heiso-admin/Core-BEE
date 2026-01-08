@@ -1,10 +1,10 @@
 "use client";
 
-import { DynamicIcon, type iconNames } from 'lucide-react/dynamic';
-import { useMemo, useRef } from 'react';
-import { Checkbox } from '@/components/ui/checkbox';
-import { cn } from '@/lib/utils';
-import type { MenuItem } from '.';
+import { Checkbox } from "@heiso/core/components/ui/checkbox";
+import { cn } from "@heiso/core/lib/utils";
+import { DynamicIcon, type iconNames } from "lucide-react/dynamic";
+import { useMemo, useRef } from "react";
+import type { MenuItem } from ".";
 
 type IconName = (typeof iconNames)[number];
 
@@ -19,7 +19,7 @@ interface MenuTreeProps {
     onMoveItem: (
       dragId: string,
       hoverId: string,
-      position: 'before' | 'after' | 'inside'
+      position: "before" | "after" | "inside",
     ) => void;
   };
   selectable?: {
@@ -92,7 +92,7 @@ function MenuTreeItem({
   return (
     <div
       ref={ref}
-      className={'grid items-start min-h-11 group transition-colors mb-4'}
+      className={"grid items-start min-h-11 group transition-colors mb-4"}
       style={style}
     >
       <div className="flex-1 min-w-0 flex items-center gap-2 text-muted-foreground">
@@ -112,7 +112,7 @@ function MenuTreeItem({
         <span className="text-sm font-medium truncate block">
           {item.title}
           <span className="text-xs text-muted-foreground/70">
-            {item.group ? ` / ${item.group}` : ''}
+            {item.group ? ` / ${item.group}` : ""}
           </span>
         </span>
       </div>
@@ -195,8 +195,8 @@ function MenuPermissionItem({
                     id={labelId}
                     htmlFor={checkboxId}
                     className={cn(
-                      'text-muted-foreground',
-                      !disabledAll && 'cursor-pointer'
+                      "text-muted-foreground",
+                      !disabledAll && "cursor-pointer",
                     )}
                   >
                     {p.action}

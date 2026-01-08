@@ -1,21 +1,25 @@
 "use server";
 
+import { permissionsConfig } from "@heiso/core/config/permissions";
+import { db } from "@heiso/core/lib/db";
+import {
+  permissions,
+  type TMenu,
+  type TPermission,
+} from "@heiso/core/lib/db/schema";
 import { and, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { db } from "@/lib/db";
-import { permissions, type TMenu, type TPermission } from "@/lib/db/schema";
-import { permissionsConfig } from '@/config/permissions';
 
 async function getPermissions() {
   // 合併 config 中的 permissions 與 db 中的 permissions
   const map = new Map();
   const permissions = permissionsConfig.map((p) => {
-    return ({
+    return {
       id: p.id,
       resource: p.resource,
       action: p.action,
       menuId: p.menu?.id ?? null,
-    })
+    };
   });
 
   for (const p of permissions) {
@@ -56,7 +60,6 @@ async function groupPermissionsByMenu<T extends TMenu, P extends TPermission>(
 }
 
 async function createPermission({
-  space,
   menuId,
   resource,
   action,

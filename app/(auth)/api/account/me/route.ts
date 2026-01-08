@@ -1,8 +1,8 @@
 export const runtime = "nodejs";
 
+import { auth } from "@heiso/core/modules/auth/auth.config";
+import { getAccount, getAccountByEmail } from "@heiso/core/server/user.service";
 import { NextResponse } from "next/server";
-import { auth } from "@/modules/auth/auth.config";
-import { getAccount, getAccountByEmail } from "@/server/user.service";
 
 export async function GET() {
   try {

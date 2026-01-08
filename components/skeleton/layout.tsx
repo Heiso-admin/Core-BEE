@@ -1,5 +1,5 @@
 "use client";
-import { useSite } from "@/providers/site";
+import { useSite } from "@heiso/core/providers/site";
 
 export function LayoutSkeleton() {
   const { site } = useSite();

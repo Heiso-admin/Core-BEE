@@ -1,10 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useTransition } from 'react';
-import { useTranslations } from 'next-intl';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { Button } from "@heiso/core/components/ui/button";
+import { Calendar } from "@heiso/core/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +9,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@heiso/core/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -21,39 +18,42 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Calendar } from '@/components/ui/calendar';
+} from "@heiso/core/components/ui/form";
+import { Input } from "@heiso/core/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { CalendarIcon, Copy, Check } from 'lucide-react';
-import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
-import { createApiKey } from '../_server/api-keys.service';
-import type { TPublicApiKey } from '@/lib/db/schema';
+} from "@heiso/core/components/ui/popover";
+import { Switch } from "@heiso/core/components/ui/switch";
+import { Textarea } from "@heiso/core/components/ui/textarea";
+import type { TPublicApiKey } from "@heiso/core/lib/db/schema";
+import { cn } from "@heiso/core/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { CalendarIcon, Check, Copy } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { createApiKey } from "../_server/api-keys.service";
 
 const createApiKeySchema = z.object({
   name: z
     .string()
-    .min(1, 'Name is required')
-    .max(100, 'Name must be less than 100 characters'),
+    .min(1, "Name is required")
+    .max(100, "Name must be less than 100 characters"),
   description: z
     .string()
-    .max(500, 'Description must be less than 500 characters')
+    .max(500, "Description must be less than 500 characters")
     .optional(),
   expiresAt: z.date().optional(),
   isActive: z.boolean(),
   rateLimit: z
     .object({
-      requests: z.number().int().min(1, 'Requests must be at least 1'),
-      window: z.number().int().min(1, 'Window must be at least 1'),
+      requests: z.number().int().min(1, "Requests must be at least 1"),
+      window: z.number().int().min(1, "Window must be at least 1"),
     })
     .optional(),
 });
@@ -71,7 +71,7 @@ export function CreateApiKeyDialog({
   onOpenChange,
   onSuccess,
 }: CreateApiKeyDialogProps) {
-  const t = useTranslations('apiKeys');
+  const t = useTranslations("apiKeys");
   const [isPending, startTransition] = useTransition();
   const [createdApiKey, setCreatedApiKey] = useState<{
     key: string;
@@ -83,8 +83,8 @@ export function CreateApiKeyDialog({
   const form = useForm<CreateApiKeyFormData>({
     resolver: zodResolver(createApiKeySchema),
     defaultValues: {
-      name: '',
-      description: '',
+      name: "",
+      description: "",
       isActive: true,
       rateLimit: {
         requests: 100,
@@ -121,13 +121,13 @@ export function CreateApiKeyDialog({
               lastUsedAt: result.apiKey.lastUsedAt,
             },
           });
-          toast.success(t('create_success'));
+          toast.success(t("create_success"));
         } else {
-          toast.error(result.error || t('create_error'));
+          toast.error(result.error || t("create_error"));
         }
       } catch (error) {
-        console.error('Error creating API key:', error);
-        toast.error(t('create_error'));
+        console.error("Error creating API key:", error);
+        toast.error(t("create_error"));
       }
     });
   };
@@ -138,11 +138,11 @@ export function CreateApiKeyDialog({
     try {
       await navigator.clipboard.writeText(createdApiKey.key);
       setCopied(true);
-      toast.success(t('key_copied'));
+      toast.success(t("key_copied"));
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error('Error copying key:', error);
-      toast.error(t('copy_error'));
+      console.error("Error copying key:", error);
+      toast.error(t("copy_error"));
     }
   };
 
@@ -161,9 +161,9 @@ export function CreateApiKeyDialog({
         {!createdApiKey ? (
           <>
             <DialogHeader>
-              <DialogTitle>{t('create_api_key')}</DialogTitle>
+              <DialogTitle>{t("create_api_key")}</DialogTitle>
               <DialogDescription>
-                {t('create_api_key_description')}
+                {t("create_api_key_description")}
               </DialogDescription>
             </DialogHeader>
 
@@ -177,9 +177,9 @@ export function CreateApiKeyDialog({
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('name')}</FormLabel>
+                      <FormLabel>{t("name")}</FormLabel>
                       <FormControl>
-                        <Input placeholder={t('name_placeholder')} {...field} />
+                        <Input placeholder={t("name_placeholder")} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -191,16 +191,16 @@ export function CreateApiKeyDialog({
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('description')}</FormLabel>
+                      <FormLabel>{t("description")}</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder={t('description_placeholder')}
+                          placeholder={t("description_placeholder")}
                           className="resize-none"
                           rows={3}
                           {...field}
                         />
                       </FormControl>
-                      <FormDescription>{t('description_help')}</FormDescription>
+                      <FormDescription>{t("description_help")}</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -211,21 +211,21 @@ export function CreateApiKeyDialog({
                   name="expiresAt"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>{t('expires_at')}</FormLabel>
+                      <FormLabel>{t("expires_at")}</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
                               variant="outline"
                               className={cn(
-                                'w-full pl-3 text-left font-normal',
-                                !field.value && 'text-muted-foreground'
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground",
                               )}
                             >
                               {field.value ? (
-                                format(field.value, 'PPP')
+                                format(field.value, "PPP")
                               ) : (
-                                <span>{t('pick_date')}</span>
+                                <span>{t("pick_date")}</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -241,7 +241,7 @@ export function CreateApiKeyDialog({
                           />
                         </PopoverContent>
                       </Popover>
-                      <FormDescription>{t('expires_at_help')}</FormDescription>
+                      <FormDescription>{t("expires_at_help")}</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -254,10 +254,10 @@ export function CreateApiKeyDialog({
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                       <div className="space-y-0.5">
                         <FormLabel className="text-base">
-                          {t('active_status')}
+                          {t("active_status")}
                         </FormLabel>
                         <FormDescription>
-                          {t('active_status_help')}
+                          {t("active_status_help")}
                         </FormDescription>
                       </div>
                       <FormControl>
@@ -276,19 +276,19 @@ export function CreateApiKeyDialog({
                   name="rateLimit.requests"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('rate_limit_requests')}</FormLabel>
+                      <FormLabel>{t("rate_limit_requests")}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           min={1}
-                          placeholder={t('rate_limit_placeholder_example')}
+                          placeholder={t("rate_limit_placeholder_example")}
                           onChange={(e) =>
                             field.onChange(Number(e.target.value))
                           }
                         />
                       </FormControl>
                       <FormDescription>
-                        {t('rate_limit_requests_description')}
+                        {t("rate_limit_requests_description")}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -300,19 +300,19 @@ export function CreateApiKeyDialog({
                   name="rateLimit.window"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('rate_limit_window_seconds')}</FormLabel>
+                      <FormLabel>{t("rate_limit_window_seconds")}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           min={1}
-                          placeholder={t('rate_limit_placeholder_example')}
+                          placeholder={t("rate_limit_placeholder_example")}
                           onChange={(e) =>
                             field.onChange(Number(e.target.value))
                           }
                         />
                       </FormControl>
                       <FormDescription>
-                        {t('rate_limit_window_description')}
+                        {t("rate_limit_window_description")}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -321,10 +321,10 @@ export function CreateApiKeyDialog({
 
                 <DialogFooter>
                   <Button type="button" variant="outline" onClick={handleClose}>
-                    {t('cancel')}
+                    {t("cancel")}
                   </Button>
                   <Button type="submit" disabled={isPending}>
-                    {isPending ? t('creating') : t('create')}
+                    {isPending ? t("creating") : t("create")}
                   </Button>
                 </DialogFooter>
               </form>
@@ -333,19 +333,19 @@ export function CreateApiKeyDialog({
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle>{t('api_key_created')}</DialogTitle>
+              <DialogTitle>{t("api_key_created")}</DialogTitle>
               <DialogDescription>
-                {t('api_key_created_description')}
+                {t("api_key_created_description")}
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4">
               <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <p className="text-sm text-yellow-800 font-medium mb-2">
-                  {t('important_notice')}
+                  {t("important_notice")}
                 </p>
                 <p className="text-sm text-yellow-700">
-                  {t('copy_key_warning')}
+                  {t("copy_key_warning")}
                 </p>
               </div>
 
@@ -354,7 +354,7 @@ export function CreateApiKeyDialog({
                   htmlFor="api-key-display"
                   className="text-sm font-medium"
                 >
-                  {t('api_key')}
+                  {t("api_key")}
                 </label>
                 <div className="flex items-center space-x-2">
                   <code className="flex-1 p-3 bg-sub-background rounded border text-sm font-mono break-all">
@@ -377,22 +377,22 @@ export function CreateApiKeyDialog({
 
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="font-medium">{t('name')}:</span>
+                  <span className="font-medium">{t("name")}:</span>
                   <p className="text-gray-600">{createdApiKey.apiKey.name}</p>
                 </div>
                 <div>
-                  <span className="font-medium">{t('status')}:</span>
+                  <span className="font-medium">{t("status")}:</span>
                   <p className="text-gray-600">
                     {createdApiKey.apiKey.isActive
-                      ? t('active')
-                      : t('inactive')}
+                      ? t("active")
+                      : t("inactive")}
                   </p>
                 </div>
               </div>
             </div>
 
             <DialogFooter>
-              <Button onClick={handleClose}>{t('done')}</Button>
+              <Button onClick={handleClose}>{t("done")}</Button>
             </DialogFooter>
           </>
         )}

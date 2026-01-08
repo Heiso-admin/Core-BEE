@@ -23,7 +23,7 @@ interface ApprovedEmailProps {
 export default function ApprovedEmail({
   logoUrl = "https://cdn.heisoo.com/smartsight/MWcIZjeOLK.svg",
   orgName = "Heiso",
-  loginUrl = "https://example.com/login"
+  loginUrl = "https://example.com/login",
 }: ApprovedEmailProps) {
   return (
     <Html>
@@ -46,7 +46,8 @@ export default function ApprovedEmail({
                 Your Account Is Active
               </Heading>
               <Text className="text-[16px] leading-[26px] text-[#404040] text-left">
-                We are pleased to inform you that your application for the {orgName} has been successfully approved.
+                We are pleased to inform you that your application for the{" "}
+                {orgName} has been successfully approved.
               </Text>
               <Text className="text-[16px] leading-[26px] text-[#404040] text-left">
                 You now have access to the system.
@@ -60,7 +61,8 @@ export default function ApprovedEmail({
                 </Button>
               </Section>
               <Text className="text-[14px] leading-[24px] text-black text-center">
-                Or copy and paste this URL into your browser:<br />
+                Or copy and paste this URL into your browser:
+                <br />
                 <Link href={loginUrl} className="text-blue-600 no-underline">
                   {loginUrl}
                 </Link>
@@ -68,7 +70,8 @@ export default function ApprovedEmail({
               <Hr className="border-gray-200 my-6" />
 
               <Text className="text-xs text-gray-500 text-center">
-                Click the button to sign in to the admin portal, explore your permissions, and begin collaboration.
+                Click the button to sign in to the admin portal, explore your
+                permissions, and begin collaboration.
               </Text>
             </Section>
           </Container>

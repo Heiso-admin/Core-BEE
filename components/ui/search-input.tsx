@@ -1,7 +1,7 @@
 "use client";
+import { Input } from "@heiso/core/components/ui/input";
+import { cn } from "@heiso/core/lib/utils";
 import { Search, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
 import { forwardRef, useState } from "react";
 
 export interface SearchInputProps extends React.ComponentProps<typeof Input> {
@@ -10,12 +10,19 @@ export interface SearchInputProps extends React.ComponentProps<typeof Input> {
 
 const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
   (
-    { className, clearAriaLabel = "Clear", onChange, defaultValue, value, ...props },
-    ref
+    {
+      className,
+      clearAriaLabel = "Clear",
+      onChange,
+      defaultValue,
+      value,
+      ...props
+    },
+    ref,
   ) => {
     const isControlled = typeof value !== "undefined";
     const [internalHasValue, setInternalHasValue] = useState<boolean>(() =>
-      typeof defaultValue === "string" ? defaultValue.length > 0 : false
+      typeof defaultValue === "string" ? defaultValue.length > 0 : false,
     );
     const hasValue = isControlled
       ? typeof value === "string" && value.length > 0
@@ -29,7 +36,10 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
     const handleClear = () => {
       if (isControlled && typeof onChange === "function") {
         const target = { value: "" } as unknown as HTMLInputElement;
-        const event = { target, currentTarget: target } as unknown as React.ChangeEvent<HTMLInputElement>;
+        const event = {
+          target,
+          currentTarget: target,
+        } as unknown as React.ChangeEvent<HTMLInputElement>;
         onChange(event);
       } else if (ref && typeof ref !== "function" && ref?.current) {
         ref.current.value = "";
@@ -64,7 +74,7 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
         ) : null}
       </div>
     );
-  }
+  },
 );
 SearchInput.displayName = "SearchInput";
 

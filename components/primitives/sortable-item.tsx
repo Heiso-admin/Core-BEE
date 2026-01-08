@@ -3,8 +3,8 @@
 import type { UniqueIdentifier } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { cn } from "@heiso/core/lib/utils";
 import type { PropsWithChildren } from "react";
-import { cn } from "@/lib/utils";
 
 type Props = PropsWithChildren<{
   id: UniqueIdentifier;
@@ -20,7 +20,7 @@ export function SortableItem({ id, children }: Props) {
     isDragging,
   } = useSortable({ id });
 
-  const style = {
+  const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,

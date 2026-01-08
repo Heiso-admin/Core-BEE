@@ -1,7 +1,9 @@
+import { Label } from "@heiso/core/components/ui/label";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@heiso/core/components/ui/radio-group";
 import { useId } from "react";
-
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function RoleSelector() {
   const id = useId();

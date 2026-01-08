@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@heiso/core/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,13 +8,14 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { MemberUser } from "./member-list";
-import { generateRandomPassword } from "@/lib/utils/format";
-import type { Member } from "../_server/team.service";
-import { useTranslations } from "next-intl";
+} from "@heiso/core/components/ui/dialog";
+import { generateRandomPassword } from "@heiso/core/lib/utils/format";
 import { Copy } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { toast } from "sonner";
+import type { Member } from "../_server/team.service";
+import { MemberUser } from "./member-list";
 
 type Props = {
   open: boolean;
@@ -54,7 +54,7 @@ export const ConfirmResetPassword = ({
       await onConfirm(newPassword);
       setGeneratedPassword(newPassword);
       setStep("result");
-    } catch (error) {
+    } catch (_error) {
       setGeneratedPassword("");
     }
   };
@@ -63,7 +63,7 @@ export const ConfirmResetPassword = ({
     toast(t("result.copy"));
     navigator.clipboard.writeText(generatedPassword);
   };
-  
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-sm!">
@@ -71,14 +71,18 @@ export const ConfirmResetPassword = ({
           <>
             <DialogHeader>
               <DialogTitle>{t("confirm.title")}</DialogTitle>
-              <DialogDescription style={{ whiteSpace: 'pre-line' }}>
+              <DialogDescription style={{ whiteSpace: "pre-line" }}>
                 {t("confirm.description", {
                   userName: member.user?.name || member.email.split("@")[0],
                 })}
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <Button variant="outline" onClick={handleClose} disabled={pending}>
+              <Button
+                variant="outline"
+                onClick={handleClose}
+                disabled={pending}
+              >
                 {t("confirm.cancel")}
               </Button>
               <Button onClick={handleConfirm} disabled={pending}>
@@ -92,11 +96,17 @@ export const ConfirmResetPassword = ({
               <DialogTitle>{t("result.title")}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <MemberUser member={member} isYou={member.user?.id === sessionUserId} />
+              <MemberUser
+                member={member}
+                isYou={member.user?.id === sessionUserId}
+              />
               <div className="text-sm">{t("result.content")}</div>
               <div className="rounded-md border bg-muted px-4 py-3 text-xl font-medium select-all text-center relative">
                 {generatedPassword}
-                <Copy className="size-5 absolute bottom-3 right-2 opacity-40 cursor-pointer" onClick={copyPassword}/>
+                <Copy
+                  className="size-5 absolute bottom-3 right-2 opacity-40 cursor-pointer"
+                  onClick={copyPassword}
+                />
               </div>
               <div className="text-sm text-muted-foreground">
                 {t("result.remark")}

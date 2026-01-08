@@ -1,3 +1,4 @@
+import { generateId } from "@heiso/core/lib/id-generator";
 import { relations } from "drizzle-orm";
 import {
   boolean,
@@ -7,7 +8,6 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
-import { generateId } from "@/lib/id-generator";
 import { users } from "./user";
 
 export const user2faCode = pgTable(

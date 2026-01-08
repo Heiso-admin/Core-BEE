@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
+import { useSite } from "@heiso/core/providers/site";
 import Image from "next/image";
-import { useSite } from "@/providers/site";
-// import config from '@/config';
+import Link from "next/link";
+// import config from '@heiso/core/config';
 
 export function Logo({
   href = "/",

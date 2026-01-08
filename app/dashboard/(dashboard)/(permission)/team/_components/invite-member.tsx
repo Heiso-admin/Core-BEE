@@ -1,11 +1,7 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import { useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { ActionButton } from "@/components/primitives";
+import { ActionButton } from "@heiso/core/components/primitives";
+import { Button } from "@heiso/core/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@heiso/core/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -22,19 +18,23 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@heiso/core/components/ui/form";
+import { Input } from "@heiso/core/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@heiso/core/components/ui/select";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
 import { invite } from "../_server/team.service";
 import type { Role } from "./member-list";
-import { toast } from "sonner";
-import { Button } from '@/components/ui/button';
 
 export function InviteMember({
   userName,
@@ -51,12 +51,8 @@ export function InviteMember({
 
   const inviteFormSchema = z.object({
     name: z.string().optional(),
-    email: z
-      .string()
-      .min(1, t("form.validation.emailInvalid")),
-    role: z
-      .string()
-      .min(1, t("form.validation.roleInvalid")),
+    email: z.string().min(1, t("form.validation.emailInvalid")),
+    role: z.string().min(1, t("form.validation.roleInvalid")),
   });
 
   type InviteFormValues = z.infer<typeof inviteFormSchema>;
@@ -71,12 +67,12 @@ export function InviteMember({
   });
 
   const onSubmit = async (data: InviteFormValues) => {
-    form.clearErrors('root.serverError');
+    form.clearErrors("root.serverError");
 
     startTransition(async () => {
       try {
         await invite({
-          email: data.email.replace(/\s/g, ''),
+          email: data.email.replace(/\s/g, ""),
           role: data.role,
           name: data.name?.trim(),
         });
@@ -87,8 +83,7 @@ export function InviteMember({
         let errorMessage: string = "";
 
         const isEmailRepeatError =
-          error instanceof Error &&
-          error.message.includes("EMAIL_REPEAT");
+          error instanceof Error && error.message.includes("EMAIL_REPEAT");
 
         if (isEmailRepeatError) {
           errorMessage = t("form.validation.emailRepeat");
@@ -97,14 +92,13 @@ export function InviteMember({
           errorMessage = t("form.error");
         }
 
-        form.setError('email', {
-          type: 'server',
+        form.setError("email", {
+          type: "server",
           message: errorMessage,
         });
       }
     });
   };
-
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -123,10 +117,7 @@ export function InviteMember({
                 <FormItem>
                   <FormLabel>{t("form.name")}</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={t("form.namePlaceholder")}
-                      {...field}
-                    />
+                    <Input placeholder={t("form.namePlaceholder")} {...field} />
                   </FormControl>
                 </FormItem>
               )}

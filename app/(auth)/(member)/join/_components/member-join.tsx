@@ -1,26 +1,34 @@
 "use client";
 
+import { ActionButton, PasswordInput } from "@heiso/core/components/primitives";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@heiso/core/components/ui/form";
+import { Input } from "@heiso/core/components/ui/input";
+import {
+  calcStrength,
+  Progress,
+  ProgressLabel,
+} from "@heiso/core/components/ui/progress";
+import Header from "@heiso/core/modules/auth/_components/header";
+import { signup } from "@heiso/core/server/services/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { ActionButton, PasswordInput, RandomAvatar } from "@/components/primitives";
-import { removeJoinToken } from "../_server/member.service";
-import { signup } from "@/server/services/auth";
+import { useForm } from "react-hook-form";
+import z from "zod";
+import type { JoinUser } from "../page";
 import { AccountConfirmAlert } from "./account-confirm-alert";
-import { useTranslations } from 'next-intl';
-import Header from '@/modules/auth/_components/header';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { calcStrength, Progress, ProgressLabel } from '@/components/ui/progress';
-import { motion } from 'framer-motion';
-import { type JoinUser } from '../page';
-
 
 export function MemberJoin({ user }: { user: JoinUser | null }) {
-  const t = useTranslations('auth.signup');
-  const p = useTranslations('auth.resetPassword.password.strength');
+  const t = useTranslations("auth.signup");
+  const p = useTranslations("auth.resetPassword.password.strength");
 
   const email = user?.email || "";
   const [error, setError] = useState("");
@@ -30,9 +38,12 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
 
   const signupSchema = z
     .object({
-      name: z.string().trim().min(3, { message: t('name.error') }),
-      email: z.email().min(3, { message: t('email.error') }),
-      password: z.string().min(8, t('password.error')).or(z.literal('')),
+      name: z
+        .string()
+        .trim()
+        .min(3, { message: t("name.error") }),
+      email: z.email().min(3, { message: t("email.error") }),
+      password: z.string().min(8, t("password.error")).or(z.literal("")),
       confirmPassword: z.string(),
     })
     .refine(
@@ -44,9 +55,9 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
         return true;
       },
       {
-        message: t('mismatch'),
-        path: ['confirmPassword'],
-      }
+        message: t("mismatch"),
+        path: ["confirmPassword"],
+      },
     )
     .refine(
       (v) => {
@@ -56,9 +67,9 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
         return true;
       },
       {
-        message: p('error'),
-        path: ['password'],
-      }
+        message: p("error"),
+        path: ["password"],
+      },
     );
 
   const form = useForm<z.infer<typeof signupSchema>>({
@@ -70,8 +81,8 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
       confirmPassword: "",
     },
   });
-  const pwd = form.watch('password');
-  const strength = calcStrength(pwd ?? '');
+  const pwd = form.watch("password");
+  const strength = calcStrength(pwd ?? "");
 
   const onSubmit = async (data: z.infer<typeof signupSchema>) => {
     const signupEmail = data.email;
@@ -83,7 +94,11 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
 
     try {
       // 使用通用 signup 服務：建立/更新使用者（姓名、密碼）並將成員狀態設為 review（非首位使用者）
-      await signup({ name: data.name, email: data.email, password: data.password ?? "" });
+      await signup({
+        name: data.name,
+        email: data.email,
+        password: data.password ?? "",
+      });
       setSubmitted(true);
       setError("");
     } catch (e) {
@@ -98,15 +113,16 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
 
   return (
     <>
-      <Header
-        title={t('title')}
-        className="mb-0"
-      />
-      <p className="text-destructive text-sm w-full text-center -mt-1 mb-1">{error}</p>
+      <Header title={t("title")} className="mb-0" />
+      <p className="text-destructive text-sm w-full text-center -mt-1 mb-1">
+        {error}
+      </p>
       <Form {...form}>
-        <form className="mb-4 space-y-4 w-full" onSubmit={form.handleSubmit(onSubmit)}>
+        <form
+          className="mb-4 space-y-4 w-full"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
           <div className="space-y-4 mb-8">
-
             <div className="flex flex-row items-center justify-center gap-4">
               <span className="text-md"> {email}</span>
             </div>
@@ -117,7 +133,10 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel required className="text-sm font-medium leading-relaxed peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      <FormLabel
+                        required
+                        className="text-sm font-medium leading-relaxed peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
                         {t("name.label")}
                       </FormLabel>
                       <FormControl>
@@ -141,7 +160,10 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel required className="text-sm font-medium leading-relaxed peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      <FormLabel
+                        required
+                        className="text-sm font-medium leading-relaxed peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
                         {t("password.label")}
                       </FormLabel>
                       <FormControl>
@@ -153,17 +175,19 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
                         />
                       </FormControl>
                       <FormMessage />
-                      {pwd && pwd !== "" &&
+                      {pwd && pwd !== "" && (
                         <motion.div
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
                           className="space-y-2"
                         >
                           <Progress value={strength} className="w-full" />
-                          <ProgressLabel passwordStrength={strength} className="text-sm text-neutral" />
-
+                          <ProgressLabel
+                            passwordStrength={strength}
+                            className="text-sm text-neutral"
+                          />
                         </motion.div>
-                      }
+                      )}
                     </FormItem>
                   );
                 }}
@@ -176,7 +200,10 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel required className="text-sm font-medium leading-relaxed peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      <FormLabel
+                        required
+                        className="text-sm font-medium leading-relaxed peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
                         {t("password.confirm")}
                       </FormLabel>
                       <FormControl>
@@ -188,11 +215,10 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
                       </FormControl>
                       <FormMessage />
                     </FormItem>
-                  )
+                  );
                 }}
               />
             </div>
-
           </div>
           <ActionButton
             type="submit"
@@ -202,9 +228,7 @@ export function MemberJoin({ user }: { user: JoinUser | null }) {
             {t("submit")}
           </ActionButton>
         </form>
-      </Form >
+      </Form>
     </>
   );
 }
-
-

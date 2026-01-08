@@ -1,13 +1,14 @@
-import NextAuth, { CredentialsSignin, type DefaultSession } from 'next-auth';
-import GitHub from "next-auth/providers/github"
-import Credentials from 'next-auth/providers/credentials';
-import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id"
-import { verifyPassword } from '@/lib/hash';
-declare module 'next-auth' {
+import { verifyPassword } from "@heiso/core/lib/hash";
+import NextAuth, { CredentialsSignin, type DefaultSession } from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+import GitHub from "next-auth/providers/github";
+import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
+
+declare module "next-auth" {
   interface Session {
     user: {
       isDeveloper: boolean;
-    } & DefaultSession['user'];
+    } & DefaultSession["user"];
     member?: {
       status: string | null;
       isOwner: boolean;
@@ -26,31 +27,31 @@ declare module 'next-auth' {
 }
 
 class InvalidLoginError extends CredentialsSignin {
-  code = 'Invalid identifier or password';
+  code = "Invalid identifier or password";
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
-    signIn: '/login',
-    error: '/login', // 將 NextAuth 的錯誤（如 AccessDenied）導向 login，附帶 ?error=...
+    signIn: "/login",
+    error: "/login", // 將 NextAuth 的錯誤（如 AccessDenied）導向 login，附帶 ?error=...
   },
   callbacks: {
     async signIn({ user, account, profile }) {
       const isNewUser = account?.isNewUser;
-      console.log('isNewUser', isNewUser);
+      console.log("isNewUser", isNewUser);
       // 禁止已用 email/密碼登入過的帳號使用 OAuth 註冊
       try {
         // 僅處理 OAuth 供應商，略過 credentials
-        if (!account || account.provider === 'credentials') return true;
+        if (!account || account.provider === "credentials") return true;
 
-        const email = (user?.email || (profile && (profile as any).email) || '')
+        const email = (user?.email || (profile && (profile as any).email) || "")
           .toString()
           .trim();
         if (!email) return true;
 
-        const { db } = await import('@/lib/db');
-        const { users, members } = await import('@/lib/db/schema');
-        const { and, eq, isNull } = await import('drizzle-orm');
+        const { db } = await import("@heiso/core/lib/db");
+        const { users, members } = await import("@heiso/core/lib/db/schema");
+        const { and, eq, isNull } = await import("drizzle-orm");
 
         const existingMember = await db.query.members.findFirst({
           where: (t, ops) =>
@@ -72,7 +73,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (
           existingUser &&
           existingMember &&
-          existingMember.status === 'invited'
+          existingMember.status === "invited"
         ) {
           await db
             .update(users)
@@ -85,13 +86,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           await db
             .update(members)
             .set({
-              inviteToken: '',
+              inviteToken: "",
               tokenExpiredAt: null,
-              status: 'joined',
+              status: "joined",
               updatedAt: new Date(),
             })
             .where(
-              and(eq(members.id, existingMember.id), isNull(members.deletedAt))
+              and(eq(members.id, existingMember.id), isNull(members.deletedAt)),
             );
           // return false; // 讓 NextAuth 回傳 error=AccessDenied，回到 login 顯示提示
           // return '/login?error=under_review';
@@ -99,7 +100,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         return true;
       } catch (err) {
-        console.error('[OAuth signIn] pre-check failed:', err);
+        console.error("[OAuth signIn] pre-check failed:", err);
         return true; // 若檢查失敗，不阻擋登入以避免誤判
       }
     },
@@ -115,12 +116,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const userId = token.sub;
         const email = (token as any).email as string | undefined;
         const { findMembershipByUserOrEmail } = await import(
-          '@/modules/account/authentication/_server/auth.service'
+          "@heiso/core/modules/account/authentication/_server/auth.service"
         );
         const membership = await findMembershipByUserOrEmail({ userId, email });
         (token as any).memberStatus = membership?.status ?? null;
       } catch (e) {
-        console.warn('[jwt] attach memberStatus failed:', e);
+        console.warn("[jwt] attach memberStatus failed:", e);
       }
       return token;
     },
@@ -138,7 +139,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const email = session.user?.email ?? undefined;
         if (userId || email) {
           const { findMembershipByUserOrEmail } = await import(
-            '@/modules/account/authentication/_server/auth.service'
+            "@heiso/core/modules/account/authentication/_server/auth.service"
           );
           const membership = await findMembershipByUserOrEmail({
             userId,
@@ -158,7 +159,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           };
         }
       } catch (e) {
-        console.warn('[session] attach member failed:', e);
+        console.warn("[session] attach member failed:", e);
       }
 
       return session;
@@ -169,37 +170,37 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async signIn({ user, account, profile }) {
       try {
         // 僅處理 OAuth 供應商，略過 credentials
-        if (!account || account.provider === 'credentials') return;
+        if (!account || account.provider === "credentials") return;
 
         // 取用 email：優先取 user.email；其次 profile.email
-        const email = (user?.email || (profile && (profile as any).email) || '')
+        const email = (user?.email || (profile && (profile as any).email) || "")
           .toString()
           .trim();
 
         // 紀錄 OAuth 登入資訊（偵測供應商）
-        console.log('[OAuth signIn] provider:', account.provider);
+        console.log("[OAuth signIn] provider:", account.provider);
 
         if (!email) {
           console.warn(
-            '[OAuth signIn] missing email from provider, skip upsert'
+            "[OAuth signIn] missing email from provider, skip upsert",
           );
           return;
         }
 
         // 動態載入 db 與 schema，避免在 edge/客戶端造成打包問題
-        const { db } = await import('@/lib/db');
-        const { users, members } = await import('@/lib/db/schema');
-        const { and, eq, isNull } = await import('drizzle-orm');
-        const { hashPassword } = await import('@/lib/hash');
-        const { generateId } = await import('@/lib/id-generator');
+        const { db } = await import("@heiso/core/lib/db");
+        const { users, members } = await import("@heiso/core/lib/db/schema");
+        const { and, eq, isNull } = await import("drizzle-orm");
+        const { hashPassword } = await import("@heiso/core/lib/hash");
+        const { generateId } = await import("@heiso/core/lib/id-generator");
 
         // 嘗試以 email 查找現有使用者
         const existingUser = await db.query.users.findFirst({
-          where: (t, ops) => eq(t.email, email),
+          where: (t, _ops) => eq(t.email, email),
         });
 
         const existingMember = await db.query.members.findFirst({
-          where: (t, ops) => and(eq(t.email, email), isNull(t.deletedAt)),
+          where: (t, _ops) => and(eq(t.email, email), isNull(t.deletedAt)),
         });
 
         let userId = existingUser?.id;
@@ -207,13 +208,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!existingUser && !existingMember) {
           // 建立占位密碼（OAuth 用戶不需要實際密碼）
           const placeholderPassword = await hashPassword(
-            generateId(undefined, 32)
+            generateId(undefined, 32),
           );
 
           const displayName = (
             user?.name ||
             (profile && (profile as any).name) ||
-            email.split('@')[0]
+            email.split("@")[0]
           ).toString();
           const avatar =
             (user as any)?.image ||
@@ -237,7 +238,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             .returning();
 
           userId = inserted?.[0]?.id;
-          console.log('[OAuth signIn] created user:', userId);
+          console.log("[OAuth signIn] created user:", userId);
         } else {
           if (existingUser) {
             // 更新最後登入時間
@@ -245,7 +246,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               .update(users)
               .set({ lastLoginAt: new Date(), updatedAt: new Date() })
               .where(eq(users.id, existingUser.id));
-            console.log('[OAuth signIn] existing user:', existingUser.id);
+            console.log("[OAuth signIn] existing user:", existingUser.id);
           }
         }
 
@@ -259,8 +260,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             })
             .where(eq(members.id, existingMember.id));
           console.log(
-            '[OAuth signIn] synced existing member without status change:',
-            existingMember.id
+            "[OAuth signIn] synced existing member without status change:",
+            existingMember.id,
           );
         } else {
           // 首次 OAuth 登入：建立 member，狀態設為 review 以便導向 pending
@@ -270,17 +271,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               email,
               userId: userId ?? undefined,
               loginMethod: account.provider,
-              status: 'review',
+              status: "review",
               updatedAt: new Date(),
             })
             .returning();
           console.log(
-            '[OAuth signIn] created member in review status:',
-            insertedMember?.[0]?.id
+            "[OAuth signIn] created member in review status:",
+            insertedMember?.[0]?.id,
           );
         }
       } catch (err) {
-        console.error('[OAuth signIn] member upsert failed:', err);
+        console.error("[OAuth signIn] member upsert failed:", err);
       }
     },
   },
@@ -295,29 +296,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       issuer: process.env.AUTH_MICROSOFT_ENTRA_ID_ISSUER,
       authorization: {
         params: {
-          prompt: 'login',
+          prompt: "login",
         },
       },
     }),
     Credentials({
       credentials: {
-        username: { label: 'Username' },
-        password: { label: 'Password', type: 'password' },
-        email: { label: 'Email' },
-        otpVerified: { label: 'OTP Verified' },
-        userId: { label: 'User ID' },
+        username: { label: "Username" },
+        password: { label: "Password", type: "password" },
+        email: { label: "Email" },
+        otpVerified: { label: "OTP Verified" },
+        userId: { label: "User ID" },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials, _req) {
         // 支援兩種授權路徑：1) 密碼登入、2) OTP 已驗證登入
         // 2) OTP 流程：前端已 verifyOTP 並提供 email + userId + otpVerified=true
-        if (credentials?.otpVerified === 'true') {
-          const email = String(credentials?.email || '');
-          const userId = String(credentials?.userId || '');
+        if (credentials?.otpVerified === "true") {
+          const email = String(credentials?.email || "");
+          const userId = String(credentials?.userId || "");
           if (!email || !userId) {
             throw new InvalidLoginError();
           }
 
-          const { getUser } = await import('./_server/user.service');
+          const { getUser } = await import("./_server/user.service");
           const user = await getUser(email);
           if (!user || user.id !== userId) {
             throw new InvalidLoginError();
@@ -340,7 +341,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const { username, password } = <{ username: string; password: string }>(
           credentials
         );
-        const { getUser } = await import('./_server/user.service');
+        const { getUser } = await import("./_server/user.service");
         const user = await getUser(username);
 
         if (!user) {

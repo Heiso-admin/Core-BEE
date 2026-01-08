@@ -1,5 +1,5 @@
+import { usePermissionContext } from "@heiso/core/providers/permission";
 import { useEffect, useState } from "react";
-import { usePermissionContext } from "@/providers/permission";
 
 export function usePermission({
   resource,
@@ -33,7 +33,7 @@ export function usePermission({
 export function usePermissions({
   permissions,
 }: {
-  space: 'General' | 'Organization' | 'Project';
+  space: "General" | "Organization" | "Project";
   permissions: {
     resource: string;
     action: string;
@@ -41,7 +41,7 @@ export function usePermissions({
 }): (boolean | null)[] {
   const { can } = usePermissionContext();
   const [allowedList, setAllowedList] = useState<(boolean | null)[]>(
-    new Array(permissions.length).fill(null)
+    new Array(permissions.length).fill(null),
   );
 
   useEffect(() => {

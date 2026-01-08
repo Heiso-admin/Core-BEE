@@ -1,10 +1,7 @@
-'use client';
+"use client";
 
-import { useTransition, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
-import { useForm, type SubmitHandler } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { Button } from "@heiso/core/components/ui/button";
+import { Calendar } from "@heiso/core/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +9,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@heiso/core/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -21,39 +18,42 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Calendar } from '@/components/ui/calendar';
+} from "@heiso/core/components/ui/form";
+import { Input } from "@heiso/core/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
-import { updateApiKey } from '../_server/api-keys.service';
-import type { TApiKeyWithKeyPrefix } from './api-keys-list';
+} from "@heiso/core/components/ui/popover";
+import { Switch } from "@heiso/core/components/ui/switch";
+import { Textarea } from "@heiso/core/components/ui/textarea";
+import { cn } from "@heiso/core/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useTransition } from "react";
+import { type SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { updateApiKey } from "../_server/api-keys.service";
+import type { TApiKeyWithKeyPrefix } from "./api-keys-list";
 
 const editApiKeySchema = z.object({
   name: z
     .string()
-    .min(1, 'Name is required')
-    .max(100, 'Name must be less than 100 characters'),
+    .min(1, "Name is required")
+    .max(100, "Name must be less than 100 characters"),
   description: z
     .string()
-    .max(500, 'Description must be less than 500 characters')
+    .max(500, "Description must be less than 500 characters")
     .optional(),
   expiresAt: z.date().optional(),
   isActive: z.boolean(),
   rateLimit: z
     .object({
-      requests: z.number().int().min(1, 'Requests must be at least 1'),
-      window: z.number().int().min(1, 'Window must be at least 1'),
+      requests: z.number().int().min(1, "Requests must be at least 1"),
+      window: z.number().int().min(1, "Window must be at least 1"),
     })
     .partial()
     .optional(),
@@ -74,15 +74,15 @@ export function EditApiKeyDialog({
   onOpenChange,
   onSuccess,
 }: EditApiKeyDialogProps) {
-  const t = useTranslations('apiKeys');
+  const t = useTranslations("apiKeys");
   const [isPending, startTransition] = useTransition();
 
-  console.log('apiKey.rateLimit: ', apiKey.rateLimit);
+  console.log("apiKey.rateLimit: ", apiKey.rateLimit);
   const form = useForm<EditApiKeyFormData>({
     resolver: zodResolver(editApiKeySchema),
     defaultValues: {
       name: apiKey.name,
-      description: apiKey.description || '',
+      description: apiKey.description || "",
       expiresAt: apiKey.expiresAt ? new Date(apiKey.expiresAt) : undefined,
       rateLimit: apiKey.rateLimit || undefined,
       isActive: apiKey.isActive,
@@ -114,12 +114,12 @@ export function EditApiKeyDialog({
 
         if (result.success && result.data) {
           onSuccess({ ...result.data, keyPrefix: apiKey.keyPrefix });
-          toast.success(t('update_success'));
+          toast.success(t("update_success"));
         } else {
-          toast.error(result.error || t('update_error'));
+          toast.error(result.error || t("update_error"));
         }
-      } catch (error) {
-        toast.error(t('update_error'));
+      } catch (_error) {
+        toast.error(t("update_error"));
       }
     });
   };
@@ -133,8 +133,8 @@ export function EditApiKeyDialog({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{t('edit_api_key')}</DialogTitle>
-          <DialogDescription>{t('edit_api_key_description')}</DialogDescription>
+          <DialogTitle>{t("edit_api_key")}</DialogTitle>
+          <DialogDescription>{t("edit_api_key_description")}</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -144,9 +144,9 @@ export function EditApiKeyDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('name')}</FormLabel>
+                  <FormLabel>{t("name")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('name_placeholder')} {...field} />
+                    <Input placeholder={t("name_placeholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -158,16 +158,16 @@ export function EditApiKeyDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('description')}</FormLabel>
+                  <FormLabel>{t("description")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder={t('description_placeholder')}
+                      placeholder={t("description_placeholder")}
                       className="resize-none"
                       rows={3}
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>{t('description_help')}</FormDescription>
+                  <FormDescription>{t("description_help")}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -178,21 +178,21 @@ export function EditApiKeyDialog({
               name="expiresAt"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>{t('expires_at')}</FormLabel>
+                  <FormLabel>{t("expires_at")}</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
                           variant="outline"
                           className={cn(
-                            'w-full pl-3 text-left font-normal',
-                            !field.value && 'text-muted-foreground'
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground",
                           )}
                         >
                           {field.value ? (
-                            format(field.value, 'PPP')
+                            format(field.value, "PPP")
                           ) : (
-                            <span>{t('pick_date')}</span>
+                            <span>{t("pick_date")}</span>
                           )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
@@ -208,7 +208,7 @@ export function EditApiKeyDialog({
                       />
                     </PopoverContent>
                   </Popover>
-                  <FormDescription>{t('expires_at_help')}</FormDescription>
+                  <FormDescription>{t("expires_at_help")}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -221,9 +221,9 @@ export function EditApiKeyDialog({
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
                     <FormLabel className="text-base">
-                      {t('active_status')}
+                      {t("active_status")}
                     </FormLabel>
-                    <FormDescription>{t('active_status_help')}</FormDescription>
+                    <FormDescription>{t("active_status_help")}</FormDescription>
                   </div>
                   <FormControl>
                     <Switch
@@ -241,18 +241,18 @@ export function EditApiKeyDialog({
               name="rateLimit.requests"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('rate_limit_requests')}</FormLabel>
+                  <FormLabel>{t("rate_limit_requests")}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       min={1}
-                      placeholder={t('rate_limit_placeholder_example')}
+                      placeholder={t("rate_limit_placeholder_example")}
                       defaultValue={field.value || 100}
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
                   <FormDescription>
-                    {t('rate_limit_requests_description')}
+                    {t("rate_limit_requests_description")}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -264,18 +264,18 @@ export function EditApiKeyDialog({
               name="rateLimit.window"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('rate_limit_window_seconds')}</FormLabel>
+                  <FormLabel>{t("rate_limit_window_seconds")}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       min={1}
                       defaultValue={field.value || 60}
-                      placeholder={t('rate_limit_placeholder_example')}
+                      placeholder={t("rate_limit_placeholder_example")}
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
                   <FormDescription>
-                    {t('rate_limit_window_description')}
+                    {t("rate_limit_window_description")}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -284,10 +284,10 @@ export function EditApiKeyDialog({
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={handleClose}>
-                {t('cancel')}
+                {t("cancel")}
               </Button>
               <Button type="submit" disabled={isPending}>
-                {isPending ? t('updating') : t('update')}
+                {isPending ? t("updating") : t("update")}
               </Button>
             </DialogFooter>
           </form>

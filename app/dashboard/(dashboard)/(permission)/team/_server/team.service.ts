@@ -1,16 +1,16 @@
 "use server";
 
-import { and, eq, isNull, asc } from "drizzle-orm";
+import { settings } from "@heiso/core/config/settings";
+import { db } from "@heiso/core/lib/db";
+import type { TMember, TRole, TUser } from "@heiso/core/lib/db/schema";
+import { members, roles } from "@heiso/core/lib/db/schema";
+import { users } from "@heiso/core/lib/db/schema/auth/user";
+import { sendApprovedEmail, sendInviteUserEmail } from "@heiso/core/lib/email";
+import { hashPassword } from "@heiso/core/lib/hash";
+import { generateInviteToken } from "@heiso/core/lib/id-generator";
+import { auth } from "@heiso/core/modules/auth/auth.config";
+import { and, asc, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { auth } from "@/modules/auth/auth.config";
-import { settings } from "@/config/settings";
-import { db } from "@/lib/db";
-import type { TMember, TRole, TUser } from "@/lib/db/schema";
-import { members, roles } from "@/lib/db/schema";
-import { users } from "@/lib/db/schema/auth/user";
-import { sendApprovedEmail, sendInviteUserEmail } from "@/lib/email";
-import { hashPassword } from "@/lib/hash";
-import { generateInviteToken } from "@/lib/id-generator";
 
 export type Member = TMember & {
   user: TUser | null;
@@ -49,8 +49,8 @@ async function invite({
   }
 
   // 若提供 name，先建立或更新 user 資料
-  let boundUserId: string | undefined = undefined;
-  if (name && name.trim()) {
+  let boundUserId: string | undefined;
+  if (name?.trim()) {
     const existingUser = await db.query.users.findFirst({
       where: (t, { eq }) => eq(t.email, email),
     });
@@ -96,7 +96,7 @@ async function invite({
     .returning();
 
   if (inviteId) {
-    const result = await sendInvite({
+    const _result = await sendInvite({
       email,
       inviteToken,
       isOwner: role === "owner",
@@ -120,17 +120,24 @@ async function updateMember({
   };
 }) {
   // Prepare member updates, including deletedAt based on status
-  const isJoined = data.status === 'joined';
+  const isJoined = data.status === "joined";
 
   const memberUpdates: Partial<typeof members.$inferInsert> = {
     ...data,
     updatedAt: new Date(),
   };
 
-  const member = await db.update(members).set(memberUpdates).where(eq(members.id, id));
+  const member = await db
+    .update(members)
+    .set(memberUpdates)
+    .where(eq(members.id, id));
 
   // user table，除了 joined，其他狀態都皆不可登入
-  const [current] = await db.select().from(members).where(eq(members.id, id)).limit(1);
+  const [current] = await db
+    .select()
+    .from(members)
+    .where(eq(members.id, id))
+    .limit(1);
   const userId = current?.userId;
   if (userId) {
     await db
@@ -146,7 +153,7 @@ async function updateMember({
 async function sendInvite({
   email,
   inviteToken,
-  isOwner
+  isOwner,
 }: {
   email: string;
   inviteToken: string;
@@ -162,11 +169,7 @@ async function sendInvite({
   return result;
 }
 
-async function sendApproved({
-  email,
-}: {
-  email: string;
-}) {
+async function sendApproved({ email }: { email: string }) {
   const { NOTIFY_EMAIL } = await settings();
   const result = await sendApprovedEmail({
     from: NOTIFY_EMAIL as string,
@@ -203,7 +206,7 @@ async function resendInvite(id: string) {
     isOwner: member.isOwner,
   });
 
-  revalidatePath('/dashboard/permission/team', 'page');
+  revalidatePath("/dashboard/permission/team", "page");
   return result;
 }
 
@@ -232,7 +235,6 @@ async function leaveTeam(id: string) {
 
   revalidatePath("/dashboard/permission/team", "page");
 }
-
 
 async function addMember({
   email,
@@ -306,7 +308,7 @@ async function transferOwnership({
     where: and(
       eq(members.id, currentOwnerId),
       eq(members.userId, session.user.id),
-      eq(members.isOwner, true)
+      eq(members.isOwner, true),
     ),
   });
 
@@ -316,10 +318,7 @@ async function transferOwnership({
 
   // 查找新擁有者
   const newOwnerMember = await db.query.members.findFirst({
-    where: and(
-      eq(members.id, newOwnerId),
-      eq(members.status, "joined")
-    ),
+    where: and(eq(members.id, newOwnerId), eq(members.status, "joined")),
   });
 
   if (!newOwnerMember) {

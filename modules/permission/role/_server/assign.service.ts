@@ -1,9 +1,9 @@
 "use server";
 
+import { db } from "@heiso/core/lib/db";
+import { roleMenus, rolePermissions } from "@heiso/core/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { db } from "@/lib/db";
-import { roleMenus, rolePermissions } from "@/lib/db/schema";
 
 async function assignMenus({
   roleId,

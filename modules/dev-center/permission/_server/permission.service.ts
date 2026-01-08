@@ -1,9 +1,9 @@
 "use server";
 
+import { db } from "@heiso/core/lib/db";
+import { permissions } from "@heiso/core/lib/db/schema";
 import { and, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { db } from "@/lib/db";
-import { permissions } from "@/lib/db/schema";
 
 async function getPermissions() {
   const result = await db.query.permissions.findMany({
@@ -38,7 +38,9 @@ async function groupPermissionsByMenu(
   const uniquePermissions = Array.from(map.values());
 
   return menus.map((menu) => {
-    const menuPermissions = uniquePermissions.filter((permission) => permission.menuId === menu.id);
+    const menuPermissions = uniquePermissions.filter(
+      (permission) => permission.menuId === menu.id,
+    );
 
     return {
       id: menu.id,
@@ -46,12 +48,12 @@ async function groupPermissionsByMenu(
       icon: menu.icon,
       permissions: menuPermissions.map((p) => {
         const dbPermission = dbPermissions.find((dbP) => dbP.id === p.id);
-        return ({
+        return {
           id: p.id,
           resource: p.resource,
           action: p.action,
-          db: !!dbPermission
-        })
+          db: !!dbPermission,
+        };
       }),
     };
   });

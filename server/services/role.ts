@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/lib/db";
+import { db } from "@heiso/core/lib/db";
 
 interface UserPermission {
   role: string;
@@ -20,7 +20,7 @@ async function findUserPermissions(userId: string): Promise<UserPermission> {
     where: (t, { eq }) => eq(t.id, userId),
   });
 
-  if (!user) throw new Error('User not found');
+  if (!user) throw new Error("User not found");
 
   const isDeveloper = user?.developer?.userId === userId;
   const membership = await db.query.members.findFirst({
@@ -54,13 +54,13 @@ async function findUserPermissions(userId: string): Promise<UserPermission> {
       and(eq(t.userId, userId), isNull(t.deletedAt)),
   });
 
-  let role = '';
+  let role = "";
   if (isDeveloper === true) {
-    role = 'develop';
+    role = "develop";
   } else if (membership?.isOwner === true) {
-    role = 'owner';
+    role = "owner";
   } else {
-    role = membership?.role?.name ?? '';
+    role = membership?.role?.name ?? "";
   }
 
   const fullAccess =

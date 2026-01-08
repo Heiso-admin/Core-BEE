@@ -1,17 +1,17 @@
 "use server";
 
-import { db } from "@/lib/db";
-import type { Settings } from "@/types/system";
+import { db } from "@heiso/core/lib/db";
+import type { Settings } from "@heiso/core/types/system";
 
 export async function getSettings(
-  withoutKey: boolean = false
+  withoutKey: boolean = false,
 ): Promise<Settings> {
   const settings = await db.query.settings.findMany({
     columns: { name: true, value: true },
     where: (fields, { and, eq, isNull }) =>
       and(
         withoutKey ? eq(fields.isKey, false) : undefined,
-        isNull(fields.deletedAt)
+        isNull(fields.deletedAt),
       ),
   });
   const result: Record<string, unknown> = {};

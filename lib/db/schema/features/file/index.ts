@@ -1,11 +1,10 @@
+import { generateId } from "@heiso/core/lib/id-generator";
 import { relations } from "drizzle-orm";
 import {
-  boolean,
   index,
   integer,
   jsonb,
   pgTable,
-  text,
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
@@ -15,7 +14,6 @@ import {
   createUpdateSchema,
 } from "drizzle-zod";
 import type zod from "zod";
-import { generateId } from "@/lib/id-generator";
 import { users } from "../../auth/user";
 
 // Storage categories table

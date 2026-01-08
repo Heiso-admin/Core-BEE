@@ -1,13 +1,16 @@
 "use server";
 
-import { and, eq, gt } from "drizzle-orm";
-import { settings } from "@/config";
-import { db } from "@/lib/db";
-import { userPasswordReset, users as usersTable } from "@/lib/db/schema";
-import { sendForgotPasswordEmail } from "@/lib/email";
-import { hashPassword } from "@/lib/hash";
-import { generateId } from "@/lib/id-generator";
-// import { users as usersTable } from '@/lib/db/schema';
+import { settings } from "@heiso/core/config";
+import { db } from "@heiso/core/lib/db";
+import {
+  userPasswordReset,
+  users as usersTable,
+} from "@heiso/core/lib/db/schema";
+import { sendForgotPasswordEmail } from "@heiso/core/lib/email";
+import { hashPassword } from "@heiso/core/lib/hash";
+import { generateId } from "@heiso/core/lib/id-generator";
+import { eq } from "drizzle-orm";
+// import { users as usersTable } from '@heiso/core/lib/db/schema';
 
 /**
  * Request password reset: generate token, persist, and send reset email

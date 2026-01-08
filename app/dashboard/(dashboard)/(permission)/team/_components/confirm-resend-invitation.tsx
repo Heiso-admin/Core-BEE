@@ -1,4 +1,4 @@
-import { ActionButton } from "@/components/primitives";
+import { ActionButton } from "@heiso/core/components/primitives";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -8,7 +8,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@heiso/core/components/ui/alert-dialog";
 
 type Props = {
   title: string;

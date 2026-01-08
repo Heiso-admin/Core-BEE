@@ -1,5 +1,5 @@
+import { auth } from "@heiso/core/modules/auth/auth.config";
 import { NextResponse } from "next/server";
-import { auth } from '@/modules/auth/auth.config';
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -8,20 +8,20 @@ export async function GET(req: Request) {
 
   // 若使用者已加入，無需設定 token，直接回 Dashboard
   const session = await auth();
-  if (session?.member?.status === 'joined') {
-    return NextResponse.redirect('/dashboard');
+  if (session?.member?.status === "joined") {
+    return NextResponse.redirect("/dashboard");
   }
 
   // 未登入：先寫入 cookie（若有 token），再導向 Login 並帶 join 標記
   if (!session?.user) {
-    const res = NextResponse.redirect('/login?join=1');
+    const res = NextResponse.redirect("/login?join=1");
     if (token) {
-      res.cookies.set('join-token', token, {
+      res.cookies.set("join-token", token, {
         httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
+        sameSite: "lax",
+        path: "/",
         maxAge: 60 * 60 * 24,
-        secure: process.env.NODE_ENV === 'production',
+        secure: process.env.NODE_ENV === "production",
       });
     }
     return res;
@@ -32,7 +32,7 @@ export async function GET(req: Request) {
     ? next
     : token
       ? `/join?token=${encodeURIComponent(token)}`
-      : '/join';
+      : "/join";
 
   const res = NextResponse.redirect(target);
 

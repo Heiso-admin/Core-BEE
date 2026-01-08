@@ -1,17 +1,21 @@
 "use client";
 
-import { Plus } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useEffect, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { MenuForm, type MenuItem, MenuTree } from "@/components/primitives";
-import { Button } from "@/components/ui/button";
+import {
+  MenuForm,
+  type MenuItem,
+  MenuTree,
+} from "@heiso/core/components/primitives";
+import { Button } from "@heiso/core/components/ui/button";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet";
+} from "@heiso/core/components/ui/sheet";
+import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useEffect, useState, useTransition } from "react";
 import {
   addMenu,
   removeMenu,
@@ -29,7 +33,7 @@ export function MenuEdit({
 }) {
   const router = useRouter();
   const [menuItems, setMenuItems] = useState<MenuItem[]>(items);
-  const [isDeleting, startTransition] = useTransition();
+  const [_isDeleting, startTransition] = useTransition();
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [selectedParentItem, setSelectedParentItem] = useState<MenuItem | null>(
     null,
@@ -38,7 +42,7 @@ export function MenuEdit({
   const [isRemovePending, startRemoveTransition] = useTransition();
   const [openRemoveConfirm, setOpenRemoveConfirm] = useState(false);
   const [removeItemId, setRemoveItemId] = useState("");
-  const t = useTranslations('devCenter.menu');
+  const t = useTranslations("devCenter.menu");
 
   useEffect(() => {
     setMenuItems(items);
@@ -49,7 +53,8 @@ export function MenuEdit({
     list: MenuItem[],
     parentId: string | null = null,
   ): { id: string; parentId: string | null; order: number }[] => {
-    const updates: { id: string; parentId: string | null; order: number }[] = [];
+    const updates: { id: string; parentId: string | null; order: number }[] =
+      [];
     list.forEach((item, index) => {
       updates.push({ id: item.id, parentId, order: index });
       if (item.children && item.children.length > 0) {
@@ -88,7 +93,9 @@ export function MenuEdit({
           .filter((item) => item.id !== id)
           .map((item) => ({
             ...item,
-            children: item.children ? removeFromTree(item.children, id) : item.children,
+            children: item.children
+              ? removeFromTree(item.children, id)
+              : item.children,
           }));
       };
       setMenuItems((prev) => removeFromTree(prev, removeItemId));
@@ -284,9 +291,9 @@ function CreateOrEditItemForm({
   onClose?: () => void;
   data?: MenuItem | null;
 }) {
-  const [isSaving, startTransition] = useTransition();
+  const [_isSaving, startTransition] = useTransition();
   const [order, setOrder] = useState(count + 1);
-  const t = useTranslations('devCenter.menu');
+  const t = useTranslations("devCenter.menu");
 
   const handleSaveItem = (item: Partial<MenuItem>) => {
     startTransition(async () => {

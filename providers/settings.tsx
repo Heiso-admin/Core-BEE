@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useEffect, useState } from 'react';
-import type { Settings } from '@/types/system';
-import { settings as getSettings } from '@/config/settings';
+import { settings as getSettings } from "@heiso/core/config/settings";
+import type { Settings } from "@heiso/core/types/system";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 
 interface SettingsContextType {
   settings: Settings | null;
@@ -15,7 +15,7 @@ const SiteContext = createContext<SettingsContextType>({
   settings: null,
   isLoading: false,
   error: null,
-  refresh: () => {},
+  refresh: () => { },
 });
 
 export function SettingProvider({ children }: { children: React.ReactNode }) {
@@ -23,7 +23,7 @@ export function SettingProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  async function fetchSetting() {
+  const fetchSetting = useCallback(async () => {
     try {
       setIsLoading(true);
       const data = await getSettings(true);
@@ -31,15 +31,15 @@ export function SettingProvider({ children }: { children: React.ReactNode }) {
         setSettings(data);
       }
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Unknown error'));
+      setError(err instanceof Error ? err : new Error("Unknown error"));
     } finally {
       setIsLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     fetchSetting();
-  }, []);
+  }, [fetchSetting]);
 
   const refresh = () => {
     fetchSetting();
@@ -55,7 +55,7 @@ export function SettingProvider({ children }: { children: React.ReactNode }) {
 export function useSettings() {
   const context = useContext(SiteContext);
   if (!context) {
-    throw new Error('useSettings must be used within a SettingsProvider');
+    throw new Error("useSettings must be used within a SettingsProvider");
   }
   return context;
 }

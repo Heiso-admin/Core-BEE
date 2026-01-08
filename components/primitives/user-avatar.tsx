@@ -1,11 +1,12 @@
 "use client";
 
-import { LogOut } from "lucide-react";
-import Link from "next/link";
-import { signOut } from "next-auth/react";
-import { RandomAvatar, ThemeSwitcher } from "@/components/primitives";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { RandomAvatar, ThemeSwitcher } from "@heiso/core/components/primitives";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@heiso/core/components/ui/avatar";
+import { Badge } from "@heiso/core/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,9 +16,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useAccount } from "@/providers/account";
-import { usePermissionContext } from "@/providers/permission";
+} from "@heiso/core/components/ui/dropdown-menu";
+import { useAccount } from "@heiso/core/providers/account";
+import { usePermissionContext } from "@heiso/core/providers/permission";
+import { LogOut } from "lucide-react";
+import Link from "next/link";
+import { signOut } from "next-auth/react";
 
 export interface UserAvatarMenuItem {
   id: string;
@@ -91,9 +95,9 @@ export function UserAvatar({
 
   if (!account) return null;
 
-  const image = account?.avatar ?? '';
-  const displayName = account?.name ?? '';
-  const email = account?.email ?? '';
+  const image = account?.avatar ?? "";
+  const displayName = account?.name ?? "";
+  const email = account?.email ?? "";
 
   return (
     <div className={className}>
@@ -127,11 +131,11 @@ export function UserAvatar({
           <DropdownMenuSeparator />
 
           {menu.map((item) => {
-            if (item.type === 'Group') {
+            if (item.type === "Group") {
               return (
                 <DropdownMenuGroup key={item.id}>
                   {item.group?.map((subItem) => (
-                    <Link key={subItem.id} href={subItem.href ?? ''}>
+                    <Link key={subItem.id} href={subItem.href ?? ""}>
                       <DropdownMenuItem>{subItem.text}</DropdownMenuItem>
                     </Link>
                   ))}
@@ -139,19 +143,19 @@ export function UserAvatar({
               );
             }
 
-            if (item.type === 'Link') {
+            if (item.type === "Link") {
               return (
-                <Link key={item.id} href={item.href ?? ''}>
+                <Link key={item.id} href={item.href ?? ""}>
                   <DropdownMenuItem>{item.text}</DropdownMenuItem>
                 </Link>
               );
             }
 
-            if (item.type === 'Separator') {
+            if (item.type === "Separator") {
               return <DropdownMenuSeparator key={item.id} />;
             }
 
-            if (item.type === 'Theme') {
+            if (item.type === "Theme") {
               return (
                 <DropdownMenuItem key={item.id}>
                   {item.text}
@@ -162,13 +166,13 @@ export function UserAvatar({
               );
             }
 
-            if (item.type === 'LogOut') {
+            if (item.type === "LogOut") {
               return (
                 <DropdownMenuItem
                   key={item.id}
                   onClick={() => {
                     signOut({
-                      callbackUrl: '/',
+                      callbackUrl: "/",
                     });
                   }}
                 >
@@ -180,7 +184,7 @@ export function UserAvatar({
               );
             }
 
-            return null
+            return null;
           })}
 
           {/* <DropdownMenuGroup>

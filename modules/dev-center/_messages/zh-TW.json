@@ -30,7 +30,7 @@
         "label": "網站名稱",
         "description": "請最多使用32個字符。"
       },
-      "title": {
+      "title_input": {
         "label": "標題"
       },
       "base_url": {
@@ -49,7 +49,7 @@
       "slogan": {
         "label": "標語"
       },
-      "description": {
+      "description_input": {
         "label": "描述"
       },
       "copyright": {

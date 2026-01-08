@@ -1,5 +1,5 @@
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
+import { Skeleton } from "@heiso/core/components/ui/skeleton";
+import { cn } from "@heiso/core/lib/utils";
 
 export function TableSkeleton({
   classNames,

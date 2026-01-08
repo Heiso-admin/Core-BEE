@@ -1,8 +1,11 @@
 "use server";
 
+import { db } from "@heiso/core/lib/db";
+import {
+  type TUserUpdate,
+  users as usersTable,
+} from "@heiso/core/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { db } from "@/lib/db";
-import { type TUserUpdate, users as usersTable } from "@/lib/db/schema";
 
 export async function getUsers() {
   const users = await db.query.users.findMany({

@@ -1,14 +1,7 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Plus } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-import { ActionButton } from "@/components/primitives";
-import { Button } from "@/components/ui/button";
+import { ActionButton } from "@heiso/core/components/primitives";
+import { Button } from "@heiso/core/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@heiso/core/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -24,15 +17,22 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@heiso/core/components/ui/form";
+import { Input } from "@heiso/core/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@heiso/core/components/ui/select";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff, Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 import { addMember } from "../_server/team.service";
 
 const createAddMemberSchema = (t: ReturnType<typeof useTranslations>) =>

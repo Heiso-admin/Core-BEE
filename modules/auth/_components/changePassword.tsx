@@ -1,18 +1,22 @@
 "use client";
 
+import { PasswordInput } from "@heiso/core/components/primitives/password-input";
+import { Button } from "@heiso/core/components/ui/button";
+import { Label } from "@heiso/core/components/ui/label";
+import {
+  calcStrength,
+  Progress,
+  ProgressLabel,
+} from "@heiso/core/components/ui/progress";
+import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { signOut, signIn, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { calcStrength, Progress, ProgressLabel } from "@/components/ui/progress";
 import { changePassword } from "../_server/user.service";
-import AuthRedirectHint from './authRedirectHint';
-import Header from './header';
-import { PasswordInput } from '@/components/primitives/password-input';
-import { motion } from 'framer-motion';
+import AuthRedirectHint from "./authRedirectHint";
+import Header from "./header";
 
 export default function ChangePasswordPage() {
   const { data: session } = useSession();
@@ -23,7 +27,7 @@ export default function ChangePasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  const _router = useRouter();
 
   if (!userId) return null;
 
@@ -33,7 +37,6 @@ export default function ChangePasswordPage() {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-
 
     if (password !== confirmPassword) {
       setError(t("error.mismatch"));
@@ -72,7 +75,7 @@ export default function ChangePasswordPage() {
 
   const handleCancelPasswordChange = () => {
     signOut({
-      callbackUrl: '/',
+      callbackUrl: "/",
     });
   };
 
@@ -89,7 +92,7 @@ export default function ChangePasswordPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            {password !== "" &&
+            {password !== "" && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -98,7 +101,7 @@ export default function ChangePasswordPage() {
                 <Progress value={passwordStrength} className="w-full" />
                 <ProgressLabel passwordStrength={passwordStrength} />
               </motion.div>
-            }
+            )}
           </div>
           <div className="space-y-2 mb-8">
             <Label htmlFor="confirmPassword">{t("password.confirm")}</Label>

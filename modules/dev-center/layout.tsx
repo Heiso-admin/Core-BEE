@@ -1,11 +1,11 @@
-import { Suspense, use } from 'react';
-import { auth } from '@/modules/auth/auth.config';
-import { Layout } from '@/components/primitives/layout';
-import type { UserAvatarMenuItem } from '@/components/primitives/user-avatar';
-import type { Navigation } from '@/types/client';
+import { auth } from "@heiso/core/modules/auth/auth.config";
+import { Suspense } from "react";
+import { Layout } from "@/components/primitives/layout";
+import type { UserAvatarMenuItem } from "@/components/primitives/user-avatar";
+import type { Navigation } from "@/types/client";
 
 const nav: Navigation = {
-  rootPath: '/dev-center',
+  rootPath: "/dev-center",
   items: [
     // {
     //   id: 'Overview',
@@ -15,69 +15,69 @@ const nav: Navigation = {
     // },
     [
       {
-        id: 'Developers',
-        title: 'Developers',
-        path: '/developers',
-        icon: 'user-round-plus',
+        id: "Developers",
+        title: "Developers",
+        path: "/developers",
+        icon: "user-round-plus",
       },
     ],
     [
       {
-        id: 'Menu',
-        title: 'Menu',
-        path: '/menu',
-        icon: 'menu',
+        id: "Menu",
+        title: "Menu",
+        path: "/menu",
+        icon: "menu",
       },
     ],
     [
       {
-        id: 'Permission',
-        title: 'Permission',
-        path: '/permission',
-        icon: 'user-lock',
+        id: "Permission",
+        title: "Permission",
+        path: "/permission",
+        icon: "user-lock",
       },
       {
-        id: 'Role',
-        title: 'Role',
-        path: '/role',
-        icon: 'square-user-round',
+        id: "Role",
+        title: "Role",
+        path: "/role",
+        icon: "square-user-round",
       },
     ],
     [
       {
-        id: 'API Keys',
-        title: 'API Keys',
+        id: "API Keys",
+        title: "API Keys",
         path: `/api-keys`,
-        icon: 'globe-lock',
+        icon: "globe-lock",
       },
       {
-        id: 'API docs',
-        title: 'API Docs',
-        path: '/../../api/docs',
-        icon: 'book-text',
+        id: "API docs",
+        title: "API Docs",
+        path: "/../../api/docs",
+        icon: "book-text",
       },
     ],
     [
       {
-        id: 'AI Usage',
-        title: 'AI Usage',
+        id: "AI Usage",
+        title: "AI Usage",
         path: `/ai/usage`,
-        icon: 'chart-line',
+        icon: "chart-line",
       },
     ],
     [
       {
-        id: 'Keys',
-        title: 'Keys',
-        path: '/key',
-        icon: 'key',
+        id: "Keys",
+        title: "Keys",
+        path: "/key",
+        icon: "key",
       },
 
       {
-        id: 'Settings',
-        title: 'Settings',
-        path: '/settings',
-        icon: 'settings',
+        id: "Settings",
+        title: "Settings",
+        path: "/settings",
+        icon: "settings",
       },
     ],
   ],
@@ -93,26 +93,26 @@ export default async function DashboardLayout({
 
   const userAvatarMenu = [
     {
-      id: 'user',
-      type: 'Group',
+      id: "user",
+      type: "Group",
       group: [
         {
-          id: 'dashboard',
-          text: 'Dashboard',
-          href: '/dashboard',
-          type: 'Link',
+          id: "dashboard",
+          text: "Dashboard",
+          href: "/dashboard",
+          type: "Link",
         },
         {
-          id: 'accountSettings',
-          text: 'Account Settings',
-          href: '/account/me',
-          type: 'Link',
+          id: "accountSettings",
+          text: "Account Settings",
+          href: "/account/me",
+          type: "Link",
         },
       ],
     },
     {
-      id: 'separator1',
-      type: 'Separator',
+      id: "separator1",
+      type: "Separator",
     },
     // {
     //   id: 'theme',
@@ -130,9 +130,9 @@ export default async function DashboardLayout({
     //   type: 'Link',
     // },
     {
-      id: 'logOut',
-      text: 'Log out',
-      type: 'LogOut',
+      id: "logOut",
+      text: "Log out",
+      type: "LogOut",
     },
   ] satisfies UserAvatarMenuItem[];
 
@@ -157,7 +157,7 @@ export default async function DashboardLayout({
         breadcrumb={{
           items: [
             {
-              title: 'Dev Center',
+              title: "Dev Center",
             },
           ],
         }}
