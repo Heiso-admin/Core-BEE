@@ -1,22 +1,22 @@
-import { Button } from "@/components/ui/button";
-import type { permissionsConfig } from '@/config/permissions';
-import { usePermission } from '@/hooks/use-permission';
+import { Button } from "@heiso/core/components/ui/button";
+import type { permissionsConfig } from "@heiso/core/config/permissions";
+import { usePermission } from "@heiso/core/hooks/use-permission";
 
 type ProtectedButtonProps =
   | {
-    className?: string;
-    resource?: undefined;
-    action?: undefined;
-    asChild?: boolean;
-    children?: React.ReactNode;
-  }
+      className?: string;
+      resource?: undefined;
+      action?: undefined;
+      asChild?: boolean;
+      children?: React.ReactNode;
+    }
   | {
-    className?: string;
-    resource: (typeof permissionsConfig)[number]['resource'];
-    action: (typeof permissionsConfig)[number]['action'];
-    asChild?: boolean;
-    children?: React.ReactNode;
-  };
+      className?: string;
+      resource: (typeof permissionsConfig)[number]["resource"];
+      action: (typeof permissionsConfig)[number]["action"];
+      asChild?: boolean;
+      children?: React.ReactNode;
+    };
 
 export const ProtectedButton = ({
   className,

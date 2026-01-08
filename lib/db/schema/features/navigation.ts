@@ -1,3 +1,4 @@
+import { generateId, generateNavigationId } from "@heiso/core/lib/id-generator";
 import { relations } from "drizzle-orm";
 import {
   boolean,
@@ -13,30 +14,29 @@ import {
   createUpdateSchema,
 } from "drizzle-zod";
 import type zod from "zod";
-import { generateId, generateNavigationId } from "@/lib/id-generator";
 
 export const navigations = pgTable(
-  'navigations',
+  "navigations",
   {
-    id: varchar('id', { length: 20 })
+    id: varchar("id", { length: 20 })
       .primaryKey()
       .$default(() => generateNavigationId()),
-    userId: varchar('user_id', { length: 20 }).notNull(),
-    slug: varchar('slug', { length: 100 }).notNull(),
-    name: varchar('name', { length: 100 }).notNull(),
-    parentId: varchar('parent_id', { length: 20 }),
-    description: varchar('description', { length: 255 }),
+    userId: varchar("user_id", { length: 20 }).notNull(),
+    slug: varchar("slug", { length: 100 }).notNull(),
+    name: varchar("name", { length: 100 }).notNull(),
+    parentId: varchar("parent_id", { length: 20 }),
+    description: varchar("description", { length: 255 }),
     // status: varchar('status', { length: 20 }).notNull().default('active'), // active, inactive
-    deletedAt: timestamp('deleted_at'),
-    createdAt: timestamp('created_at').notNull().defaultNow(),
-    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    deletedAt: timestamp("deleted_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
   (table) => [
-    index('navigations_slug_idx').on(table.slug),
+    index("navigations_slug_idx").on(table.slug),
     // Index for faster tree structure queries
     // Index for soft delete queries
-    index('navigations_deleted_at_idx').on(table.deletedAt),
-  ]
+    index("navigations_deleted_at_idx").on(table.deletedAt),
+  ],
 );
 
 export const navigationMenus = pgTable(

@@ -1,6 +1,29 @@
 "use client";
 
 import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@heiso/core/components/ui/alert";
+import { Button } from "@heiso/core/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@heiso/core/components/ui/card";
+import { Input } from "@heiso/core/components/ui/input";
+import { Label } from "@heiso/core/components/ui/label";
+import { Switch } from "@heiso/core/components/ui/switch";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@heiso/core/components/ui/tabs";
+import {
   AlertCircle,
   CheckCircle2,
   Copy,
@@ -11,20 +34,6 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function TwoFactorAuthentication() {
   const t = useTranslations("account.2fa");

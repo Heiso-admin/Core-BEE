@@ -1,10 +1,6 @@
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useState, useTransition, useEffect, useCallback } from 'react';
-import { useForm, UseFormReturn } from 'react-hook-form';
-import * as z from 'zod';
-import { ActionButton } from '@/components/primitives';
+import { ActionButton } from "@heiso/core/components/primitives";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,15 +11,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
+} from "@heiso/core/components/ui/alert-dialog";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@heiso/core/components/ui/card";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@heiso/core/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -31,19 +31,23 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+} from "@heiso/core/components/ui/form";
+import { Input } from "@heiso/core/components/ui/input";
 // TODO: change service to external
 import {
   createPermission,
   deletePermission,
   deletePermissionByKey,
   updatePermission,
-} from '@/modules/dev-center/permission/_server/permission.service';
+} from "@heiso/core/modules/dev-center/permission/_server/permission.service";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { CheckedState } from "@radix-ui/react-checkbox";
+import { PencilIcon, SquarePlus, TrashIcon } from "lucide-react";
 import { DynamicIcon, type IconName } from "lucide-react/dynamic";
-import { type CheckedState } from '@radix-ui/react-checkbox';
-import { Button } from '../ui/button';
-import { PencilIcon, SquarePlus, TrashIcon } from 'lucide-react';
+import { useCallback, useState, useTransition } from "react";
+import { type UseFormReturn, useForm } from "react-hook-form";
+import * as z from "zod";
+import { Button } from "../ui/button";
 
 export interface Permission {
   id: string;
@@ -61,10 +65,11 @@ export interface PermissionGroup {
 }
 
 const permissionFormSchema = z.object({
-  resource: z.string().min(1, 'Resource is required'),
-  action: z.string()
-    .min(1, 'Action is required')
-    .max(20, { message: 'Action cannot exceed 20 characters.' }),
+  resource: z.string().min(1, "Resource is required"),
+  action: z
+    .string()
+    .min(1, "Action is required")
+    .max(20, { message: "Action cannot exceed 20 characters." }),
 });
 
 type PermissionFormValues = z.infer<typeof permissionFormSchema>;
@@ -83,24 +88,29 @@ export function PermissionCard({
   const [isEditPending, startEditTransition] = useTransition();
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [editingPermission, setEditingPermission] = useState<Permission | null>(
-    null
+    null,
   );
-  const [localPermissions, setLocalPermissions] = useState<Permission[]>(permissionGroup.permissions);
-  const [isAll, setIsAll] = useState<CheckedState>(false);
+  const [localPermissions, setLocalPermissions] = useState<Permission[]>(
+    permissionGroup.permissions,
+  );
+  const [_isAll, setIsAll] = useState<CheckedState>(false);
 
-  const getOverallCheckboxState = useCallback((list: { checked?: boolean }[]): CheckedState => {
-    const areAllChecked = list.length > 0 && list.every(p => !!p.checked);
-    const isAnyChecked = list.some(p => !!p.checked);
+  const _getOverallCheckboxState = useCallback(
+    (list: { checked?: boolean }[]): CheckedState => {
+      const areAllChecked = list.length > 0 && list.every((p) => !!p.checked);
+      const isAnyChecked = list.some((p) => !!p.checked);
 
-    if (areAllChecked) {
-      return true;
-    }
+      if (areAllChecked) {
+        return true;
+      }
 
-    if (isAnyChecked) {
-      return 'indeterminate';
-    }
-    return false;
-  }, []);
+      if (isAnyChecked) {
+        return "indeterminate";
+      }
+      return false;
+    },
+    [],
+  );
 
   // useEffect(() => {
   //   setLocalPermissions(permissionGroup.permissions);
@@ -114,8 +124,8 @@ export function PermissionCard({
   const form = useForm<PermissionFormValues>({
     resolver: zodResolver(permissionFormSchema),
     defaultValues: {
-      resource: '',
-      action: '',
+      resource: "",
+      action: "",
     },
   });
 
@@ -150,7 +160,7 @@ export function PermissionCard({
     });
   };
 
-  const handleDeletePermission = async (id: string) => {
+  const _handleDeletePermission = async (id: string) => {
     await deletePermission({ id });
   };
 
@@ -163,22 +173,20 @@ export function PermissionCard({
     setIsDialogOpen(true);
   };
 
-  const handlePermissionChange = (
+  const _handlePermissionChange = (
     checked: boolean | string,
-    permission: Permission
+    permission: Permission,
   ) => {
-    if (typeof checked !== 'boolean') return;
+    if (typeof checked !== "boolean") return;
 
     const { resource, action, id } = permission;
     setLocalPermissions((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, checked } : p,
-      ),
+      prev.map((p) => (p.id === id ? { ...p, checked } : p)),
     );
 
     if (checked) {
       startCreateTransition(async () => {
-        const created = await createPermission({
+        const _created = await createPermission({
           menuId: permissionGroup.id,
           resource,
           action,
@@ -191,11 +199,13 @@ export function PermissionCard({
     }
   };
 
-  const handleToggleAll = (checkedAll: boolean) => {
+  const _handleToggleAll = (checkedAll: boolean) => {
     setIsAll(checkedAll);
     const currentPermissions = localPermissions;
 
-    setLocalPermissions((prevState) => prevState.map((p) => ({ ...p, checked: checkedAll })));
+    setLocalPermissions((prevState) =>
+      prevState.map((p) => ({ ...p, checked: checkedAll })),
+    );
 
     if (checkedAll) {
       const toCreate = currentPermissions.filter((p) => !p.checked);
@@ -204,7 +214,11 @@ export function PermissionCard({
       startCreateTransition(async () => {
         await Promise.all(
           toCreate.map((p) =>
-            createPermission({ menuId: permissionGroup.id, resource: p.resource, action: p.action }),
+            createPermission({
+              menuId: permissionGroup.id,
+              resource: p.resource,
+              action: p.action,
+            }),
           ),
         );
       });
@@ -239,24 +253,29 @@ export function PermissionCard({
           <div className="flex justify-between">
             <div className="flex items-center space-x-2">
               <CardTitle className="text-md font-medium text-gray-500 flex items-center gap-2">
-                {permissionGroup.icon && <DynamicIcon name={permissionGroup.icon as IconName} size={18} />}
+                {permissionGroup.icon && (
+                  <DynamicIcon
+                    name={permissionGroup.icon as IconName}
+                    size={18}
+                  />
+                )}
                 {permissionGroup.title}
               </CardTitle>
             </div>
 
             <Button
-              className='text-gray-500'
+              className="text-gray-500"
               variant="ghost"
               size="icon_sm"
               onClick={() => {
                 form.reset({
-                  resource: '',
-                  action: '',
+                  resource: "",
+                  action: "",
                 });
                 setIsDialogOpen(true);
               }}
             >
-              <SquarePlus className='size-4' />
+              <SquarePlus className="size-4" />
             </Button>
           </div>
         </CardHeader>
@@ -307,32 +326,33 @@ export function PermissionCard({
                     </label>
                   </div>
 
-                  {permission.db && <div className="flex items-center">
-                    <Button
-                      className='text-gray-500 '
-                      variant="ghost"
-                      size="icon_sm"
-                      onClick={() =>
-                        openEditDialog({
-                          id: permission.id,
-                          resource: permission.resource,
-                          action: permission.action,
-                        })
-                      }
-                    >
-                      <PencilIcon className="size-4" />
-                    </Button>
-                    <DeleteConfirm id={permission.id}>
+                  {permission.db && (
+                    <div className="flex items-center">
                       <Button
+                        className="text-gray-500 "
                         variant="ghost"
                         size="icon_sm"
-                        className='text-gray-500'
+                        onClick={() =>
+                          openEditDialog({
+                            id: permission.id,
+                            resource: permission.resource,
+                            action: permission.action,
+                          })
+                        }
                       >
-                        <TrashIcon className="size-4" />
+                        <PencilIcon className="size-4" />
                       </Button>
-                    </DeleteConfirm>
-                  </div>}
-
+                      <DeleteConfirm id={permission.id}>
+                        <Button
+                          variant="ghost"
+                          size="icon_sm"
+                          className="text-gray-500"
+                        >
+                          <TrashIcon className="size-4" />
+                        </Button>
+                      </DeleteConfirm>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -369,7 +389,7 @@ function AddOrEditPermission({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {editingPermission ? 'Edit Permission' : 'Create Permission'}
+            {editingPermission ? "Edit Permission" : "Create Permission"}
             <span className="ml-1 text-xs text-muted-foreground">
               - {permissionGroup.title}
             </span>
@@ -378,9 +398,7 @@ function AddOrEditPermission({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(
-              editingPermission
-                ? handleEditPermission
-                : handleCreatePermission
+              editingPermission ? handleEditPermission : handleCreatePermission,
             )}
             className="space-y-4"
           >
@@ -416,13 +434,13 @@ function AddOrEditPermission({
               disabled={editingPermission ? isEditPending : isCreatePending}
               loading={editingPermission ? isEditPending : isCreatePending}
             >
-              {editingPermission ? 'Update' : 'Create'}
+              {editingPermission ? "Update" : "Create"}
             </ActionButton>
           </form>
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
 function DeleteConfirm({

@@ -1,1 +1,1 @@
-export { default } from '@/modules/account/me/avatar/page';
+export { default } from "@heiso/core/modules/account/me/avatar/page";

@@ -103,9 +103,12 @@ function smoothStream<TOOLS extends ToolSet>({
 
         buffer += chunk.textDelta;
 
-        let match;
+        let match: string | null | undefined;
 
-        while ((match = detectChunk(buffer)) != null) {
+        while (true) {
+          match = detectChunk(buffer);
+          if (match == null) break;
+
           controller.enqueue({ textDelta: match, type: "text-delta" });
           buffer = buffer.slice(match.length);
 
@@ -177,7 +180,7 @@ export async function POST(req: NextRequest) {
 
           // Use line chunking for code blocks and tables, word chunking otherwise
           // Choose the appropriate chunking strategy based on content type
-          let match;
+          let match: RegExpExecArray | null;
 
           if (isInCodeBlock || isInTable || isInLink) {
             // Use line chunking for code blocks and tables

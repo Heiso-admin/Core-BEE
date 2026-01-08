@@ -1,8 +1,7 @@
-import { db } from '@/lib/db';
-import { eq } from 'drizzle-orm';
-import { apiKeys } from '@/lib/db/schema';
-import { hashApiKey } from '@/lib/hash';
-import { apiKeyAccessLogs } from '@/lib/db/schema';
+import { db } from "@heiso/core/lib/db";
+import { apiKeyAccessLogs, apiKeys } from "@heiso/core/lib/db/schema";
+import { hashApiKey } from "@heiso/core/lib/hash";
+import { eq } from "drizzle-orm";
 
 // Verify API key (for authentication middleware)
 export async function verifyApiKey(key: string): Promise<{
@@ -33,7 +32,7 @@ export async function verifyApiKey(key: string): Promise<{
         and(
           eq(t.key, hashedKey),
           eq(apiKeys.isActive, true),
-          isNull(t.deletedAt)
+          isNull(t.deletedAt),
         ),
     });
 
@@ -64,7 +63,7 @@ export async function verifyApiKey(key: string): Promise<{
       rateLimit: rateLimit,
     };
   } catch (error) {
-    console.error('Error verifying API key:', error);
+    console.error("Error verifying API key:", error);
     return { valid: false };
   }
 }
@@ -95,6 +94,6 @@ export async function storeApiKeyAccessLog(params: {
       createdAt: new Date(),
     });
   } catch (error) {
-    console.error('Error storing API key access log:', error);
+    console.error("Error storing API key access log:", error);
   }
 }

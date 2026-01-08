@@ -1,14 +1,14 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { signOut } from 'next-auth/react';
-import { useTranslations } from 'next-intl';
+import { Button } from "@heiso/core/components/ui/button";
+import { signOut } from "next-auth/react";
+import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 import { join } from "../_server/member.service";
-import { type JoinUser } from '../page';
-import { useEffect } from 'react';
+import type { JoinUser } from "../page";
 
 export function AccountConfirmAlert({ user }: { user: JoinUser | null }) {
-  const t = useTranslations('auth.join');
+  const t = useTranslations("auth.join");
   const email = user?.email || "email";
 
   // Entering the page should submit for review and clear join-token
@@ -18,7 +18,7 @@ export function AccountConfirmAlert({ user }: { user: JoinUser | null }) {
       try {
         await join(user.id);
       } catch (err) {
-        console.error('join on mount failed', err);
+        console.error("join on mount failed", err);
       }
     };
     run();
@@ -26,7 +26,9 @@ export function AccountConfirmAlert({ user }: { user: JoinUser | null }) {
 
   return (
     <>
-      <p className="whitespace-pre-line text-center">{t('joinSuccess', { email: email })}</p>
+      <p className="whitespace-pre-line text-center">
+        {t("joinSuccess", { email: email })}
+      </p>
       <Button
         onClick={async () => {
           if (!user?.id) {

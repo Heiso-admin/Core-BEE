@@ -1,6 +1,6 @@
 "use client";
 
-import type { OAuthDataType } from '../login/page';
+import type { OAuthDataType } from "../login/page";
 import LoginForm from "./loginForm";
 
 export default function Login({

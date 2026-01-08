@@ -1,20 +1,11 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import * as z from "zod";
-import { ActionButton, PermissionCard } from "@/components/primitives";
-import { Button } from "@/components/ui/button";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  ActionButton,
+  PermissionCard,
+} from "@heiso/core/components/primitives";
+import { Button } from "@heiso/core/components/ui/button";
+import { Form, FormField, FormItem } from "@heiso/core/components/ui/form";
 import {
   Sheet,
   SheetContent,
@@ -22,8 +13,13 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import type { TPermission } from "@/lib/db/schema";
+} from "@heiso/core/components/ui/sheet";
+import type { TPermission } from "@heiso/core/lib/db/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
 import { assignPermissions } from "../_server/assign.service";
 import type { Role } from "../_server/role.service";
 
@@ -86,7 +82,7 @@ export function PermissionAccess({
               render={({ field }) => (
                 <FormItem>
                   <div className="space-y-2">
-                    {permissions.map((permission: any, i: number) => (
+                    {permissions.map((permission: any, _i: number) => (
                       <PermissionCard
                         permissionGroup={permission}
                         key={permission.id}

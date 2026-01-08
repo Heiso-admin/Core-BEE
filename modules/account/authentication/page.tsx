@@ -1,5 +1,23 @@
 "use client";
 
+import { ActionButton } from "@heiso/core/components/primitives";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@heiso/core/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@heiso/core/components/ui/form";
+import { Input } from "@heiso/core/components/ui/input";
+import { Switch } from "@heiso/core/components/ui/switch";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -8,26 +26,6 @@ import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { ActionButton } from "@/components/primitives";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { toggle2FA, updatePassword } from "./_server/auth.service";
 
 const passwordSchema = z
@@ -48,7 +46,7 @@ export default function Authentication() {
   const { data: session } = useSession();
   const [isUpdatePasswordPending, startUpdatePasswordTransition] =
     useTransition();
-  const [isEnable2FaPending, startEnable2FaTransition] = useTransition();
+  const [_isEnable2FaPending, startEnable2FaTransition] = useTransition();
   const passwordForm = useForm<PasswordFormData>({
     resolver: zodResolver(passwordSchema),
   });
@@ -60,7 +58,7 @@ export default function Authentication() {
         await updatePassword(session.user.id, data);
         toast.success(t("password.toast.success"));
         passwordForm.reset();
-      } catch (error) {
+      } catch (_error) {
         toast.error(t("password.toast.error"));
       }
     });
@@ -72,7 +70,7 @@ export default function Authentication() {
       try {
         await toggle2FA(session.user.id, checked);
         toast(t(checked ? "2fa.toast.enabled" : "2fa.toast.disabled"));
-      } catch (error) {
+      } catch (_error) {
         toast.error(
           t(checked ? "2fa.toast.enableError" : "2fa.toast.disableError"),
         );

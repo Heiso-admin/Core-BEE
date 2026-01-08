@@ -1,8 +1,8 @@
 "use server";
 
+import { db } from "@heiso/core/lib/db";
+import { settings } from "@heiso/core/lib/db/schema/system/setting";
 import { eq } from "drizzle-orm";
-import { db } from "@/lib/db";
-import { settings } from "@/lib/db/schema/system/setting";
 
 // import type { KeysFormValues } from '../key/page';
 

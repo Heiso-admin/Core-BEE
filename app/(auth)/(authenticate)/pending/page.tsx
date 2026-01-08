@@ -1,3 +1,3 @@
-import Pending from '@/modules/auth/pending/page';
+import Pending from "@heiso/core/modules/auth/pending/page";
 
 export default Pending;

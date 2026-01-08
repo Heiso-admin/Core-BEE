@@ -1,12 +1,12 @@
 "use client";
 
+import { Button } from "@heiso/core/components/ui/button";
+import { Progress } from "@heiso/core/components/ui/progress";
+import { useUploadFile } from "@heiso/core/hooks/use-upload-file";
+import { cn } from "@heiso/core/lib/utils";
 import { Upload, X } from "lucide-react";
 import type * as React from "react";
 import { useFilePicker } from "use-file-picker";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { useUploadFile } from "@/hooks/use-upload-file";
-import { cn } from "@/lib/utils";
 
 type UploaderButtonProps = {
   onUploadComplete?: (file: {
@@ -27,7 +27,7 @@ export const ButtonUploader = ({
 }: UploaderButtonProps) => {
   const { uploadFile, progress, isUploading, cancel } = useUploadFile();
 
-  const { openFilePicker, filesContent, loading, clear } = useFilePicker({
+  const { openFilePicker, loading, clear } = useFilePicker({
     readAs: "DataURL",
     accept: "*",
     multiple: false,

@@ -1,10 +1,6 @@
-import { ChevronDownIcon, SlashIcon } from "lucide-react";
-import Link from "next/link";
-import { Fragment } from "react";
-import { auth } from '@/modules/auth/auth.config';
-import { UserAvatar } from "@/components/primitives";
-import { Logo } from "@/components/primitives/logo";
-import type { UserAvatarMenuItem } from "@/components/primitives/user-avatar";
+import { UserAvatar } from "@heiso/core/components/primitives";
+import { Logo } from "@heiso/core/components/primitives/logo";
+import type { UserAvatarMenuItem } from "@heiso/core/components/primitives/user-avatar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,17 +8,21 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from "@heiso/core/components/ui/breadcrumb";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-// import { LanguageSwitcher } from '@/components/primitives';
-import { getUserLocale } from "@/server/locale";
+} from "@heiso/core/components/ui/dropdown-menu";
+import { auth } from "@heiso/core/modules/auth/auth.config";
+// import { LanguageSwitcher } from '@heiso/core/components/primitives';
+import { getUserLocale } from "@heiso/core/server/locale";
 // import { Notification } from './notification';
-import type { BreadcrumbProps } from "@/types/client";
+import type { BreadcrumbProps } from "@heiso/core/types/client";
+import { ChevronDownIcon, SlashIcon } from "lucide-react";
+import Link from "next/link";
+import { Fragment } from "react";
 
 export async function Header({
   breadcrumb,
@@ -33,7 +33,7 @@ export async function Header({
 }) {
   const session = await auth();
   if (!session?.user) return null;
-  const lang = await getUserLocale();
+  const _lang = await getUserLocale();
 
   return (
     <header className="w-full flex-none border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

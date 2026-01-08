@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { Suspense } from "react";
 // import { UsageYearTable } from './_components/usage-year-table';
 // import { TableSkeleton } from './_components/loading-skeleton';
 // import { getYearlyTokenUsage } from './actions/billing';
@@ -12,7 +12,7 @@ export default function UsageManagement() {
     <div className="max-w-6xl mx-auto space-y-10 py-6">
       <div className="flex justify-between items-end mb-4">
         <h2 className="text-3xl font-extrabold">
-          {new Date().getFullYear()}{' '}
+          {new Date().getFullYear()}{" "}
           <span className="text-lg text-muted-foreground">Tokens Usage</span>
         </h2>
         <div className="text-sm space-y-2 rounded-md border border-muted-foreground px-4 py-2">

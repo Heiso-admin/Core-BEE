@@ -1,5 +1,5 @@
-// import { db } from '@/lib/db';
-// import { menus } from '@/lib/db/schema';
+// import { db } from '@heiso/core/lib/db';
+// import { menus } from '@heiso/core/lib/db/schema';
 // import { eq } from 'drizzle-orm';
 
 // export async function getMenus() {

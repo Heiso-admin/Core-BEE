@@ -1,25 +1,16 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState, useTransition, useCallback } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import * as z from "zod";
-import { ActionButton } from "@/components/primitives";
-import { LanguageSwitcher } from "@/components/primitives/language-switcher";
-import { Card } from "@/components/ui/card";
+import { ActionButton } from "@heiso/core/components/primitives";
+import { LanguageSwitcher } from "@heiso/core/components/primitives/language-switcher";
+import { Card } from "@heiso/core/components/ui/card";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import type { Locale } from "@/i18n/config";
-import { defaultLocale, getLanguageInfo } from "@/i18n/config";
-import { getGeneralSettings, saveGeneralSetting, saveDefaultLanguage } from "../../_server/general.service";
-import { useTranslations } from 'next-intl';
+} from "@heiso/core/components/ui/form";
+import { Input } from "@heiso/core/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -27,20 +18,33 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@heiso/core/components/ui/select";
+import type { Locale } from "@heiso/core/i18n/config";
+import { defaultLocale, getLanguageInfo } from "@heiso/core/i18n/config";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+import {
+  getGeneralSettings,
+  saveDefaultLanguage,
+  saveGeneralSetting,
+} from "../../_server/general.service";
 
 export const SystemOauth = {
   none: {
-    name: 'None',
-    value: 'none',
+    name: "None",
+    value: "none",
   },
   google: {
-    name: 'Google SSO',
-    value: 'google',
+    name: "Google SSO",
+    value: "google",
   },
   microsoft: {
-    name: 'Azure SSO',
-    value: 'microsoft',
+    name: "Azure SSO",
+    value: "microsoft",
   },
   // github: {
   //   name: "Github SSO",
@@ -50,10 +54,10 @@ export const SystemOauth = {
 
 const settingsSchema = z.object({
   basic: z.object({
-    name: z.string().min(2, 'Site name must be at least 2 characters').max(32),
-    title: z.string().min(2, 'Site title must be at least 2 characters'),
-    base_url: z.string().min(1, 'Base URL must be at least 1 character'),
-    domain: z.string().min(1, 'Domain must be at least 1 character'),
+    name: z.string().min(2, "Site name must be at least 2 characters").max(32),
+    title: z.string().min(2, "Site title must be at least 2 characters"),
+    base_url: z.string().min(1, "Base URL must be at least 1 character"),
+    domain: z.string().min(1, "Domain must be at least 1 character"),
   }),
   branding: z.object({
     slogan: z.string().optional(),
@@ -73,7 +77,7 @@ type SettingsFormValues = z.infer<typeof settingsSchema>;
 export type SiteSetting = SettingsFormValues;
 
 export default function Setting() {
-  const t = useTranslations('dashboard.settings.site');
+  const t = useTranslations("dashboard.settings.site");
   const [isLoading, startTransition] = useTransition();
   const [generalSettings, setGeneralSettings] = useState<any>(null);
   const [currentLocale, setCurrentLocale] = useState<Locale | undefined>();
@@ -92,37 +96,42 @@ export default function Setting() {
   }, [fetchSettings]);
 
   // 將 DB 讀取到的 site 物件映射到表單預設值，容忍 snake/camel 命名差異
-  const mapSiteToFormValues = useCallback((s: any | null | undefined): SettingsFormValues => {
-    const basic = s?.basic ?? {};
-    const branding = s?.branding ?? {};
-    const assets = s?.assets ?? {};
-    const system_oauth = s?.system_oauth ?? 'none';
+  const mapSiteToFormValues = useCallback(
+    (s: any | null | undefined): SettingsFormValues => {
+      const basic = s?.basic ?? {};
+      const branding = s?.branding ?? {};
+      const assets = s?.assets ?? {};
+      const system_oauth = s?.system_oauth ?? "none";
 
-    return {
-      basic: {
-        name: basic?.name ?? '',
-        title: basic?.title ?? '',
-        base_url: basic?.base_url ?? basic?.baseUrl ?? '',
-        domain: basic?.domain ?? '',
-      },
-      branding: {
-        slogan: branding?.slogan ?? '',
-        organization: branding?.organization ?? '',
-        description: branding?.description ?? '',
-        copyright: branding?.copyright ?? '',
-      },
-      assets: {
-        favicon: assets?.favicon ?? '',
-        logo: assets?.logo ?? '',
-        ogImage: assets?.ogImage ?? '',
-      },
-      system_oauth,
-    };
-  }, []);
+      return {
+        basic: {
+          name: basic?.name ?? "",
+          title: basic?.title ?? "",
+          base_url: basic?.base_url ?? basic?.baseUrl ?? "",
+          domain: basic?.domain ?? "",
+        },
+        branding: {
+          slogan: branding?.slogan ?? "",
+          organization: branding?.organization ?? "",
+          description: branding?.description ?? "",
+          copyright: branding?.copyright ?? "",
+        },
+        assets: {
+          favicon: assets?.favicon ?? "",
+          logo: assets?.logo ?? "",
+          ogImage: assets?.ogImage ?? "",
+        },
+        system_oauth,
+      };
+    },
+    [],
+  );
 
   // 以 DB 的 general_settings 為主，顯示系統預設語言
   useEffect(() => {
-    const locale = (generalSettings as any)?.language?.default as Locale | undefined;
+    const locale = (generalSettings as any)?.language?.default as
+      | Locale
+      | undefined;
     setCurrentLocale(locale ?? defaultLocale);
   }, [generalSettings]);
 
@@ -141,7 +150,7 @@ export default function Setting() {
     startTransition(async () => {
       await saveGeneralSetting(data);
       await fetchSettings();
-      toast.success('General settings updated');
+      toast.success("General settings updated");
     });
   }
 
@@ -208,7 +217,7 @@ export default function Setting() {
                   name="basic.domain"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('basic.form.domain.label')}</FormLabel>
+                      <FormLabel>{t("basic.form.domain.label")}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -221,7 +230,7 @@ export default function Setting() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        {t('basic.form.system_oauth.label')}
+                        {t("basic.form.system_oauth.label")}
                       </FormLabel>
                       <FormControl>
                         <Select
@@ -255,7 +264,7 @@ export default function Setting() {
               loading={isLoading}
               disabled={isLoading}
             >
-              {t('actions.save.button')}
+              {t("actions.save.button")}
             </ActionButton>
           </div>
         </form>
@@ -265,18 +274,18 @@ export default function Setting() {
       <Card className="p-6">
         <div className="space-y-4">
           <div>
-            <h3 className="text-lg font-medium">{t('language.title')}</h3>
+            <h3 className="text-lg font-medium">{t("language.title")}</h3>
             <p className="text-sm text-muted-foreground">
-              {t('language.description')}
+              {t("language.description")}
             </p>
           </div>
           <div className="flex items-center justify-between">
             <div>
               <span className="text-sm font-medium">
-                {t('language.default')}
+                {t("language.default")}
               </span>
               <p className="text-xs text-muted-foreground">
-                {t('language.default_description')}
+                {t("language.default_description")}
               </p>
             </div>
             <div className="">
@@ -288,7 +297,7 @@ export default function Setting() {
                   startTransition(async () => {
                     await saveDefaultLanguage(value);
                     await fetchSettings();
-                    toast('Language settings saved');
+                    toast("Language settings saved");
                   });
                 }}
               >

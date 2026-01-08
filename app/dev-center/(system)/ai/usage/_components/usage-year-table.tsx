@@ -1,7 +1,17 @@
-'use client';
+"use client";
 
 import {
-  ColumnDef,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@heiso/core/components/ui/table";
+import { monthlyRange } from "@heiso/core/lib/format";
+import { cn } from "@heiso/core/lib/utils";
+import {
+  type ColumnDef,
   flexRender,
   getCoreRowModel,
   getFacetedMinMaxValues,
@@ -10,19 +20,9 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table';
-import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { monthlyRange } from '@/lib/format';
-import Link from 'next/link';
+} from "@tanstack/react-table";
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import Link from "next/link";
 
 type Usage = {
   date: string;
@@ -34,26 +34,26 @@ type Usage = {
 
 const columns: ColumnDef<Usage>[] = [
   {
-    header: 'Date',
-    accessorKey: 'date',
+    header: "Date",
+    accessorKey: "date",
     cell: ({ row }) => {
-      const range = monthlyRange(row.getValue('date'));
+      const range = monthlyRange(row.getValue("date"));
       return (
         <div className="flex gap-1">
           <Link
             href={`/billing/usage/tokens?range=${encodeURIComponent(
-              JSON.stringify(range)
+              JSON.stringify(range),
             )}`}
             className="hover:underline"
           >
-            {row.getValue('date')}
+            {row.getValue("date")}
           </Link>
         </div>
       );
     },
   },
   {
-    header: 'Input Tokens',
+    header: "Input Tokens",
     cell: ({ row }) => {
       return (
         <div className="">{row.original.inputTokens.toLocaleString()}</div>
@@ -61,7 +61,7 @@ const columns: ColumnDef<Usage>[] = [
     },
   },
   {
-    header: 'Output Tokens',
+    header: "Output Tokens",
     cell: ({ row }) => {
       return (
         <div className="">{row.original.outputTokens.toLocaleString()}</div>
@@ -69,11 +69,11 @@ const columns: ColumnDef<Usage>[] = [
     },
   },
   {
-    header: 'Fee',
+    header: "Fee",
     cell: ({ row }) => {
       return (
         <div className="">
-          {row.original.fee ? `$ ${row.original.fee.toLocaleString()}` : ' -- '}
+          {row.original.fee ? `$ ${row.original.fee.toLocaleString()}` : " -- "}
         </div>
       );
     },
@@ -111,25 +111,25 @@ export function UsageYearTable({ data }: { data: Usage[] }) {
                     key={header.id}
                     className="relative h-10 border-t select-none"
                     aria-sort={
-                      header.column.getIsSorted() === 'asc'
-                        ? 'ascending'
-                        : header.column.getIsSorted() === 'desc'
-                          ? 'descending'
-                          : 'none'
+                      header.column.getIsSorted() === "asc"
+                        ? "ascending"
+                        : header.column.getIsSorted() === "desc"
+                          ? "descending"
+                          : "none"
                     }
                   >
                     {header.isPlaceholder ? null : header.column.getCanSort() ? (
                       <div
                         className={cn(
                           header.column.getCanSort() &&
-                            'flex h-full cursor-pointer items-center justify-between gap-2 select-none'
+                            "flex h-full cursor-pointer items-center justify-between gap-2 select-none",
                         )}
                         onClick={header.column.getToggleSortingHandler()}
                         onKeyDown={(e) => {
                           // Enhanced keyboard handling for sorting
                           if (
                             header.column.getCanSort() &&
-                            (e.key === 'Enter' || e.key === ' ')
+                            (e.key === "Enter" || e.key === " ")
                           ) {
                             e.preventDefault();
                             header.column.getToggleSortingHandler()?.(e);
@@ -139,7 +139,7 @@ export function UsageYearTable({ data }: { data: Usage[] }) {
                       >
                         {flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                         {{
                           asc: (
@@ -163,7 +163,7 @@ export function UsageYearTable({ data }: { data: Usage[] }) {
                     ) : (
                       flexRender(
                         header.column.columnDef.header,
-                        header.getContext()
+                        header.getContext(),
                       )
                     )}
                   </TableHead>
@@ -177,7 +177,7 @@ export function UsageYearTable({ data }: { data: Usage[] }) {
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
-                data-state={row.getIsSelected() && 'selected'}
+                data-state={row.getIsSelected() && "selected"}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>

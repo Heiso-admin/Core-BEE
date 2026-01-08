@@ -1,9 +1,13 @@
 "use client";
 
+import {
+  Sidebar,
+  SidebarBody,
+  SidebarLink,
+} from "@heiso/core/components/primitives";
+import type { Navigation } from "@heiso/core/types/client";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Sidebar, SidebarBody, SidebarLink } from "@/components/primitives";
-import type { Navigation } from "@/types/client";
 
 export function DashboardSidebar({ navigation }: { navigation?: Navigation }) {
   const [open, setOpen] = useState(false);
@@ -11,7 +15,8 @@ export function DashboardSidebar({ navigation }: { navigation?: Navigation }) {
   if (!navigation) return null;
 
   // 分段最長匹配：只選擇分段數匹配最高的連結作為唯一 active
-  const normalize = (p: string) => (p.startsWith("/") ? p : `/${p}`).replace(/\/+$/, "");
+  const normalize = (p: string) =>
+    (p.startsWith("/") ? p : `/${p}`).replace(/\/+$/, "");
   const segs = (p: string) => normalize(p).split("/").filter(Boolean);
   const scoreMatch = (current: string, base: string) => {
     const cur = segs(current);
@@ -56,7 +61,10 @@ export function DashboardSidebar({ navigation }: { navigation?: Navigation }) {
                 : `link:${item.path ?? item.title ?? ""}`;
 
               return Array.isArray(item) ? (
-                <div key={groupKey} className="flex flex-col border-t pt-2 gap-1">
+                <div
+                  key={groupKey}
+                  className="flex flex-col border-t pt-2 gap-1"
+                >
                   {item.map((subItem) => (
                     <SidebarLink
                       key={`link:${navigation.rootPath}${subItem.path ?? subItem.title ?? ""}`}

@@ -1,28 +1,38 @@
 "use client";
 
+import { Button } from "@heiso/core/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@heiso/core/components/ui/form";
+import { Input } from "@heiso/core/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { requestPasswordReset } from "../_server/password.service";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import Header from "./header";
+import { requestPasswordReset } from "../_server/password.service";
 import AuthRedirectHint from "./authRedirectHint";
+import Header from "./header";
 
-export default function ForgotPasswordPage({ email }: { email?: string | null }) {
+export default function ForgotPasswordPage({
+  email,
+}: {
+  email?: string | null;
+}) {
   const t = useTranslations("auth.forgotPassword");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const forgotSchema = z
-    .object({
-      email: z.string().email({ message: t('error.invalidEmail') }),
-    })
+  const forgotSchema = z.object({
+    email: z.string().email({ message: t("error.invalidEmail") }),
+  });
 
   const form = useForm<z.infer<typeof forgotSchema>>({
     resolver: zodResolver(forgotSchema),
@@ -59,7 +69,14 @@ export default function ForgotPasswordPage({ email }: { email?: string | null })
 
   return (
     <>
-      <Header title={t("title")} description={isSubmitted ? t("success.description", { email: email || "email" }) : t("description")} />
+      <Header
+        title={t("title")}
+        description={
+          isSubmitted
+            ? t("success.description", { email: email || "email" })
+            : t("description")
+        }
+      />
       <Form {...form}>
         <form className="mt-8 space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <div className="space-y-4">

@@ -1,23 +1,23 @@
-import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
-import { ClientRedirect } from '@/components/primitives/redirect.client';
-import { auth } from '@/modules/auth/auth.config';
+import { ClientRedirect } from "@heiso/core/components/primitives/redirect.client";
+import { auth } from "@heiso/core/modules/auth/auth.config";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import {
   getMyMembership,
   getMyMenus,
   getUser,
-} from './_server/membership.service';
+} from "./_server/membership.service";
 
 export default async function DashboardPage() {
   const headerList = await headers();
-  const pathname = headerList.get('x-current-pathname');
+  const pathname = headerList.get("x-current-pathname");
 
   const session = await auth();
   if (!session?.user) return null;
 
   const me = await getUser();
   if (me?.mustChangePassword) {
-    redirect('/auth/change-password');
+    redirect("/auth/change-password");
   }
 
   const membership = await getMyMembership();
@@ -32,7 +32,7 @@ export default async function DashboardPage() {
   });
 
   if (
-    (pathname === '/dashboard' || pathname === '/dashboard/') &&
+    (pathname === "/dashboard" || pathname === "/dashboard/") &&
     menu?.length &&
     menu[0].path
   ) {

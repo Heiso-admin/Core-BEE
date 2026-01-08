@@ -1,8 +1,8 @@
 "use client";
 
+import type { TUser } from "@heiso/core/lib/db/schema";
 import { useSession } from "next-auth/react";
 import { createContext, useContext, useEffect, useState } from "react";
-import type { TUser } from "@/lib/db/schema";
 
 interface Membership {
   id: string;
@@ -29,7 +29,7 @@ const AccountContext = createContext<AccountContextType>({
   membership: null,
   isLoading: false,
   error: null,
-  updateAccount: () => { },
+  updateAccount: () => {},
 });
 
 export function AccountProvider({ children }: { children: React.ReactNode }) {
@@ -51,9 +51,9 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
         setIsLoading(true);
 
         // 改用 API 路由避免在 Client 端匯入 server/db 導致打包錯誤
-        const res = await fetch('/api/account/me', {
-          method: 'GET',
-          cache: 'no-store',
+        const res = await fetch("/api/account/me", {
+          method: "GET",
+          cache: "no-store",
         });
 
         if (!res.ok) {
@@ -73,7 +73,7 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
           setMembership(null);
         }
       } catch (err) {
-        setError(err instanceof Error ? err : new Error('Unknown error'));
+        setError(err instanceof Error ? err : new Error("Unknown error"));
       } finally {
         setIsLoading(false);
       }

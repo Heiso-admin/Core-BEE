@@ -1,10 +1,10 @@
 "use server";
 
-import { auth } from '@/modules/auth/auth.config';
-import { db } from "@/lib/db";
-import { menus, roleMenus } from '@/lib/db/schema';
-import { eq, and, isNull, asc } from 'drizzle-orm';
-import type { TMenu, TPermission } from '@/lib/db/schema';
+import { db } from "@heiso/core/lib/db";
+import type { TMenu, TPermission } from "@heiso/core/lib/db/schema";
+import { menus, roleMenus } from "@heiso/core/lib/db/schema";
+import { auth } from "@heiso/core/modules/auth/auth.config";
+import { and, asc, eq, isNull } from "drizzle-orm";
 
 // Types
 type AccessParams = {
@@ -13,7 +13,7 @@ type AccessParams = {
 };
 
 // Error messages
-const UNAUTHORIZED_ERROR = 'Unauthorized';
+const UNAUTHORIZED_ERROR = "Unauthorized";
 
 async function getUser() {
   const session = await auth();
@@ -94,7 +94,7 @@ async function getMyMenus({
 async function getMyOrgPermissions({
   fullAccess,
   roleId,
-}: AccessParams): Promise<Pick<TPermission, 'resource' | 'action'>[]> {
+}: AccessParams): Promise<Pick<TPermission, "resource" | "action">[]> {
   if (!roleId) return [];
 
   if (fullAccess) {

@@ -1,4 +1,4 @@
-import type { Locale } from "@/i18n/config";
+import type { Locale } from "@heiso/core/i18n/config";
 
 export async function getDashboardMessages(locale: Locale) {
   const dashboard = (await import(`../(dashboard)/_messages/${locale}.json`))
@@ -7,7 +7,6 @@ export async function getDashboardMessages(locale: Locale) {
   const permission = (
     await import(`../(dashboard)/(permission)/_messages/${locale}.json`)
   ).default;
-
 
   return {
     ...dashboard,

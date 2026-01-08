@@ -1,5 +1,5 @@
+import { TableSkeleton } from "@heiso/core/components/skeleton";
 import { Suspense } from "react";
-import { TableSkeleton } from "@/components/skeleton";
 import { RoleList } from "./_components/role-list";
 import { getMenus } from "./_server/menu.service";
 import {

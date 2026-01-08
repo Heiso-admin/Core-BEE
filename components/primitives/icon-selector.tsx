@@ -1,17 +1,17 @@
 "use client";
 
-import { Search } from "lucide-react";
-import { DynamicIcon, iconNames } from "lucide-react/dynamic";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@heiso/core/components/ui/button";
+import { Input } from "@heiso/core/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
+} from "@heiso/core/components/ui/popover";
+import { ScrollArea } from "@heiso/core/components/ui/scroll-area";
+import { cn } from "@heiso/core/lib/utils";
+import { Search } from "lucide-react";
+import { DynamicIcon, iconNames } from "lucide-react/dynamic";
+import { useCallback, useMemo, useState } from "react";
 
 export type IconName = (typeof iconNames)[number];
 
@@ -52,7 +52,7 @@ export function IconSelector({
   }, [searchTerm, maxIcons]);
 
   // Get selected icon display name
-  const selectedIconDisplay = useMemo(() => {
+  const _selectedIconDisplay = useMemo(() => {
     if (!value || !iconNames.includes(value as IconName)) return null;
     return (value as string).replace(/-/g, " ");
   }, [value]);

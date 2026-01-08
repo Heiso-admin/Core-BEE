@@ -1,3 +1,4 @@
+import { generateId } from "@heiso/core/lib/id-generator";
 import {
   index,
   integer,
@@ -11,7 +12,6 @@ import {
   createUpdateSchema,
 } from "drizzle-zod";
 import type zod from "zod";
-import { generateId } from "@/lib/id-generator";
 
 export const menus = pgTable(
   "menus",

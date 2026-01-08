@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@heiso/core/lib/utils";
 
 export default function LoadingSpinner({ className }: { className?: string }) {
   return (

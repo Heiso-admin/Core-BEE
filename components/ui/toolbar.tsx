@@ -1,19 +1,18 @@
 "use client";
 
+import {
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuSeparator,
+} from "@heiso/core/components/ui/dropdown-menu";
+import { Separator } from "@heiso/core/components/ui/separator";
+import { Tooltip, TooltipTrigger } from "@heiso/core/components/ui/tooltip";
+import { cn } from "@heiso/core/lib/utils";
 import * as ToolbarPrimitive from "@radix-ui/react-toolbar";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { cva, type VariantProps } from "class-variance-authority";
 import { ChevronDown } from "lucide-react";
 import * as React from "react";
-
-import {
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipTrigger } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
 
 export function Toolbar({
   className,

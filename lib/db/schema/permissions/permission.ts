@@ -1,18 +1,12 @@
-import {
-  index,
-  pgTable,
-  primaryKey,
-  timestamp,
-  varchar,
-} from "drizzle-orm/pg-core";
-import { relations } from 'drizzle-orm';
+import { generatePermissionId } from "@heiso/core/lib/id-generator";
+import { relations } from "drizzle-orm";
+import { index, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
 import {
   createInsertSchema,
   createSelectSchema,
   createUpdateSchema,
 } from "drizzle-zod";
 import type zod from "zod";
-import { generatePermissionId } from "@/lib/id-generator";
 import { menus } from "./menu";
 
 export const permissions = pgTable(

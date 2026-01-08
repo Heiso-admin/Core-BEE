@@ -2,8 +2,8 @@ import {
   getGeneralSettings,
   getSettings,
   getSiteSettings,
-} from '@/server/services/system/setting';
-import type { Settings } from '@/types/system';
+} from "@heiso/core/server/services/system/setting";
+import type { Settings } from "@heiso/core/types/system";
 
 export function settings(withoutKey: boolean = false): Promise<Settings> {
   return getSettings(withoutKey);

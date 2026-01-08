@@ -1,8 +1,14 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import type { SiteSetting } from '@/modules/dev-center/system/settings/site/page';
-import { getSiteSettings } from '@/server/site.service';
+import type { SiteSetting } from "@heiso/core/modules/dev-center/system/settings/site/page";
+import { getSiteSettings } from "@heiso/core/server/site.service";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 interface SiteContextType {
   site: SiteSetting | null;
@@ -15,10 +21,16 @@ const SiteContext = createContext<SiteContextType>({
   site: null,
   isLoading: false,
   error: null,
-  refresh: () => { },
+  refresh: () => {},
 });
 
-export function SiteProvider({ children, initialSite }: { children: React.ReactNode; initialSite?: SiteSetting | null }) {
+export function SiteProvider({
+  children,
+  initialSite,
+}: {
+  children: React.ReactNode;
+  initialSite?: SiteSetting | null;
+}) {
   const [site, setSite] = useState<SiteSetting | null>(initialSite ?? null);
   const [isLoading, setIsLoading] = useState(!initialSite);
   const [error, setError] = useState<Error | null>(null);
@@ -31,11 +43,11 @@ export function SiteProvider({ children, initialSite }: { children: React.ReactN
         setSite(data);
       }
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Unknown error'));
+      setError(err instanceof Error ? err : new Error("Unknown error"));
     } finally {
       setIsLoading(false);
     }
-  }, [setIsLoading, setSite, setError]);
+  }, []);
 
   useEffect(() => {
     if (!initialSite) {
@@ -57,7 +69,7 @@ export function SiteProvider({ children, initialSite }: { children: React.ReactN
 export function useSite() {
   const context = useContext(SiteContext);
   if (!context) {
-    throw new Error('useSite must be used within a SiteProvider');
+    throw new Error("useSite must be used within a SiteProvider");
   }
   return context;
 }

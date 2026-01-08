@@ -1,10 +1,9 @@
-"use client"
+"use client";
 
-import * as React from "react"
-
-import { cn } from "@/lib/utils"
-import { SortDirection } from "@tanstack/react-table"
-import { Icon } from "@iconify/react"
+import { cn } from "@heiso/core/lib/utils";
+import { Icon } from "@iconify/react";
+import type { SortDirection } from "@tanstack/react-table";
+import type * as React from "react";
 
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
@@ -18,7 +17,7 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
         {...props}
       />
     </div>
-  )
+  );
 }
 
 function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
@@ -28,9 +27,8 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
       className={cn("[&_tr]:border-b", className)}
       {...props}
     />
-  )
+  );
 }
-
 
 function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
   return (
@@ -39,7 +37,7 @@ function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
       className={cn("[&_tr:last-child]:border-0", className)}
       {...props}
     />
-  )
+  );
 }
 
 function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
@@ -48,11 +46,11 @@ function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
       data-slot="table-footer"
       className={cn(
         "bg-muted/50 border-t font-medium [&>tr]:last:border-b-0",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
 function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
@@ -61,22 +59,22 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
       data-slot="table-row"
       className={cn(
         "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
 function TableHead({
   className,
-  isSortable = false, 
+  isSortable = false,
   sorted = false,
   isCenter,
   handleSort,
   children,
   ...props
-}: React.ComponentProps<"th"> & { 
+}: React.ComponentProps<"th"> & {
   isSortable?: boolean;
   sorted?: false | SortDirection;
   isCenter?: boolean; //標題置中
@@ -93,13 +91,33 @@ function TableHead({
       onClick={isSortable ? handleSort : undefined}
       {...props}
     >
-      <div className={cn("flex items-center gap-1", isCenter && "w-full justify-center")}>
+      <div
+        className={cn(
+          "flex items-center gap-1",
+          isCenter && "w-full justify-center",
+        )}
+      >
         {children}
         {isSortable && (
           <span className="inline-flex items-center text-muted-foreground ml-1.5">
-            {sorted === "asc" && <Icon icon="fa-solid:sort-up" className="size-3 text-muted-foreground" />}
-            {sorted === "desc" && <Icon icon="fa-solid:sort-down" className="size-3 text-muted-foreground" />}
-            {!sorted && <Icon icon="fa-solid:sort" className="size-3 text-muted-foreground" />}
+            {sorted === "asc" && (
+              <Icon
+                icon="fa-solid:sort-up"
+                className="size-3 text-muted-foreground"
+              />
+            )}
+            {sorted === "desc" && (
+              <Icon
+                icon="fa-solid:sort-down"
+                className="size-3 text-muted-foreground"
+              />
+            )}
+            {!sorted && (
+              <Icon
+                icon="fa-solid:sort"
+                className="size-3 text-muted-foreground"
+              />
+            )}
           </span>
         )}
       </div>
@@ -107,18 +125,17 @@ function TableHead({
   );
 }
 
-
 function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   return (
     <td
       data-slot="table-cell"
       className={cn(
         "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
 function TableCaption({
@@ -131,7 +148,7 @@ function TableCaption({
       className={cn("text-muted-foreground mt-4 text-sm", className)}
       {...props}
     />
-  )
+  );
 }
 
 export {
@@ -143,4 +160,4 @@ export {
   TableRow,
   TableCell,
   TableCaption,
-}
+};

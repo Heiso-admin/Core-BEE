@@ -1,17 +1,17 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { useTranslations } from 'next-intl';
-import { signOut } from 'next-auth/react';
+import { Button } from "@heiso/core/components/ui/button";
+import { signOut } from "next-auth/react";
+import { useTranslations } from "next-intl";
 
 export function InvalidJoinToken() {
-  const t = useTranslations('auth.join');
+  const t = useTranslations("auth.join");
   return (
     <>
       <p>{t("error.expiredLink")}</p>
       <Button
         onClick={() => {
-          signOut({ callbackUrl: "/login" })
+          signOut({ callbackUrl: "/login" });
         }}
       >
         {t("action.reLogin")}

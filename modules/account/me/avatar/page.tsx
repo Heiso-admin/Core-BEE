@@ -1,11 +1,12 @@
 "use client";
 
-import { Shuffle, Upload, User } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@heiso/core/components/ui/avatar";
+import { Button } from "@heiso/core/components/ui/button";
+import { Card, CardContent } from "@heiso/core/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -14,17 +15,25 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@heiso/core/components/ui/dialog";
+import { Input } from "@heiso/core/components/ui/input";
+import { Label } from "@heiso/core/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from "@heiso/core/components/ui/select";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@heiso/core/components/ui/tabs";
+import { Shuffle, Upload, User } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 const avatarOptions = {
   avatarStyle: ["Circle", "Transparent"],

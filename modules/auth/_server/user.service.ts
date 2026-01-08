@@ -1,16 +1,16 @@
-'use server';
+"use server";
 
-import { and, eq } from 'drizzle-orm';
-import { db } from '@/lib/db';
+import { sendInvite } from "@heiso/core/app/dashboard/(dashboard)/(permission)/team/_server/team.service";
+import { db } from "@heiso/core/lib/db";
 import {
   members,
   type TUserUpdate,
   users as usersTable,
-} from '@/lib/db/schema';
-import { hashPassword } from '@/lib/hash';
-import { generateInviteToken } from '@/lib/id-generator';
-import { sendInvite } from '@/app/dashboard/(dashboard)/(permission)/team/_server/team.service';
-import { hasAnyUser } from '@/server/services/auth';
+} from "@heiso/core/lib/db/schema";
+import { hashPassword } from "@heiso/core/lib/hash";
+import { generateInviteToken } from "@heiso/core/lib/id-generator";
+import { hasAnyUser } from "@heiso/core/server/services/auth";
+import { and, eq } from "drizzle-orm";
 
 export async function getUsers() {
   const users = await db.query.users.findMany({
@@ -45,7 +45,7 @@ export async function getLoginMethod(email: string) {
       and(eq(t.email, email), isNull(t.deletedAt)),
   });
   // role: owner
-  if (membership?.isOwner) return 'both';
+  if (membership?.isOwner) return "both";
 
   // role: other
   const roleId = membership?.roleId ?? null;
@@ -161,7 +161,7 @@ export async function resendInviteByEmail(email: string) {
   });
 
   if (!member) {
-    throw new Error('Member not found');
+    throw new Error("Member not found");
   }
 
   const inviteToken = generateInviteToken();
@@ -227,7 +227,7 @@ export async function ensureInviteTokenSilently(email: string) {
       .set({
         inviteToken,
         tokenExpiredAt: inviteTokenExpiresAt,
-        status: 'invited',
+        status: "invited",
       })
       .where(eq(members.id, member.id))
       .returning({ inviteToken: members.inviteToken });
@@ -243,7 +243,7 @@ export async function ensureInviteTokenSilently(email: string) {
  */
 export async function ensureMemberReviewOnFirstLogin(
   email: string,
-  userId?: string
+  _userId?: string,
 ) {
   // 嘗試建立/刷新 invite token（若無 token 也不阻擋狀態更新）
   await ensureInviteTokenSilently(email);
@@ -259,7 +259,7 @@ export async function ensureMemberReviewOnFirstLogin(
     .update(members)
     .set({
       userId: member.userId ?? undefined,
-      status: 'joined',
+      status: "joined",
       updatedAt: new Date(),
     })
     .where(eq(members.id, member.id))

@@ -34,7 +34,7 @@ export function RandomAvatar({ name }: { name: string }) {
       role="img"
       aria-label={`Avatar for ${name}`}
     >
-      <title>Avatar for {name}</title>
+      <title>{`Avatar for ${name}`}</title>
       <defs>
         <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" style={{ stopColor: color1, stopOpacity: 1 }} />

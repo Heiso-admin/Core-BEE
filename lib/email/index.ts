@@ -1,11 +1,10 @@
+import config, { settings } from "@heiso/core/config";
+import ApprovedEmail from "@heiso/core/emails/approved";
+import { ForgotPasswordEmail } from "@heiso/core/emails/forgot-password";
+import InviteOwnerEmail from "@heiso/core/emails/invite-owner";
+import { InviteUserEmail } from "@heiso/core/emails/invite-user";
+import { getSiteSettings } from "@heiso/core/server/services/system/setting";
 import { Resend } from "resend";
-import config from "@/config";
-import { settings } from "@/config";
-import { ForgotPasswordEmail } from "@/emails/forgot-password";
-import { InviteUserEmail } from "@/emails/invite-user";
-import { getSiteSettings } from "@/server/services/system/setting";
-import InviteOwnerEmail from "@/emails/invite-owner";
-import ApprovedEmail from "@/emails/approved";
 
 const { RESEND_API_KEY } = await settings();
 const resend = new Resend(RESEND_API_KEY as string);
@@ -45,20 +44,23 @@ export async function sendInviteUserEmail({
   const { BASE_HOST } = await settings();
 
   const siteLogo = site?.assets?.logo || "/images/logo.png";
-  const derivedLogoUrl = (typeof siteLogo === "string" && siteLogo.startsWith("http")
-    ? siteLogo
-    : `${BASE_HOST}${siteLogo}`);
+  const derivedLogoUrl =
+    typeof siteLogo === "string" && siteLogo.startsWith("http")
+      ? siteLogo
+      : `${BASE_HOST}${siteLogo}`;
   const orgName = site?.branding?.organization || config?.site?.organization;
-  const subject = `Verify Your Email Address for ${orgName}`
+  const subject = `Verify Your Email Address for ${orgName}`;
   const inviteLink = `${BASE_HOST}/join?token=${inviteToken}`;
 
   const emailType = {
     logoUrl: derivedLogoUrl,
     orgName,
     inviteLink,
-  }
+  };
 
-  const email = owner ? InviteOwnerEmail(emailType) : InviteUserEmail(emailType);
+  const email = owner
+    ? InviteOwnerEmail(emailType)
+    : InviteUserEmail(emailType);
   return await sendEmail({ from, to, subject, body: email });
 }
 
@@ -78,9 +80,10 @@ export async function sendForgotPasswordEmail({
   const site: any = await getSiteSettings();
   const { BASE_HOST } = await settings();
   const siteLogo = site?.assets?.logo || "/images/logo.png";
-  const derivedLogoUrl = (typeof siteLogo === "string" && siteLogo.startsWith("http")
-    ? siteLogo
-    : `${BASE_HOST}${siteLogo}`);
+  const derivedLogoUrl =
+    typeof siteLogo === "string" && siteLogo.startsWith("http")
+      ? siteLogo
+      : `${BASE_HOST}${siteLogo}`;
   const orgName = site?.branding?.organization || config?.site?.organization;
 
   const email = ForgotPasswordEmail({
@@ -107,9 +110,10 @@ export async function sendApprovedEmail({
   const site: any = await getSiteSettings();
   const { BASE_HOST } = await settings();
   const siteLogo = site?.assets?.logo || "/images/logo.png";
-  const derivedLogoUrl = (typeof siteLogo === "string" && siteLogo.startsWith("http")
-    ? siteLogo
-    : `${BASE_HOST}${siteLogo}`);
+  const derivedLogoUrl =
+    typeof siteLogo === "string" && siteLogo.startsWith("http")
+      ? siteLogo
+      : `${BASE_HOST}${siteLogo}`;
   const orgName = site?.branding?.organization || config?.site?.organization;
 
   const email = ApprovedEmail({

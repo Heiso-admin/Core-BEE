@@ -1,24 +1,15 @@
 "use client";
 
+import { Avatar, DataPagination } from "@heiso/core/components/primitives";
+import { CaptionTotal } from "@heiso/core/components/shared/caption-total";
+import { Badge } from "@heiso/core/components/ui/badge";
+import { Button } from "@heiso/core/components/ui/button";
+import { RadioGroup } from "@heiso/core/components/ui/radio-group";
 import {
-  type ColumnDef,
-  type SortingState,
-  type PaginationState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  getPaginationRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { MoreHorizontal, Plus } from "lucide-react";
-import { useSession } from "next-auth/react";
-import { useTranslations } from "next-intl";
-import { useCallback, useMemo, useState } from "react";
-import { ProtectedArea } from "@/components/permission/protected-area";
-import { Avatar, DataPagination } from "@/components/primitives";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+  RadioTagGroupItem,
+  RadioTagLabel,
+} from "@heiso/core/components/ui/radio-tag";
+import { SearchInput } from "@heiso/core/components/ui/search-input";
 import {
   Table,
   TableBody,
@@ -26,24 +17,34 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@heiso/core/components/ui/table";
+import { readableDate } from "@heiso/core/lib/utils/format";
+import { useAccount } from "@heiso/core/providers/account";
+import {
+  type ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  type PaginationState,
+  type SortingState,
+  useReactTable,
+} from "@tanstack/react-table";
+import { MoreHorizontal, Plus } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
+import { useCallback, useMemo, useState } from "react";
 import type { Member } from "../_server/team.service";
 import { InviteMember } from "./invite-member";
 import { MemberActions } from "./member-actions";
-import { SearchInput } from "@/components/ui/search-input";
-import { CaptionTotal } from '@/components/shared/caption-total';
-import { readableDate } from "@/lib/utils/format";
-import { RadioGroup } from '@/components/ui/radio-group';
-import { RadioTagGroupItem, RadioTagLabel } from '@/components/ui/radio-tag';
-import { capitalize } from 'lodash';
-import { useAccount } from '@/providers/account';
 
 export enum MemberStatus {
-  Invited = "invited",        // 已邀請/待驗證
-  Joined = "joined",          // 已加入/啟用
-  Review = "review",          // 待審核
-  Disabled = "suspend",      // 停用/已拒絕
-  Owner = "Owner",            // 擁有者
+  Invited = "invited", // 已邀請/待驗證
+  Joined = "joined", // 已加入/啟用
+  Review = "review", // 待審核
+  Disabled = "suspend", // 停用/已拒絕
+  Owner = "Owner", // 擁有者
 }
 
 type FilterStatus = "all" | MemberStatus;
@@ -55,7 +56,7 @@ export interface Role {
 }
 
 const filterStatuses: FilterStatus[] = [
-  'all',
+  "all",
   MemberStatus.Review,
   MemberStatus.Joined,
   MemberStatus.Disabled,
@@ -64,12 +65,12 @@ const filterStatuses: FilterStatus[] = [
 export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
   const { data: session } = useSession();
   const { isDeveloper } = useAccount();
-  const [filtering, setFiltering] = useState('');
-  const te = useTranslations('dashboard.permission.team');
-  const t = useTranslations('dashboard.permission.team.members');
+  const [filtering, setFiltering] = useState("");
+  const te = useTranslations("dashboard.permission.team");
+  const t = useTranslations("dashboard.permission.team.members");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filterStatus, setFilterStatus] = useState<FilterStatus>(
-    filterStatuses[0]
+    filterStatuses[0],
   );
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -85,40 +86,40 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
     (
       member: string | null,
       tokenExpiredAt?: Date | null,
-      loginMethod?: string | null
+      loginMethod?: string | null,
     ) => {
       switch (member) {
         case MemberStatus.Invited:
-          return loginMethod !== 'sso' ? (
+          return loginMethod !== "sso" ? (
             tokenExpiredAt && tokenExpiredAt.getTime() > Date.now() ? (
-              <Badge status="blue">{t('statuses.invited')}</Badge>
+              <Badge status="blue">{t("statuses.invited")}</Badge>
             ) : (
-              <Badge status="red">{t('statuses.expired')}</Badge>
+              <Badge status="red">{t("statuses.expired")}</Badge>
             )
           ) : (
-            <Badge status="blue">{t('statuses.invited')}</Badge>
+            <Badge status="blue">{t("statuses.invited")}</Badge>
           );
         case MemberStatus.Disabled:
-          return <Badge status="hidden">{t('statuses.declined')}</Badge>;
+          return <Badge status="hidden">{t("statuses.declined")}</Badge>;
         case MemberStatus.Joined:
-          return <Badge status="green">{t('statuses.joined')}</Badge>;
+          return <Badge status="green">{t("statuses.joined")}</Badge>;
         case MemberStatus.Review:
-          return <Badge status="yellow">{t('statuses.review')}</Badge>;
+          return <Badge status="yellow">{t("statuses.review")}</Badge>;
         default:
           return member;
       }
     },
-    [t]
+    [t],
   );
 
   const columns: ColumnDef<Member>[] = [
     {
-      header: t('user'),
+      header: t("user"),
       accessorFn: (row) => {
-        const userName = row.user?.name || row.email.split('@')[0];
+        const userName = row.user?.name || row.email.split("@")[0];
         return `${userName} ${row.email}`;
       },
-      sortingFn: 'basic',
+      sortingFn: "basic",
       cell: ({ row }) => {
         const { user } = row.original;
         const isYou = user?.id === session?.user.id;
@@ -130,18 +131,18 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
         if (row.isOwner) {
           return MemberStatus.Owner;
         }
-        return row.role?.name || 'No Role';
+        return row.role?.name || "No Role";
       },
       sortingFn: (rowA, rowB) => {
         const aValue = rowA.original.isOwner
-          ? '0_Owner'
-          : `1_${rowA.original.role?.name || 'ZZZ_No_Role'}`;
+          ? "0_Owner"
+          : `1_${rowA.original.role?.name || "ZZZ_No_Role"}`;
         const bValue = rowB.original.isOwner
-          ? '0_Owner'
-          : `1_${rowB.original.role?.name || 'ZZZ_No_Role'}`;
+          ? "0_Owner"
+          : `1_${rowB.original.role?.name || "ZZZ_No_Role"}`;
         return aValue.localeCompare(bValue);
       },
-      header: t('role'),
+      header: t("role"),
       cell: ({ row }) => {
         const isOwner = row.original.isOwner;
         const isRole =
@@ -152,14 +153,14 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
       },
     },
     {
-      header: t('status'),
-      accessorKey: 'status',
-      sortingFn: 'basic',
+      header: t("status"),
+      accessorKey: "status",
+      sortingFn: "basic",
       cell: ({ row }) => {
         return showStatus(
           row.original.status,
           row.original.tokenExpiredAt,
-          row.original.role?.loginMethod
+          row.original.role?.loginMethod,
         );
       },
     },
@@ -171,24 +172,24 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
     //   cell: ({ getValue }) => capitalize(String(getValue())),
     // },
     {
-      header: t('createdDate'),
-      accessorKey: 'createdAt',
-      sortingFn: 'datetime',
+      header: t("createdDate"),
+      accessorKey: "createdAt",
+      sortingFn: "datetime",
       cell: ({ row }) => readableDate(row.original.createdAt),
     },
     {
-      header: t('updatedDate'),
-      id: 'lastLoginAt',
+      header: t("updatedDate"),
+      id: "lastLoginAt",
       accessorFn: (row) => row.user?.lastLoginAt ?? null,
-      sortingFn: 'datetime',
+      sortingFn: "datetime",
       cell: ({ getValue }) => {
         const value = getValue() as Date | string | null;
-        return value ? readableDate(value) : '-';
+        return value ? readableDate(value) : "-";
       },
     },
     {
-      header: t('actions'),
-      id: 'actions',
+      header: t("actions"),
+      id: "actions",
       cell: ({ row }) => {
         const isYou = row.original.user?.id === session?.user.id;
         return (
@@ -202,7 +203,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
               >
                 <Button variant="ghost" size="icon" className="h-8 w-8">
                   <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">{t('more')}</span>
+                  <span className="sr-only">{t("more")}</span>
                 </Button>
               </MemberActions>
               {/* </ProtectedArea> */}
@@ -215,8 +216,8 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
 
   const columnFilters = useMemo(
     () =>
-      filterStatus === 'all' ? [] : [{ id: 'status', value: filterStatus }],
-    [filterStatus]
+      filterStatus === "all" ? [] : [{ id: "status", value: filterStatus }],
+    [filterStatus],
   );
 
   const table = useReactTable({
@@ -224,7 +225,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
     columns,
     state: {
       sorting,
-      globalFilter: filtering ?? '',
+      globalFilter: filtering ?? "",
       columnFilters,
       pagination,
     },
@@ -243,19 +244,19 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
   return (
     <div className="container mx-auto pt-4 pr-4 h-full flex flex-col">
       <div className="flex items-center justify-between mb-4">
-        <CaptionTotal title={te('title')} total={totalRows} />
+        <CaptionTotal title={te("title")} total={totalRows} />
         <div className="flex gap-2">
           <SearchInput
             value={filtering}
             onChange={(e) => setFiltering(e.target.value)}
-            placeholder={t('searchMembers')}
+            placeholder={t("searchMembers")}
           />
           {/* <ProtectedArea resource={'member'} action={'edit'}> */}
           {/* <AddMember roles={AllRoles} /> */}
           {/* {!isDeveloper && ( */}
           <InviteMember userName={userName} roles={roles}>
             <Button>
-              <Plus className="h-4 w-4" /> {t('invite')}
+              <Plus className="h-4 w-4" /> {t("invite")}
             </Button>
           </InviteMember>
           {/* )} */}
@@ -268,7 +269,7 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
         onValueChange={(value) => setFilterStatus(value as FilterStatus)}
       >
         <span className="pl-0.5 text-sm text-text-secondary">
-          {t('filter.title')}:
+          {t("filter.title")}:
         </span>
         {filterStatuses.map((item) => (
           <div className="flex items-center gap-3" key={item}>
@@ -296,14 +297,14 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
                           ? header.column.getToggleSortingHandler()
                           : undefined
                       }
-                      isCenter={header.column.id === 'actions'}
+                      isCenter={header.column.id === "actions"}
                     >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                     </TableHead>
                   );
                 })}
@@ -336,7 +337,13 @@ export function MemberList({ data, roles }: { data: Member[]; roles: Role[] }) {
   );
 }
 
-export const MemberUser = ({ member, isYou }: { member: Member, isYou: boolean }) => {
+export const MemberUser = ({
+  member,
+  isYou,
+}: {
+  member: Member;
+  isYou: boolean;
+}) => {
   const t = useTranslations("dashboard.permission.team.members");
   const { email, user } = member;
   const userName = user?.name || email.split("@")[0];
@@ -352,13 +359,10 @@ export const MemberUser = ({ member, isYou }: { member: Member, isYou: boolean }
         <span className="text-neutral">{email}</span>
       </div>
       {isYou && (
-        <Badge
-          variant="outline"
-          className="text-xs text-muted-foreground"
-        >
+        <Badge variant="outline" className="text-xs text-muted-foreground">
           {t("you")}
         </Badge>
       )}
     </div>
   );
-}
+};

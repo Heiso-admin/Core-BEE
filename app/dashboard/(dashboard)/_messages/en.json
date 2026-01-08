@@ -1,42 +1,42 @@
 {
-	"nav": {
-		"Overview": "Overview",
-		"OverAll": "Overview",
-		"Navigation": "Navigation",
-		"Page": "Page tab",
-		"Article": "Article",
-		"Category": "Category",
-		"Institution": "Institution",
-		"Booking": "Booking",
-		"Media Asset": "Media Asset",
-		"Faq": "Faq",
-		"Rotator": "Rotator",
-		"Team": "Team",
-		"Role": "Role",
-		"Settings": "Settings",
-		"Site-SEO": "Site-SEO",
-		"HomePage": "HP Builder"
-	},
-	"overview": {
-		"navigation": "Navigation",
-		"pages": "Page tabs",
-		"article": "Article",
-		"articles": "Articles",
-		"institution": "Institution",
-		"institutions": "Institutions",
-		"booking": "Booking",
-		"bookings": "Bookings",
-		"file": "File",
-		"files": "Files",
-		"faq": "Faq",
-		"noActivity": "No activity"
-	},
-	"userMenu": {
-		"dashboard": "Dashboard",
-		"accountSettings": "Account Settings",
-		"theme": "Theme",
-		"homePage": "Home Page",
-		"logOut": "Log out",
-		"developer": "Dev Center"
-	}
+  "nav": {
+    "Overview": "Overview",
+    "OverAll": "Overview",
+    "Navigation": "Navigation",
+    "Page": "Page tab",
+    "Article": "Article",
+    "Category": "Category",
+    "Institution": "Institution",
+    "Booking": "Booking",
+    "Media Asset": "Media Asset",
+    "Faq": "Faq",
+    "Rotator": "Rotator",
+    "Team": "Team",
+    "Role": "Role",
+    "Settings": "Settings",
+    "Site-SEO": "Site-SEO",
+    "HomePage": "HP Builder"
+  },
+  "overview": {
+    "navigation": "Navigation",
+    "pages": "Page tabs",
+    "article": "Article",
+    "articles": "Articles",
+    "institution": "Institution",
+    "institutions": "Institutions",
+    "booking": "Booking",
+    "bookings": "Bookings",
+    "file": "File",
+    "files": "Files",
+    "faq": "Faq",
+    "noActivity": "No activity"
+  },
+  "userMenu": {
+    "dashboard": "Dashboard",
+    "accountSettings": "Account Settings",
+    "theme": "Theme",
+    "homePage": "Home Page",
+    "logOut": "Log out",
+    "developer": "Dev Center"
+  }
 }

@@ -1,13 +1,16 @@
-import { redirect } from 'next/navigation';
-import { auth } from '@/modules/auth/auth.config';
-import { Login } from '../_components';
-import { hasAnyUser } from '@/server/services/auth';
-import { getGeneralSettings, getSiteSettings } from '@/server/services/system/setting';
-import config from '@/config';
+import config from "@heiso/core/config";
+import { auth } from "@heiso/core/modules/auth/auth.config";
+import { hasAnyUser } from "@heiso/core/server/services/auth";
 import {
-  getMember,
+  getGeneralSettings,
+  getSiteSettings,
+} from "@heiso/core/server/services/system/setting";
+import { redirect } from "next/navigation";
+import { Login } from "../_components";
+import {
   ensureMemberReviewOnFirstLogin,
-} from '../_server/user.service';
+  getMember,
+} from "../_server/user.service";
 
 export type OAuthDataType = {
   userId: string | null;
@@ -26,8 +29,8 @@ export default async function Page({
     (site as any)?.branding?.organization || config?.site?.organization;
 
   const session = await auth(); // oAuth 登入
-  let email = '';
-  let oAuthData: OAuthDataType | undefined = undefined;
+  let email = "";
+  let oAuthData: OAuthDataType | undefined;
 
   // 使用 oAuth 有可能會遇到第三方不願意給 email
   const { relogin, error } = (await searchParams) ?? {};
@@ -38,7 +41,7 @@ export default async function Page({
 
     // 開發人員直接進 Dashboard
     if (session.user.isDeveloper) {
-      redirect('/dashboard');
+      redirect("/dashboard");
     }
 
     const member = await getMember({ id: userId, email: sessionEmail });
@@ -46,8 +49,8 @@ export default async function Page({
     if (member) {
       oAuthData = member;
       // 已加入：直接進 Dashboard
-      if (member.status === 'joined') {
-        redirect('/dashboard');
+      if (member.status === "joined") {
+        redirect("/dashboard");
       }
 
       // 非 joined：如無錯誤參數才導向 Pending；有錯誤時留在 login 顯示錯誤

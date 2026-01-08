@@ -1,13 +1,13 @@
 "use client";
 
-import { ActionButton } from "@/components/primitives";
-import { Button } from "@/components/ui/button";
+import { ActionButton } from "@heiso/core/components/primitives";
+import { Button } from "@heiso/core/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@heiso/core/components/ui/dialog";
 import { useTranslations } from "next-intl";
 
 type Props = {
@@ -30,7 +30,7 @@ export const ConfirmRemoveMember = ({
   onConfirm,
 }: Props) => {
   const t = useTranslations("dashboard.permission.message.remove");
-  return (  
+  return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
@@ -43,7 +43,9 @@ export const ConfirmRemoveMember = ({
             {t("content", { email: data.email })}
           </p>
           <div className="flex justify-end gap-4">
-            <Button variant="outline" onClick={onClose}>{t("cancel")}</Button>
+            <Button variant="outline" onClick={onClose}>
+              {t("cancel")}
+            </Button>
             <ActionButton
               variant="destructive"
               onClick={async () => {

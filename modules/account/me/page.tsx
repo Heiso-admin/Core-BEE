@@ -1,12 +1,10 @@
 "use client";
 
-import { CheckIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useTheme } from "next-themes";
-import { useEffect, useState, useTransition } from "react";
-import { toast } from "sonner";
-import { ActionButton, AvatarUploader } from "@/components/primitives";
-import { Button } from "@/components/ui/button";
+import {
+  ActionButton,
+  AvatarUploader,
+} from "@heiso/core/components/primitives";
+import { Button } from "@heiso/core/components/ui/button";
 import {
   Card,
   CardContent,
@@ -14,10 +12,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { useAccount } from "@/providers/account";
-import { useSite } from "@/providers/site";
+} from "@heiso/core/components/ui/card";
+import { Input } from "@heiso/core/components/ui/input";
+import { useAccount } from "@heiso/core/providers/account";
+import { useSite } from "@heiso/core/providers/site";
+import { CheckIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useTheme } from "next-themes";
+import { useEffect, useState, useTransition } from "react";
+import { toast } from "sonner";
 import { updateAvatar, updateNickname } from "./_server/profile.service";
 
 export default function Preferences() {
@@ -199,9 +202,9 @@ function UserId() {
   );
 }
 
-function PhoneNumber() {
+function _PhoneNumber() {
   // const { account } = useAccount();
-  const t = useTranslations("account.me");
+  const _t = useTranslations("account.me");
   return (
     <Card x-chunk="dashboard-07-chunk-2">
       <CardHeader>
@@ -393,7 +396,7 @@ function Appearance() {
   );
 }
 
-function DeleteAccount() {
+function _DeleteAccount() {
   const t = useTranslations("account.me");
   return (
     <Card x-chunk="dashboard-09-chunk-2" className="border-destructive/15 pb-0">

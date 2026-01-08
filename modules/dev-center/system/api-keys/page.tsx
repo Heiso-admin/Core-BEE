@@ -1,16 +1,16 @@
-import { Suspense } from 'react';
-import { getTranslations } from 'next-intl/server';
-import { getApiKeysList } from './_server/api-keys.service';
-import { ApiKeysList } from './_components/api-keys-list';
-import { CreateApiKeyButton } from './_components/create-api-key-button';
+import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
+import { ApiKeysList } from "./_components/api-keys-list";
+import { CreateApiKeyButton } from "./_components/create-api-key-button";
+import { getApiKeysList } from "./_server/api-keys.service";
 
 function ApiKeysLoadingSkeleton() {
   const skeletonItems = [
-    { id: 'skeleton-1' },
-    { id: 'skeleton-2' },
-    { id: 'skeleton-3' },
-    { id: 'skeleton-4' },
-    { id: 'skeleton-5' },
+    { id: "skeleton-1" },
+    { id: "skeleton-2" },
+    { id: "skeleton-3" },
+    { id: "skeleton-4" },
+    { id: "skeleton-5" },
   ];
 
   return (
@@ -35,14 +35,14 @@ function ApiKeysLoadingSkeleton() {
 }
 
 export default async function ApiKeysPage() {
-  const t = await getTranslations('apiKeys');
+  const t = await getTranslations("apiKeys");
 
   return (
     <div className="mx-auto max-w-6xl py-6 space-y-6 px-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">{t('title')}</h1>
-          <p className="text-sm text-gray-600">{t('description')}</p>
+          <h1 className="text-2xl font-semibold text-gray-900">{t("title")}</h1>
+          <p className="text-sm text-gray-600">{t("description")}</p>
         </div>
         <CreateApiKeyButton />
       </div>

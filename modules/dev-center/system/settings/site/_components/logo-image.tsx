@@ -1,8 +1,8 @@
 "use client";
 
-import { Plus } from "lucide-react";
 // import { useState } from 'react';
-import { ImageUploader } from "@/components/primitives";
+import { ImageUploader } from "@heiso/core/components/primitives";
+import { Plus } from "lucide-react";
 
 export function LogoImage({
   value,

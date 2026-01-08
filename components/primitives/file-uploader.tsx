@@ -1,5 +1,11 @@
 "use client";
 
+import { useControllableState } from "@heiso/core/components/hooks/use-controllable-state";
+import { Button } from "@heiso/core/components/ui/button";
+import { Progress } from "@heiso/core/components/ui/progress";
+import { ScrollArea } from "@heiso/core/components/ui/scroll-area";
+import { formatBytes } from "@heiso/core/lib/helper";
+import { cn } from "@heiso/core/lib/utils";
 import { FileText, Upload, X } from "lucide-react";
 import Image from "next/image";
 import * as React from "react";
@@ -8,12 +14,6 @@ import Dropzone, {
   type FileRejection,
 } from "react-dropzone";
 import { toast } from "sonner";
-import { useControllableState } from "@/components/hooks/use-controllable-state";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { formatBytes } from "@/lib/helper";
-import { cn } from "@/lib/utils";
 
 interface FileUploaderProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
@@ -182,7 +182,7 @@ export function FileUploader(props: FileUploaderProps) {
       });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [files]);
 
   const isDisabled = disabled || (files?.length ?? 0) >= maxFileCount;
 
@@ -424,7 +424,7 @@ export function IconUploader({
   function onRemove() {
     if (!value) return;
     // 如果是臨時 URL，釋放記憶體
-    if (previewUrl && previewUrl.startsWith("blob:")) {
+    if (previewUrl?.startsWith("blob:")) {
       URL.revokeObjectURL(previewUrl);
     }
     setPreviewUrl(undefined);

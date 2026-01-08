@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@heiso/core/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,12 +8,19 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+} from "@heiso/core/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@heiso/core/components/ui/select";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
 import type { Member } from "../_server/team.service";
 import type { Role } from "./member-list";
 import { MemberStatus, MemberUser } from "./member-list";
-import { useTranslations } from "next-intl";
 
 type Props = {
   open: boolean;
@@ -37,12 +43,17 @@ export const ConfirmReviewMember = ({
 }: Props) => {
   const t = useTranslations("dashboard.permission.message.review");
   const labelT = useTranslations("dashboard.permission.team.invite");
-  const [selectedRoleId, setSelectedRoleId] = useState<string>(member.isOwner ? MemberStatus.Owner : member.role?.id || "");
+  const [selectedRoleId, setSelectedRoleId] = useState<string>(
+    member.isOwner ? MemberStatus.Owner : member.role?.id || "",
+  );
 
   const handleApprove = () => {
     if (!selectedRoleId) return;
     const isOwner = selectedRoleId === MemberStatus.Owner;
-    const roleId = selectedRoleId === MemberStatus.Owner ? null : roles.find((r) => r.id === selectedRoleId)?.id || null;
+    const roleId =
+      selectedRoleId === MemberStatus.Owner
+        ? null
+        : roles.find((r) => r.id === selectedRoleId)?.id || null;
     onApprove(roleId, isOwner);
   };
 

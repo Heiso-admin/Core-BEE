@@ -1,11 +1,14 @@
 "use server";
 
-import { signIn, signOut } from '@/modules/auth/auth.config';
-import { db } from "@/lib/db";
-import { users as usersTable, members } from "@/lib/db/schema";
-import { hashPassword } from "@/lib/hash";
-import { verifyPassword as verifyPasswordHash } from "@/lib/hash";
-import { and, eq, isNull, sql } from "drizzle-orm";
+import { db } from "@heiso/core/lib/db";
+import { members, users as usersTable } from "@heiso/core/lib/db/schema";
+import {
+  hashPassword,
+  verifyPassword as verifyPasswordHash,
+} from "@heiso/core/lib/hash";
+import { signIn, signOut } from "@heiso/core/modules/auth/auth.config";
+
+import { and, eq, isNull } from "drizzle-orm";
 
 export async function login(username: string, password: string) {
   try {
@@ -21,7 +24,10 @@ export async function login(username: string, password: string) {
       .where(eq(usersTable.email, username));
 
     return true;
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.message === "NEXT_REDIRECT" || error?.digest?.startsWith("NEXT_REDIRECT")) {
+      throw error;
+    }
     console.error("Error during login:", error);
     return false; // Return false to indicate login failure
   }
@@ -31,7 +37,10 @@ export async function login(username: string, password: string) {
  * Verify user password without creating a session.
  * Returns true if the email exists and the password matches.
  */
-export async function verifyPasswordOnly(email: string, password: string): Promise<boolean> {
+export async function verifyPasswordOnly(
+  email: string,
+  password: string,
+): Promise<boolean> {
   try {
     const user = await db.query.users.findFirst({
       where: (t, { eq }) => eq(t.email, email),
@@ -99,8 +108,8 @@ export async function signup(input: {
 
       // const nextStatus = total === 1 ? "joined" : "review";
       // 不需要審查，直接加入
-      const nextStatus = 'joined';
-      console.log('nextStatus: ', nextStatus);
+      const nextStatus = "joined";
+      console.log("nextStatus: ", nextStatus);
       await db
         .update(members)
         .set({ userId: user.id, status: nextStatus, updatedAt: new Date() })
@@ -136,8 +145,8 @@ export async function hasAnyUser() {
 
 export const oAuthLogin = async (provider: string) => {
   await signIn(provider);
-}
+};
 
 export const oAuthLogout = async () => {
   await signOut({ redirectTo: "/" });
-}
+};

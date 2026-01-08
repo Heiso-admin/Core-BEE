@@ -1,15 +1,13 @@
-import { getTranslations } from 'next-intl/server';
-import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
-import { Suspense } from 'react';
-import { auth } from '@/modules/auth/auth.config';
-import { Layout } from '@/components/primitives/layout';
-import type { UserAvatarMenuItem } from '@/components/primitives/user-avatar';
-import { LayoutSkeleton } from '@/components/skeleton';
-import { findMenus, groupMenuItems } from '@/lib/tree';
-import { PermissionProvider } from '@/providers/permission';
-import type { Navigation } from '@/types/client';
-import { getMyMembership, getMyMenus } from './_server/membership.service';
+import { Layout } from "@heiso/core/components/primitives/layout";
+import type { UserAvatarMenuItem } from "@heiso/core/components/primitives/user-avatar";
+import { LayoutSkeleton } from "@heiso/core/components/skeleton";
+import { findMenus, groupMenuItems } from "@heiso/core/lib/tree";
+import { auth } from "@heiso/core/modules/auth/auth.config";
+import { PermissionProvider } from "@heiso/core/providers/permission";
+import type { Navigation } from "@heiso/core/types/client";
+import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
+import { getMyMembership, getMyMenus } from "./_server/membership.service";
 
 interface OrgLayoutProps {
   children: React.ReactNode;
@@ -47,8 +45,8 @@ async function OrgLayoutWrap({ children }: { children: React.ReactNode }) {
     membership.role?.fullAccess === true;
 
   // Get translations
-  const t = await getTranslations('dashboard.userMenu');
-  const tn = await getTranslations('dashboard.nav');
+  const t = await getTranslations("dashboard.userMenu");
+  const tn = await getTranslations("dashboard.nav");
 
   // Build navigation menu
   const menu = await getMyMenus({
@@ -56,7 +54,7 @@ async function OrgLayoutWrap({ children }: { children: React.ReactNode }) {
     roleId: membership?.roleId,
   });
 
-  console.log('menu: ', menu);
+  console.log("menu: ", menu);
 
   const navigation: Navigation = {
     rootPath: `/dashboard`,
@@ -78,8 +76,8 @@ async function OrgLayoutWrap({ children }: { children: React.ReactNode }) {
 
   const userAvatarMenu = [
     {
-      id: 'user',
-      type: 'Group',
+      id: "user",
+      type: "Group",
       group: [
         // {
         //   id: 'dashboard',
@@ -88,10 +86,10 @@ async function OrgLayoutWrap({ children }: { children: React.ReactNode }) {
         //   type: 'Link',
         // },
         {
-          id: 'accountSettings',
-          text: t('accountSettings'),
-          href: '/account/me',
-          type: 'Link',
+          id: "accountSettings",
+          text: t("accountSettings"),
+          href: "/account/me",
+          type: "Link",
         },
       ],
     },
@@ -105,8 +103,8 @@ async function OrgLayoutWrap({ children }: { children: React.ReactNode }) {
     //   type: 'Theme',
     // },
     {
-      id: 'separator2',
-      type: 'Separator',
+      id: "separator2",
+      type: "Separator",
     },
     // {
     //   id: 'homePage',
@@ -115,18 +113,18 @@ async function OrgLayoutWrap({ children }: { children: React.ReactNode }) {
     //   type: 'Link',
     // },
     {
-      id: 'logOut',
-      text: t('logOut'),
-      type: 'LogOut',
+      id: "logOut",
+      text: t("logOut"),
+      type: "LogOut",
     },
   ] satisfies UserAvatarMenuItem[];
 
   if (membership.isDeveloper) {
     userAvatarMenu[0].group?.push({
-      id: 'dev-center',
-      text: t('developer'),
-      href: '/dev-center',
-      type: 'Link',
+      id: "dev-center",
+      text: t("developer"),
+      href: "/dev-center",
+      type: "Link",
     });
   }
 

@@ -1,4 +1,4 @@
-import { SubNav } from "@/components/primitives";
+import { SubNav } from "@heiso/core/components/primitives";
 
 export default function PermissionLayout({
   children,
@@ -7,15 +7,15 @@ export default function PermissionLayout({
 }) {
   const subNavGroups = [
     {
-      title: 'SETTING',
+      title: "SETTING",
       items: [
         // {
         //   title: 'Site SEO',
         //   href: '/site',
         // },
         {
-          title: 'General setting',
-          href: '/general',
+          title: "General setting",
+          href: "/general",
         },
       ],
     },
@@ -24,7 +24,7 @@ export default function PermissionLayout({
   return (
     <div className="flex w-full h-full">
       <SubNav
-        rootPath={'/dev-center/settings'}
+        rootPath={"/dev-center/settings"}
         title="Settings"
         groups={subNavGroups}
         className="flex-none"

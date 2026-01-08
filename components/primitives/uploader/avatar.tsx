@@ -1,14 +1,14 @@
 "use client";
 
+import { RandomAvatar } from "@heiso/core/components/primitives";
+import { Avatar, AvatarImage } from "@heiso/core/components/ui/avatar";
+import { Button } from "@heiso/core/components/ui/button";
+import { Progress } from "@heiso/core/components/ui/progress";
+import { useUploadFile } from "@heiso/core/hooks/use-upload-file";
+import { cn } from "@heiso/core/lib/utils";
 import { X } from "lucide-react";
 import * as React from "react";
 import { useFilePicker } from "use-file-picker";
-import { RandomAvatar } from "@/components/primitives";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { useUploadFile } from "@/hooks/use-upload-file";
-import { cn } from "@/lib/utils";
 
 type AvatarUploaderProps = {
   onUploadComplete?: (file: {

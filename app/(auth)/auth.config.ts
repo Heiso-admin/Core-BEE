@@ -1,1 +1,1 @@
-export { auth, signIn, signOut } from '@/modules/auth/auth.config';
+export { auth, signIn, signOut } from "@heiso/core/modules/auth/auth.config";

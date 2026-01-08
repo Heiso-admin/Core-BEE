@@ -1,42 +1,42 @@
 {
-	"nav": {
-		"Overview": "概覽",
-		"OverAll": "概覽",
-		"Navigation": "選單",
-		"Page": "分頁",
-		"Article": "文章",
-		"Category": "分類",
-		"Institution": "機構",
-		"Booking": "預約",
-		"Media Asset": "媒體資產",
-		"Faq": "常見問題",
-		"Rotator": "輪播",
-		"Team": "團隊",
-		"Role": "角色",
-		"Settings": "設定",
-		"Site-SEO": "網站 SEO",
-		"HomePage": "首頁上稿工具"
-	},
-	"overview": {
-		"navigation": "選單",
-		"pages": "分頁",
-		"article": "文章",
-		"articles": "文章",
-		"institution": "機構",
-		"institutions": "機構",
-		"booking": "預約",
-		"bookings": "預約",
-		"file": "檔案",
-		"files": "檔案",
-		"faq": "常見問題",
-		"noActivity": "無活動"
-	},
-	"userMenu": {
-		"dashboard": "儀表板",
-		"accountSettings": "帳戶設定",
-		"theme": "主題",
-		"homePage": "首頁",
-		"logOut": "登出",
-		"developer": "開發者"
-	}
+  "nav": {
+    "Overview": "概覽",
+    "OverAll": "概覽",
+    "Navigation": "選單",
+    "Page": "分頁",
+    "Article": "文章",
+    "Category": "分類",
+    "Institution": "機構",
+    "Booking": "預約",
+    "Media Asset": "媒體資產",
+    "Faq": "常見問題",
+    "Rotator": "輪播",
+    "Team": "團隊",
+    "Role": "角色",
+    "Settings": "設定",
+    "Site-SEO": "網站 SEO",
+    "HomePage": "首頁上稿工具"
+  },
+  "overview": {
+    "navigation": "選單",
+    "pages": "分頁",
+    "article": "文章",
+    "articles": "文章",
+    "institution": "機構",
+    "institutions": "機構",
+    "booking": "預約",
+    "bookings": "預約",
+    "file": "檔案",
+    "files": "檔案",
+    "faq": "常見問題",
+    "noActivity": "無活動"
+  },
+  "userMenu": {
+    "dashboard": "儀表板",
+    "accountSettings": "帳戶設定",
+    "theme": "主題",
+    "homePage": "首頁",
+    "logOut": "登出",
+    "developer": "開發者"
+  }
 }

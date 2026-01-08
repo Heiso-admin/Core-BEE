@@ -1,4 +1,4 @@
-import { SubNav } from "@/components/primitives";
+import { SubNav } from "@heiso/core/components/primitives";
 
 export default function PermissionLayout({
   children,
@@ -24,7 +24,7 @@ export default function PermissionLayout({
   return (
     <div className="flex w-full h-full">
       <SubNav
-        rootPath={'/dev-center/menu'}
+        rootPath={"/dev-center/menu"}
         title="Menu"
         groups={subNavGroups}
         className="flex-none"

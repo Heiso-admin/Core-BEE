@@ -1,19 +1,18 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import type React from "react";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { IconSelector } from "@/components/primitives";
-import { Button } from "@/components/ui/button";
+import { IconSelector } from "@heiso/core/components/primitives";
+import { Button } from "@heiso/core/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@heiso/core/components/ui/form";
+import { Input } from "@heiso/core/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import type { MenuItem } from ".";
 
 const formSchema = z.object({

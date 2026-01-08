@@ -1,1 +1,1 @@
-export { default } from '@/modules/dev-center/system/settings/page';
+export { default } from "@heiso/core/modules/dev-center/system/settings/page";

@@ -1,13 +1,13 @@
 "use client";
 
+import { Toaster } from "@heiso/core/components/ui/sonner";
+import type { SiteSetting } from "@heiso/core/modules/dev-center/system/settings/site/page";
+import { AccountProvider } from "@heiso/core/providers/account";
+import { SettingProvider } from "@heiso/core/providers/settings";
+import { SiteProvider } from "@heiso/core/providers/site";
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
 import { useEffect } from "react";
-import { Toaster } from "@/components/ui/sonner";
-import { AccountProvider } from "@/providers/account";
-import { SiteProvider } from "@/providers/site";
-import { SettingProvider } from '@/providers/settings';
-import type { SiteSetting } from '@/modules/dev-center/system/settings/site/page';
 
 export default function ClientBody({
   children,
@@ -19,7 +19,7 @@ export default function ClientBody({
   // Remove any extension-added classes during hydration
   useEffect(() => {
     // This runs only on the client after hydration
-    document.body.className = 'antialiased';
+    document.body.className = "antialiased";
   }, []);
 
   return (
