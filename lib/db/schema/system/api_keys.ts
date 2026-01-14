@@ -4,55 +4,89 @@ import {
   boolean,
   integer,
   json,
+  pgPolicy,
   pgTable,
   text,
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { tenantSchema } from "../utils";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 import { users } from "../auth";
 
 // API Keys table
-export const apiKeys = pgTable("api_keys", {
-  id: varchar("id", { length: 20 })
-    .primaryKey()
-    .$defaultFn(() => generateId()),
-  userId: varchar("user_id", { length: 20 })
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  name: varchar("name", { length: 100 }).notNull(),
-  key: varchar("key", { length: 255 }).notNull().unique(),
-  rateLimit: json("rate_limit").default({ requests: 100, window: 60 }),
-  description: text("description"),
-  isActive: boolean("is_active").default(true).notNull(),
-  lastUsedAt: timestamp("last_used_at"),
-  expiresAt: timestamp("expires_at"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  deletedAt: timestamp("deleted_at"),
-});
+export const apiKeys = pgTable(
+  "api_keys",
+  {
+    id: varchar("id", { length: 20 })
+      .primaryKey()
+      .$defaultFn(() => generateId()),
+    ...tenantSchema,
+    userId: varchar("user_id", { length: 20 })
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    name: varchar("name", { length: 100 }).notNull(),
+    key: varchar("key", { length: 255 }).notNull().unique(),
+    rateLimit: json("rate_limit").default({ requests: 100, window: 60 }),
+    description: text("description"),
+    isActive: boolean("is_active").default(true).notNull(),
+    lastUsedAt: timestamp("last_used_at"),
+    expiresAt: timestamp("expires_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (t) => ({
+    policy: pgPolicy("tenant_isolation", {
+      for: "all",
+      to: "public",
+      using: sql`${t.tenantId} = current_setting('app.current_tenant_id')`,
+      withCheck: sql`${t.tenantId} = current_setting('app.current_tenant_id')`,
+    }),
+  }),
+);
 
 // API Key access log table
-export const apiKeyAccessLogs = pgTable("api_key_access_logs", {
-  id: varchar("id", { length: 20 })
-    .primaryKey()
-    .$defaultFn(() => generateId()),
-  apiKeyId: varchar("api_key_id", { length: 20 })
-    .notNull()
-    .references(() => apiKeys.id, { onDelete: "cascade" }),
-  userId: varchar("user_id", { length: 20 })
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  endpoint: varchar("endpoint", { length: 255 }).notNull(),
-  method: varchar("method", { length: 10 }).notNull(),
-  statusCode: integer("status_code").notNull(),
-  responseTime: integer("response_time").notNull(), // in milliseconds
-  ipAddress: varchar("ip_address", { length: 45 }),
-  userAgent: text("user_agent"),
-  errorMessage: text("error_message"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+export const apiKeyAccessLogs = pgTable(
+  "api_key_access_logs",
+  {
+    id: varchar("id", { length: 20 })
+      .primaryKey()
+      .$defaultFn(() => generateId()),
+    ...tenantSchema,
+    apiKeyId: varchar("api_key_id", { length: 20 })
+      .notNull()
+      .references(() => apiKeys.id, { onDelete: "cascade" }),
+    userId: varchar("user_id", { length: 20 })
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    endpoint: varchar("endpoint", { length: 255 }).notNull(),
+    method: varchar("method", { length: 10 }).notNull(),
+    statusCode: integer("status_code").notNull(),
+    responseTime: integer("response_time").notNull(), // in milliseconds
+    ipAddress: varchar("ip_address", { length: 45 }),
+    userAgent: text("user_agent"),
+    errorMessage: text("error_message"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    policy: pgPolicy("tenant_isolation", {
+      for: "all",
+      to: "public",
+      using: sql`${t.tenantId} = current_setting('app.current_tenant_id')`,
+      withCheck: sql`${t.tenantId} = current_setting('app.current_tenant_id')`,
+    }),
+  }),
+);
+
+export const enableSystemApiKeyRls = sql`
+  ALTER TABLE "api_keys" ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE "api_keys" FORCE ROW LEVEL SECURITY;
+  ALTER TABLE "api_key_access_logs" ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE "api_key_access_logs" FORCE ROW LEVEL SECURITY;
+`;
 
 // Relations for access logs
 export const apiKeyAccessLogsRelations = relations(

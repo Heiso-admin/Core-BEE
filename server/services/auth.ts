@@ -1,14 +1,17 @@
 "use server";
 
 import { db } from "@heiso/core/lib/db";
+import { ensureTenantContext } from "@heiso/core/lib/db/rls";
 import { members, users as usersTable } from "@heiso/core/lib/db/schema";
 import {
   hashPassword,
   verifyPassword as verifyPasswordHash,
 } from "@heiso/core/lib/hash";
 import { signIn, signOut } from "@heiso/core/modules/auth/auth.config";
+import { ensureMemberReviewOnFirstLogin } from "@heiso/core/modules/auth/_server/user.service";
 
 import { and, eq, isNull } from "drizzle-orm";
+import { headers } from "next/headers";
 
 export async function login(username: string, password: string) {
   try {
@@ -64,6 +67,10 @@ export async function signup(input: {
   const name = input.name?.trim();
   const email = input.email.trim();
   const { password } = input;
+
+  // Ensure RLS context for Server Action
+  await ensureTenantContext();
+
   try {
     // 先檢查是否已存在 user（可能由邀請流程預先建立）
     const existing = await db.query.users.findFirst({
@@ -110,10 +117,14 @@ export async function signup(input: {
       // 不需要審查，直接加入
       const nextStatus = "joined";
       console.log("nextStatus: ", nextStatus);
-      await db
-        .update(members)
-        .set({ userId: user.id, status: nextStatus, updatedAt: new Date() })
-        .where(and(eq(members.email, email), isNull(members.deletedAt)));
+
+      const headerList = await headers();
+      const tenantId = headerList.get("x-tenant-id") || undefined;
+
+      console.log("[DEBUG] Signup: extracted tenantId from headers:", tenantId);
+
+      // Ensure member exists and bind user (Auto-create first owner if needed)
+      await ensureMemberReviewOnFirstLogin(email, user.id, tenantId);
     }
     return user;
   } catch (error) {

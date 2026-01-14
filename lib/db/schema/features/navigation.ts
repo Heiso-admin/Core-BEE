@@ -4,10 +4,13 @@ import {
   boolean,
   index,
   integer,
+  pgPolicy,
   pgTable,
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { tenantSchema } from "../utils";
 import {
   createInsertSchema,
   createSelectSchema,
@@ -21,6 +24,7 @@ export const navigations = pgTable(
     id: varchar("id", { length: 20 })
       .primaryKey()
       .$default(() => generateNavigationId()),
+    ...tenantSchema,
     userId: varchar("user_id", { length: 20 }).notNull(),
     slug: varchar("slug", { length: 100 }).notNull(),
     name: varchar("name", { length: 100 }).notNull(),
@@ -31,12 +35,18 @@ export const navigations = pgTable(
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
-  (table) => [
-    index("navigations_slug_idx").on(table.slug),
+  (table) => ({
+    navigationsSlugIdx: index("navigations_slug_idx").on(table.slug),
     // Index for faster tree structure queries
     // Index for soft delete queries
-    index("navigations_deleted_at_idx").on(table.deletedAt),
-  ],
+    navigationsDeletedAtIdx: index("navigations_deleted_at_idx").on(table.deletedAt),
+    policy: pgPolicy("tenant_isolation", {
+      for: "all",
+      to: "public",
+      using: sql`${table.tenantId} = current_setting('app.current_tenant_id')`,
+      withCheck: sql`${table.tenantId} = current_setting('app.current_tenant_id')`,
+    }),
+  }),
 );
 
 export const navigationMenus = pgTable(
@@ -45,6 +55,7 @@ export const navigationMenus = pgTable(
     id: varchar("id", { length: 20 })
       .primaryKey()
       .$default(() => generateId()),
+    ...tenantSchema,
     navigationId: varchar("navigation_id", { length: 20 }).notNull(),
     slug: varchar("slug", { length: 100 }).notNull(),
     group: varchar("group", { length: 100 }),
@@ -61,14 +72,27 @@ export const navigationMenus = pgTable(
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
-  (table) => [
-    index("navigation_menus_slug_idx").on(table.slug),
+  (table) => ({
+    navigationMenusSlugIdx: index("navigation_menus_slug_idx").on(table.slug),
     // Index for faster tree structure queries
-    index("navigation_menus_parent_id_idx").on(table.parentId),
+    navigationMenusParentIdIdx: index("navigation_menus_parent_id_idx").on(table.parentId),
     // Index for soft delete queries
-    index("navigation_menus_deleted_at_idx").on(table.deletedAt),
-  ],
+    navigationMenusDeletedAtIdx: index("navigation_menus_deleted_at_idx").on(table.deletedAt),
+    policy: pgPolicy("tenant_isolation", {
+      for: "all",
+      to: "public",
+      using: sql`${table.tenantId} = current_setting('app.current_tenant_id')`,
+      withCheck: sql`${table.tenantId} = current_setting('app.current_tenant_id')`,
+    }),
+  }),
 );
+
+export const enableNavigationRls = sql`
+  ALTER TABLE "navigations" ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE "navigations" FORCE ROW LEVEL SECURITY;
+  ALTER TABLE "navigation_menus" ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE "navigation_menus" FORCE ROW LEVEL SECURITY;
+`;
 
 export const navigationsRelations = relations(navigations, ({ many }) => ({
   menus: many(navigationMenus),

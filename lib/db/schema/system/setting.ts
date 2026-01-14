@@ -2,10 +2,14 @@ import {
   boolean,
   index,
   json,
+  pgPolicy,
   pgTable,
+  primaryKey,
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { tenantSchema } from "../utils";
 import {
   createInsertSchema,
   createSelectSchema,
@@ -16,7 +20,8 @@ import type zod from "zod";
 export const settings = pgTable(
   "settings",
   {
-    name: varchar("name", { length: 100 }).primaryKey(),
+    ...tenantSchema,
+    name: varchar("name", { length: 100 }).notNull(),
     value: json("value").notNull(),
     isKey: boolean("is_key").notNull().default(false),
     description: varchar("description", { length: 255 }),
@@ -25,12 +30,24 @@ export const settings = pgTable(
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
-  (t) => [
-    index("settings_group_idx").on(t.group),
-    index("settings_is_key_idx").on(t.isKey),
-    index("settings_deleted_at_idx").on(t.deletedAt),
-  ],
+  (t) => ({
+    pk: primaryKey({ columns: [t.tenantId, t.name] }),
+    settingsGroupIdx: index("settings_group_idx").on(t.group),
+    settingsIsKeyIdx: index("settings_is_key_idx").on(t.isKey),
+    settingsDeletedAtIdx: index("settings_deleted_at_idx").on(t.deletedAt),
+    policy: pgPolicy("tenant_isolation", {
+      for: "all",
+      to: "public",
+      using: sql`${t.tenantId} = current_setting('app.current_tenant_id')`,
+      withCheck: sql`${t.tenantId} = current_setting('app.current_tenant_id')`,
+    }),
+  }),
 );
+
+export const enableSettingRls = sql`
+  ALTER TABLE "settings" ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE "settings" FORCE ROW LEVEL SECURITY;
+`;
 
 export const settingsSchema = createSelectSchema(settings);
 export const settingsInsertSchema = createInsertSchema(settings);

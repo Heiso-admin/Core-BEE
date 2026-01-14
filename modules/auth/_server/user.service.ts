@@ -10,7 +10,7 @@ import {
 import { hashPassword } from "@heiso/core/lib/hash";
 import { generateInviteToken } from "@heiso/core/lib/id-generator";
 import { hasAnyUser } from "@heiso/core/server/services/auth";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 
 export async function getUsers() {
   const users = await db.query.users.findMany({
@@ -191,9 +191,28 @@ export async function resendInviteByEmail(email: string) {
  * - If member exists but token missing/expired, refresh the token.
  * - Returns the invite token.
  */
-export async function ensureInviteTokenSilently(email: string) {
-  const member = await db.query.members.findFirst({
-    where: (t, { eq, isNull }) => and(eq(t.email, email), isNull(t.deletedAt)),
+export async function ensureInviteTokenSilently(email: string, tx?: any, tenantId?: string) {
+  const d = tx || db;
+
+  // Resolve tenantId if not provided (fallback to RLS context context query, but explicit is better)
+  if (!tenantId) {
+    const tenantIdResult = await d.execute(sql`SELECT current_setting('app.current_tenant_id', true) as tenant_id`);
+    tenantId = tenantIdResult[0]?.tenant_id as string;
+  }
+
+  if (!tenantId) {
+    console.error("[DEBUG] Tenant context missing in ensureInviteTokenSilently!");
+    throw new Error("Tenant context missing during member creation");
+  }
+
+  // Explicitly filter by tenantId (critical for Superuser which ignores RLS)
+  const member = await d.query.members.findFirst({
+    where: (t: any, { and, eq, isNull }: any) =>
+      and(
+        eq(t.email, email),
+        isNull(t.deletedAt),
+        eq(t.tenantId, tenantId)
+      ),
   });
 
   const now = Date.now();
@@ -206,10 +225,21 @@ export async function ensureInviteTokenSilently(email: string) {
     const inviteToken = generateInviteToken();
     const inviteTokenExpiresAt = new Date(now + 1000 * 60 * 60 * 24 * 7); // 7 days
 
-    const isOwner = !(await hasAnyUser());
-    const [created] = await db
+    // Check if this is the first member of the tenant (Explicit filter)
+    const existingMember = await d.query.members.findFirst({
+      columns: { id: true },
+      where: (t: any, { eq, isNull }: any) =>
+        and(eq(t.tenantId, tenantId), isNull(t.deletedAt)),
+    });
+    const isOwner = !existingMember;
+
+    console.log("[DEBUG] ensureInviteTokenSilently: Current Tenant:", tenantId);
+    console.log("[DEBUG] Attempting to insert member with tenantId:", tenantId, "isOwner:", isOwner);
+
+    const [created] = await d
       .insert(members)
       .values({
+        tenantId,
         isOwner,
         email,
         inviteToken,
@@ -222,7 +252,7 @@ export async function ensureInviteTokenSilently(email: string) {
   if (needsNewToken) {
     const inviteToken = generateInviteToken();
     const inviteTokenExpiresAt = new Date(now + 1000 * 60 * 60 * 24 * 7);
-    const [updated] = await db
+    const [updated] = await d
       .update(members)
       .set({
         inviteToken,
@@ -243,33 +273,103 @@ export async function ensureInviteTokenSilently(email: string) {
  */
 export async function ensureMemberReviewOnFirstLogin(
   email: string,
-  _userId?: string,
+  userId?: string,
+  tenantId?: string,
 ) {
-  // 嘗試建立/刷新 invite token（若無 token 也不阻擋狀態更新）
-  await ensureInviteTokenSilently(email);
+  return await db.transaction(async (tx) => {
+    console.log("[DEBUG] ensureMemberReviewOnFirstLogin: Transaction started. TenantId:", tenantId);
 
-  const member = await db.query.members.findFirst({
-    where: (t, { and, eq, isNull }) =>
-      and(eq(t.email, email), isNull(t.deletedAt)),
-  });
+    // 1. Set RLS Context inside Transaction
+    if (tenantId) {
+      await tx.execute(
+        sql`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`,
+      );
+      console.log("[DEBUG] RLS Context Set for tenant:", tenantId);
+    } else {
+      console.warn("[DEBUG] No tenantId provided to ensureMemberReviewOnFirstLogin!");
+    }
 
-  if (!member) return null;
+    // 2. Ensure Token (Pass tx, tenantId)
+    const token = await ensureInviteTokenSilently(email, tx, tenantId);
+    console.log("[DEBUG] ensureInviteTokenSilently result:", token);
 
-  const result = await db
-    .update(members)
-    .set({
-      userId: member.userId ?? undefined,
-      status: "joined",
-      updatedAt: new Date(),
-    })
-    .where(eq(members.id, member.id))
-    .returning({
-      userId: members.userId,
-      status: members.status,
-      email: members.email,
+    // Check if tenant has any owner (Explicit Filter)
+    const existingOwner = await tx.query.members.findFirst({
+      where: (t, { and, eq, isNull }) =>
+        and(
+          eq(t.isOwner, true),
+          isNull(t.deletedAt),
+          eq(t.tenantId, tenantId!) // Explicitly filter by tenantId
+        ),
+      columns: { id: true },
     });
 
-  return result ?? null;
+    const shouldBeOwner = !existingOwner;
+
+    // 3. Update Status (Use tx, explicit filter)
+    const member = await tx.query.members.findFirst({
+      where: (t, { and, eq, isNull }) =>
+        and(
+          eq(t.email, email),
+          isNull(t.deletedAt),
+          eq(t.tenantId, tenantId!) // Explicitly filter
+        ),
+    });
+
+    if (!member) return null;
+
+    const [updated] = await tx
+      .update(members)
+      .set({
+        userId: member.userId ?? userId,
+        status: "joined",
+        isOwner: member.isOwner || shouldBeOwner,
+        updatedAt: new Date(),
+      })
+      .where(eq(members.id, member.id))
+      .returning({
+        userId: members.userId,
+        status: members.status,
+        email: members.email,
+        isOwner: members.isOwner,
+      });
+
+    return updated ?? null;
+  });
+}
+
+/**
+ * Check if the current tenant has any owner.
+ * Used for detecting initial tenant state.
+ */
+export async function checkTenantHasOwner(tenantId?: string) {
+  if (!tenantId) {
+    // If no tenantId explicitly passed, try to get it from current setting (unlikely to work in detached server action without context)
+    const tenantIdResult = await db.execute(sql`SELECT current_setting('app.current_tenant_id', true) as tenant_id`);
+    tenantId = tenantIdResult[0]?.tenant_id as string;
+  }
+
+  if (!tenantId) return false;
+
+  const result = await db.transaction(async (tx) => {
+    // Set RLS context for this check
+    await tx.execute(
+      sql`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`,
+    );
+
+    const owner = await tx.query.members.findFirst({
+      where: (t, { and, eq, isNull }) =>
+        and(
+          eq(t.isOwner, true),
+          isNull(t.deletedAt),
+          eq(t.tenantId, tenantId!) // Explicitly filter
+        ),
+      columns: { id: true, tenantId: true },
+    });
+    return !!owner;
+  });
+
+  return result;
 }
 
 // export async function findRoles(userId: string) {

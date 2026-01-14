@@ -6,6 +6,7 @@ import {
   pgTable,
   timestamp,
   varchar,
+  pgPolicy,
 } from "drizzle-orm/pg-core";
 import {
   createInsertSchema,
@@ -13,6 +14,7 @@ import {
   createUpdateSchema,
 } from "drizzle-zod";
 import type zod from "zod";
+import { sql } from "drizzle-orm";
 import { users } from "../auth";
 import { roles } from "./role";
 
@@ -22,6 +24,7 @@ export const members = pgTable(
     id: varchar("id", { length: 20 })
       .primaryKey()
       .$default(() => generateId()),
+    tenantId: varchar("tenant_id", { length: 50 }).notNull(), // Shared DB RLS discriminator
     userId: varchar("user_id", { length: 20 }).references(() => users.id),
     email: varchar("email", { length: 100 }).notNull(),
     roleId: varchar("role_id", { length: 20 }).references(() => roles.id),
@@ -35,13 +38,15 @@ export const members = pgTable(
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
   (table) => [
-    // Index for foreign key lookups
-    index("org_members_user_id_idx").on(table.userId),
-    index("org_members_role_id_idx").on(table.roleId),
-    // Index for email lookups
-    index("org_members_email_idx").on(table.email),
     // Index for invite token lookups
     index("org_members_invite_token_idx").on(table.inviteToken),
+    // RLS Policy
+    pgPolicy("tenant_isolation", {
+      for: "all",
+      to: "public",
+      using: sql`tenant_id = current_setting('app.current_tenant_id', true)`,
+      withCheck: sql`tenant_id = current_setting('app.current_tenant_id', true)`,
+    }),
   ],
 );
 

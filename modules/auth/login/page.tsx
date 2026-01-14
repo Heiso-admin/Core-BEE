@@ -7,7 +7,9 @@ import {
 } from "@heiso/core/server/services/system/setting";
 import { redirect } from "next/navigation";
 import { Login } from "../_components";
+import InitializeTenantForm from "../_components/InitializeTenantForm";
 import {
+  checkTenantHasOwner,
   ensureMemberReviewOnFirstLogin,
   getMember,
 } from "../_server/user.service";
@@ -22,6 +24,25 @@ export default async function Page({
 }: {
   searchParams?: Promise<{ join?: string; relogin?: string; error?: string }>;
 }) {
+  /* 
+   * Only check for owner if we are in a tenant context.
+   * On Root Domain (x-tenant-id missing), we show standard login.
+   */
+  const { headers } = await import("next/headers");
+  const headersList = await headers();
+  const tenantId = headersList.get("x-tenant-id");
+
+  if (tenantId) {
+    const hasOwner = await checkTenantHasOwner(tenantId);
+    if (!hasOwner) {
+      return (
+        <div className="w-full max-w-md space-y-10">
+          <InitializeTenantForm />
+        </div>
+      );
+    }
+  }
+
   const anyUser = await hasAnyUser();
   const general = await getGeneralSettings();
   const site = await getSiteSettings();
