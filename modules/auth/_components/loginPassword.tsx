@@ -62,15 +62,15 @@ export default function LoginPassword({
     const { email, password } = values;
 
     // 若屬於兩步驟登入，先只驗證密碼，成功後導向 2steps 並寄送 OTP
-    if (twoStep) {
-      const ok = await verifyPasswordOnly(email, password);
-      if (!ok) {
-        setError(t("error.errorPassword"));
-        return;
-      }
-      router.push(`/login/2steps?email=${encodeURIComponent(email)}`);
-      return;
-    }
+    // if (twoStep) {
+    //   const ok = await verifyPasswordOnly(email, password);
+    //   if (!ok) {
+    //     setError(t("error.errorPassword"));
+    //     return;
+    //   }
+    //   router.push(`/login/2steps?email=${encodeURIComponent(email)}`);
+    //   return;
+    // }
 
     // 一般密碼登入：建立 Session 並導向 Dashboard
     const result = await login(email, password);
