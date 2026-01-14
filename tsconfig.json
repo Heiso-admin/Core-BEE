@@ -30,9 +30,7 @@
         "./*"
       ]
     },
-    "types": [
-      "bun-types"
-    ]
+    "types": []
   },
   "include": [
     "next-env.d.ts",
