@@ -1,13 +1,18 @@
 import { generateId } from "@heiso/core/lib/id-generator";
 import { relations } from "drizzle-orm";
 import {
+  foreignKey,
   index,
   integer,
   jsonb,
+  pgPolicy,
   pgTable,
+  primaryKey,
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { tenantSchema } from "../../utils";
 import {
   createInsertSchema,
   createSelectSchema,
@@ -17,16 +22,29 @@ import type zod from "zod";
 import { users } from "../../auth/user";
 
 // Storage categories table
-export const fileStorageCategories = pgTable("file_storage_categories", {
-  id: varchar("id", { length: 20 }).primaryKey(),
-  name: varchar("name", { length: 50 }).notNull(),
-  icon: varchar("icon", { length: 50 }).notNull(),
-  color: varchar("color", { length: 20 }).notNull(),
-  fileCount: integer("file_count").notNull().default(0),
-  size: integer("size").notNull().default(0),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+export const fileStorageCategories = pgTable(
+  "file_storage_categories",
+  {
+    id: varchar("id", { length: 20 }).notNull(),
+    ...tenantSchema,
+    name: varchar("name", { length: 50 }).notNull(),
+    icon: varchar("icon", { length: 50 }).notNull(),
+    color: varchar("color", { length: 20 }).notNull(),
+    fileCount: integer("file_count").notNull().default(0),
+    size: integer("size").notNull().default(0),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.tenantId, t.id] }),
+    policy: pgPolicy("tenant_isolation", {
+      for: "all",
+      to: "public",
+      using: sql`${t.tenantId} = current_setting('app.current_tenant_id')`,
+      withCheck: sql`${t.tenantId} = current_setting('app.current_tenant_id')`,
+    }),
+  }),
+);
 
 export const storageCategoriesRelations = relations(
   fileStorageCategories,
@@ -42,6 +60,7 @@ export const files = pgTable(
     id: varchar("id", { length: 20 })
       .primaryKey()
       .$defaultFn(() => generateId()),
+    ...tenantSchema,
     name: varchar("name", { length: 255 }).notNull(),
     size: integer("size").notNull(), // Size in bytes
     type: varchar("type", { length: 20 }).notNull(), // document, image, video, audio, archive, other
@@ -52,7 +71,7 @@ export const files = pgTable(
     metadata: jsonb("metadata"), // Store additional metadata like image dimensions, video duration, etc.
     storageCategoryId: varchar("storage_category_id", {
       length: 20,
-    }).references(() => fileStorageCategories.id),
+    }),
     ownerId: varchar("owner_id", { length: 20 })
       .notNull()
       .references(() => users.id),
@@ -60,12 +79,22 @@ export const files = pgTable(
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
     deletedAt: timestamp("deleted_at"), // Soft delete
   },
-  (table) => [
-    index("files_name_idx").on(table.name),
-    index("files_type_idx").on(table.type),
-    index("files_owner_id_idx").on(table.ownerId),
-    index("files_storage_category_id_idx").on(table.storageCategoryId),
-  ],
+  (table) => ({
+    filesNameIdx: index("files_name_idx").on(table.name),
+    filesTypeIdx: index("files_type_idx").on(table.type),
+    filesOwnerIdIdx: index("files_owner_id_idx").on(table.ownerId),
+    filesStorageCategoryIdIdx: index("files_storage_category_id_idx").on(table.storageCategoryId),
+    storageCategoryFk: foreignKey({
+      columns: [table.storageCategoryId, table.tenantId],
+      foreignColumns: [fileStorageCategories.id, fileStorageCategories.tenantId],
+    }),
+    policy: pgPolicy("tenant_isolation", {
+      for: "all",
+      to: "public",
+      using: sql`${table.tenantId} = current_setting('app.current_tenant_id')`,
+      withCheck: sql`${table.tenantId} = current_setting('app.current_tenant_id')`,
+    }),
+  }),
 );
 
 export const filesRelations = relations(files, ({ one, many }) => ({
@@ -87,11 +116,20 @@ export const fileTags = pgTable(
     id: varchar("id", { length: 20 })
       .primaryKey()
       .$defaultFn(() => generateId()),
+    ...tenantSchema,
     name: varchar("name", { length: 50 }).notNull(),
     color: varchar("color", { length: 20 }).notNull(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
-  (table) => [index("file_tags_name_idx").on(table.name)],
+  (table) => ({
+    fileTagsNameIdx: index("file_tags_name_idx").on(table.name),
+    policy: pgPolicy("tenant_isolation", {
+      for: "all",
+      to: "public",
+      using: sql`${table.tenantId} = current_setting('app.current_tenant_id')`,
+      withCheck: sql`${table.tenantId} = current_setting('app.current_tenant_id')`,
+    }),
+  }),
 );
 
 export const fileTagsRelations = relations(fileTags, ({ many }) => ({
@@ -105,6 +143,7 @@ export const fileTagRelations = pgTable(
     id: varchar("id", { length: 20 })
       .primaryKey()
       .$defaultFn(() => generateId()),
+    ...tenantSchema,
     fileId: varchar("file_id", { length: 20 })
       .references(() => files.id)
       .notNull(),
@@ -113,10 +152,27 @@ export const fileTagRelations = pgTable(
       .notNull(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
-  (table) => [
-    index("file_tag_relations_file_tag_idx").on(table.fileId, table.tagId),
-  ],
+  (table) => ({
+    fileTagRelationsFileTagIdx: index("file_tag_relations_file_tag_idx").on(table.fileId, table.tagId),
+    policy: pgPolicy("tenant_isolation", {
+      for: "all",
+      to: "public",
+      using: sql`${table.tenantId} = current_setting('app.current_tenant_id')`,
+      withCheck: sql`${table.tenantId} = current_setting('app.current_tenant_id')`,
+    }),
+  }),
 );
+
+export const enableFileRls = sql`
+  ALTER TABLE "file_storage_categories" ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE "file_storage_categories" FORCE ROW LEVEL SECURITY;
+  ALTER TABLE "files" ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE "files" FORCE ROW LEVEL SECURITY;
+  ALTER TABLE "file_tags" ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE "file_tags" FORCE ROW LEVEL SECURITY;
+  ALTER TABLE "file_tag_relations" ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE "file_tag_relations" FORCE ROW LEVEL SECURITY;
+`;
 
 export const fileTagRelationsRelations = relations(
   fileTagRelations,

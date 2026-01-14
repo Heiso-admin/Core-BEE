@@ -3,10 +3,13 @@ import { relations } from "drizzle-orm";
 import {
   boolean,
   index,
+  pgPolicy,
   pgTable,
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { tenantSchema } from "../utils";
 import {
   createInsertSchema,
   createSelectSchema,
@@ -23,6 +26,7 @@ export const roles = pgTable(
     id: varchar("id", { length: 20 })
       .primaryKey()
       .$default(() => generateRoleId()),
+    ...tenantSchema,
     name: varchar("name", { length: 50 }).notNull(),
     description: varchar("description", { length: 255 }),
     fullAccess: boolean("full_access").notNull().default(false),
@@ -31,11 +35,19 @@ export const roles = pgTable(
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
-  (table) => [
-    index("roles_name_idx").on(table.name),
-    index("roles_deleted_at_idx").on(table.deletedAt),
-  ],
+  (table) => ({
+    rolesNameIdx: index("roles_name_idx").on(table.name),
+    rolesDeletedAtIdx: index("roles_deleted_at_idx").on(table.deletedAt),
+    policy: pgPolicy("tenant_isolation", {
+      for: "all",
+      to: "public",
+      using: sql`${table.tenantId} = current_setting('app.current_tenant_id')`,
+      withCheck: sql`${table.tenantId} = current_setting('app.current_tenant_id')`,
+    }),
+  }),
 );
+
+export const enableRoleRls = sql`ALTER TABLE roles ENABLE ROW LEVEL SECURITY; ALTER TABLE roles FORCE ROW LEVEL SECURITY;`;
 
 export const roleRelations = relations(roles, ({ many }) => ({
   menus: many(roleMenus),

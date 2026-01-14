@@ -28,16 +28,6 @@ export const permissionsConfig = [
       "title": "Overview",
       "path": ""
     }
-  },
-  {
-    "id": "pe_GO5dZCbCY1",
-    "resource": "Action",
-    "action": "download",
-    "menu": {
-      "id": "tUkCKz1yfd",
-      "title": "Navigation",
-      "path": "/navigation"
-    }
   }
 ] as const satisfies readonly PermissionConfigShape[];
 

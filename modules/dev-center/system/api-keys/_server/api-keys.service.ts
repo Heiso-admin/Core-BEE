@@ -7,6 +7,7 @@ import { generateApiKey, hashApiKey } from "@heiso/core/lib/hash";
 import { auth } from "@heiso/core/modules/auth/auth.config";
 import { and, count, desc, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 
 // Get API key prefix for display
 function getKeyPrefix(key: string): string {
@@ -16,6 +17,7 @@ function getKeyPrefix(key: string): string {
 type TApiKeyWithKeyPrefix = TPublicApiKey & { keyPrefix: string };
 
 // Get API Keys list
+// Get API Keys list
 export async function getApiKeysList(
   options: { search?: string; start?: number; limit?: number } = {},
 ) {
@@ -23,6 +25,9 @@ export async function getApiKeysList(
   if (!session?.user?.id) {
     return { apiKeys: [], total: 0 };
   }
+
+  const h = await headers();
+  const tenantId = h.get("x-tenant-id");
 
   const { search, start = 0, limit = 10 } = options;
 
@@ -32,6 +37,10 @@ export async function getApiKeysList(
       eq(apiKeys.userId, session.user.id),
       isNull(apiKeys.deletedAt),
     ];
+
+    if (tenantId) {
+      whereConditions.push(eq(apiKeys.tenantId, tenantId));
+    }
 
     if (search) {
       whereConditions.push(
@@ -50,6 +59,7 @@ export async function getApiKeysList(
     const results = await db
       .select({
         id: apiKeys.id,
+        tenantId: apiKeys.tenantId,
         name: apiKeys.name,
         userId: apiKeys.userId,
         description: apiKeys.description,
@@ -94,10 +104,21 @@ export async function getApiKey(
     return null;
   }
 
+  const h = await headers();
+  const tenantId = h.get("x-tenant-id");
+
   try {
+    const filters = [
+      eq(apiKeys.id, id),
+      eq(apiKeys.userId, session.user.id),
+      isNull(apiKeys.deletedAt),
+    ];
+    if (tenantId) filters.push(eq(apiKeys.tenantId, tenantId));
+
     const result = await db
       .select({
         id: apiKeys.id,
+        tenantId: apiKeys.tenantId,
         name: apiKeys.name,
         userId: apiKeys.userId,
         description: apiKeys.description,
@@ -110,13 +131,7 @@ export async function getApiKey(
         updatedAt: apiKeys.updatedAt,
       })
       .from(apiKeys)
-      .where(
-        and(
-          eq(apiKeys.id, id),
-          eq(apiKeys.userId, session.user.id),
-          isNull(apiKeys.deletedAt),
-        ),
-      )
+      .where(and(...filters))
       .limit(1);
 
     if (result.length === 0) {
@@ -160,6 +175,9 @@ export async function createApiKey(data: CreateApiKeyInput): Promise<{
   if (!session?.user?.id) {
     return { success: false, error: "Unauthorized" };
   }
+  const h = await headers();
+  const tenantId = h.get("x-tenant-id");
+  if (!tenantId) return { success: false, error: "Tenant context missing" };
 
   try {
     // Generate new API key
@@ -171,6 +189,7 @@ export async function createApiKey(data: CreateApiKeyInput): Promise<{
       .insert(apiKeys)
       .values({
         userId: session.user.id,
+        tenantId,
         name: data.name,
         description: data.description,
         key: hashedKey,
@@ -180,6 +199,7 @@ export async function createApiKey(data: CreateApiKeyInput): Promise<{
       })
       .returning({
         id: apiKeys.id,
+        tenantId: apiKeys.tenantId,
         name: apiKeys.name,
         userId: apiKeys.userId,
         description: apiKeys.description,
@@ -216,8 +236,17 @@ export async function updateApiKey(
   if (!session?.user?.id) {
     return { success: false, error: "Unauthorized" };
   }
+  const h = await headers();
+  const tenantId = h.get("x-tenant-id");
 
   try {
+    const filters = [
+      eq(apiKeys.id, id),
+      eq(apiKeys.userId, session.user.id),
+      isNull(apiKeys.deletedAt),
+    ];
+    if (tenantId) filters.push(eq(apiKeys.tenantId, tenantId));
+
     const result = await db
       .update(apiKeys)
       .set({
@@ -228,15 +257,10 @@ export async function updateApiKey(
         rateLimit: data.rateLimit,
         updatedAt: new Date(),
       })
-      .where(
-        and(
-          eq(apiKeys.id, id),
-          eq(apiKeys.userId, session.user.id),
-          isNull(apiKeys.deletedAt),
-        ),
-      )
+      .where(and(...filters))
       .returning({
         id: apiKeys.id,
+        tenantId: apiKeys.tenantId,
         name: apiKeys.name,
         userId: apiKeys.userId,
         description: apiKeys.description,
@@ -274,21 +298,24 @@ export async function deleteApiKey(
   if (!session?.user?.id) {
     return { success: false, error: "Unauthorized" };
   }
+  const h = await headers();
+  const tenantId = h.get("x-tenant-id");
 
   try {
+    const filters = [
+      eq(apiKeys.id, id),
+      eq(apiKeys.userId, session.user.id),
+      isNull(apiKeys.deletedAt),
+    ];
+    if (tenantId) filters.push(eq(apiKeys.tenantId, tenantId));
+
     const result = await db
       .update(apiKeys)
       .set({
         deletedAt: new Date(),
         updatedAt: new Date(),
       })
-      .where(
-        and(
-          eq(apiKeys.id, id),
-          eq(apiKeys.userId, session.user.id),
-          isNull(apiKeys.deletedAt),
-        ),
-      )
+      .where(and(...filters))
       .returning({ id: apiKeys.id });
 
     if (result.length === 0) {
@@ -313,8 +340,18 @@ export async function verifyApiKey(key: string): Promise<{
     return { valid: false };
   }
 
+  const h = await headers();
+  const tenantId = h.get("x-tenant-id");
+
   try {
     const hashedKey = await hashApiKey(key);
+
+    const filters = [
+      eq(apiKeys.key, hashedKey),
+      eq(apiKeys.isActive, true),
+      isNull(apiKeys.deletedAt),
+    ];
+    if (tenantId) filters.push(eq(apiKeys.tenantId, tenantId));
 
     const result = await db
       .select({
@@ -324,13 +361,7 @@ export async function verifyApiKey(key: string): Promise<{
         expiresAt: apiKeys.expiresAt,
       })
       .from(apiKeys)
-      .where(
-        and(
-          eq(apiKeys.key, hashedKey),
-          eq(apiKeys.isActive, true),
-          isNull(apiKeys.deletedAt),
-        ),
-      )
+      .where(and(...filters))
       .limit(1);
 
     if (result.length === 0) {
@@ -369,19 +400,22 @@ export async function toggleApiKeyStatus(
   if (!session?.user?.id) {
     return { success: false, error: "Unauthorized" };
   }
+  const h = await headers();
+  const tenantId = h.get("x-tenant-id");
 
   try {
+    const filters = [
+      eq(apiKeys.id, id),
+      eq(apiKeys.userId, session.user.id),
+      isNull(apiKeys.deletedAt),
+    ];
+    if (tenantId) filters.push(eq(apiKeys.tenantId, tenantId));
+
     // First get current status
     const [currentApiKey] = await db
       .select({ isActive: apiKeys.isActive })
       .from(apiKeys)
-      .where(
-        and(
-          eq(apiKeys.id, id),
-          eq(apiKeys.userId, session.user.id),
-          isNull(apiKeys.deletedAt),
-        ),
-      )
+      .where(and(...filters))
       .limit(1);
 
     if (!currentApiKey) {
@@ -395,13 +429,7 @@ export async function toggleApiKeyStatus(
         isActive: !currentApiKey.isActive,
         updatedAt: new Date(),
       })
-      .where(
-        and(
-          eq(apiKeys.id, id),
-          eq(apiKeys.userId, session.user.id),
-          isNull(apiKeys.deletedAt),
-        ),
-      );
+      .where(and(...filters));
 
     revalidatePath("/dashboard/settings/api-keys", "page");
     return { success: true };

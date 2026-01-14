@@ -5,6 +5,14 @@ export default auth(async (req) => {
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set("x-current-pathname", req.nextUrl.pathname);
 
+  // Tenant Context Injection for Core (Dev/Localhost only)
+  // Since Core doesn't depend on Hive, we inject the default tenant for local development.
+  const hostname = req.headers.get("host") || "";
+  if (process.env.NODE_ENV !== "production" && (hostname.includes("localhost") || hostname.includes("127.0.0.1"))) {
+    // Default Tenant ID from migration/seed
+    // requestHeaders.set("x-tenant-id", "74acd0b4-bea5-464b-b658-e9402a0b042c");
+  }
+
   // 未登入：針對匹配的路由導向到 /login
   if (!req.auth) {
     const response = NextResponse.redirect(new URL("/login", req.url));

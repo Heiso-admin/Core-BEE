@@ -188,24 +188,34 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         // 動態載入 db 與 schema，避免在 edge/客戶端造成打包問題
+        // 動態載入 db 與 schema，避免在 edge/客戶端造成打包問題
         const { db } = await import("@heiso/core/lib/db");
         const { users, members } = await import("@heiso/core/lib/db/schema");
         const { and, eq, isNull } = await import("drizzle-orm");
         const { hashPassword } = await import("@heiso/core/lib/hash");
         const { generateId } = await import("@heiso/core/lib/id-generator");
 
+        // Tenant Context
+        const { headers } = await import("next/headers");
+        const h = await headers();
+        const tenantId = h.get("x-tenant-id");
+
         // 嘗試以 email 查找現有使用者
         const existingUser = await db.query.users.findFirst({
           where: (t, _ops) => eq(t.email, email),
         });
 
-        const existingMember = await db.query.members.findFirst({
-          where: (t, _ops) => and(eq(t.email, email), isNull(t.deletedAt)),
-        });
+        let existingMember: any = null;
+        if (tenantId) {
+          existingMember = await db.query.members.findFirst({
+            where: (t, _ops) => and(eq(t.email, email), isNull(t.deletedAt), eq(t.tenantId, tenantId)),
+          });
+        }
 
         let userId = existingUser?.id;
-        // 新用戶需要沒有 user and member 才可以建立
-        if (!existingUser && !existingMember) {
+        // 新用戶需要沒有 user (and no member in this tenant) 才可以建立
+        // If user exists, we use it. If not, create user.
+        if (!existingUser) {
           // 建立占位密碼（OAuth 用戶不需要實際密碼）
           const placeholderPassword = await hashPassword(
             generateId(undefined, 32),
@@ -240,45 +250,59 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           userId = inserted?.[0]?.id;
           console.log("[OAuth signIn] created user:", userId);
         } else {
-          if (existingUser) {
-            // 更新最後登入時間
-            await db
-              .update(users)
-              .set({ lastLoginAt: new Date(), updatedAt: new Date() })
-              .where(eq(users.id, existingUser.id));
-            console.log("[OAuth signIn] existing user:", existingUser.id);
-          }
+          // 更新最後登入時間
+          await db
+            .update(users)
+            .set({ lastLoginAt: new Date(), updatedAt: new Date() })
+            .where(eq(users.id, existingUser.id));
+          console.log("[OAuth signIn] existing user:", existingUser.id);
         }
 
-        // 再次登入，但未審核過，僅更新 updateAt
-        if (existingMember) {
-          await db
-            .update(members)
-            .set({
-              userId: userId ?? existingMember.userId,
-              updatedAt: new Date(),
-            })
-            .where(eq(members.id, existingMember.id));
-          console.log(
-            "[OAuth signIn] synced existing member without status change:",
-            existingMember.id,
-          );
+        // Member Logic - Only if Tenant ID matches
+        if (tenantId) {
+          // 再次登入，但未審核過，僅更新 updateAt
+          if (existingMember) {
+            await db
+              .update(members)
+              .set({
+                userId: userId ?? existingMember.userId,
+                updatedAt: new Date(),
+              })
+              .where(eq(members.id, existingMember.id));
+            console.log(
+              "[OAuth signIn] synced existing member without status change:",
+              existingMember.id,
+            );
+          } else {
+            // 首次 OAuth 登入
+            // 檢查該 Tenant 是否已有任何成員 (是否為第一位初始建立者)
+            const hasAnyMember = await db.query.members.findFirst({
+              where: (t, { eq, and, isNull }) =>
+                and(eq(t.tenantId, tenantId), isNull(t.deletedAt)),
+              columns: { id: true },
+            });
+
+            const isFirstMember = !hasAnyMember;
+
+            const insertedMember = await db
+              .insert(members)
+              .values({
+                email,
+                userId: userId ?? undefined,
+                loginMethod: account.provider,
+                status: isFirstMember ? "joined" : "review",
+                isOwner: isFirstMember,
+                updatedAt: new Date(),
+                tenantId,
+              })
+              .returning();
+            console.log(
+              `[OAuth signIn] created member in ${isFirstMember ? "joined (OWNER)" : "review"} status:`,
+              insertedMember?.[0]?.id,
+            );
+          }
         } else {
-          // 首次 OAuth 登入：建立 member，狀態設為 review 以便導向 pending
-          const insertedMember = await db
-            .insert(members)
-            .values({
-              email,
-              userId: userId ?? undefined,
-              loginMethod: account.provider,
-              status: "review",
-              updatedAt: new Date(),
-            })
-            .returning();
-          console.log(
-            "[OAuth signIn] created member in review status:",
-            insertedMember?.[0]?.id,
-          );
+          console.log("[OAuth signIn] no tenant context, skipping member creation");
         }
       } catch (err) {
         console.error("[OAuth signIn] member upsert failed:", err);

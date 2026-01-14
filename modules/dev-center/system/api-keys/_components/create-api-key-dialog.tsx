@@ -119,6 +119,7 @@ export function CreateApiKeyDialog({
               createdAt: result.apiKey.createdAt,
               updatedAt: result.apiKey.updatedAt,
               lastUsedAt: result.apiKey.lastUsedAt,
+              tenantId: result.apiKey.tenantId,
             },
           });
           toast.success(t("create_success"));

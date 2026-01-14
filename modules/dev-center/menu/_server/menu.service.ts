@@ -3,12 +3,22 @@
 import { db } from "@heiso/core/lib/db";
 import { menus } from "@heiso/core/lib/db/schema";
 import { recursiveList } from "@heiso/core/lib/tree";
-import { eq, inArray } from "drizzle-orm";
+import { eq, inArray, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 
 async function getMenus({ recursive = false }: { recursive?: boolean }) {
+  const h = await headers();
+  const tenantId = h.get("x-tenant-id");
+
   const result = await db.query.menus.findMany({
-    where: (t, { isNull }) => isNull(t.deletedAt),
+    where: (t, { and, isNull, eq }) => {
+      const filters = [isNull(t.deletedAt)];
+      if (tenantId) {
+        filters.push(eq(t.tenantId, tenantId));
+      }
+      return and(...filters);
+    },
     orderBy: (t, { asc }) => [asc(t.order)],
   });
 
@@ -26,10 +36,15 @@ async function addMenu({
   menu: any;
   revalidateUri?: string;
 }) {
+  const h = await headers();
+  const tenantId = h.get("x-tenant-id");
+  if (!tenantId) throw new Error("Tenant context missing");
+
   const result = await db
     .insert(menus)
     .values({
       ...menu,
+      tenantId,
       createdAt: new Date(),
       updatedAt: new Date(),
     })
@@ -65,9 +80,18 @@ async function updateMenu({
 }
 
 async function removeMenu({ id }: { id: string }) {
+  const h = await headers();
+  const tenantId = h.get("x-tenant-id");
+
   // Get all menu items to find children
   const allItems = await db.query.menus.findMany({
-    where: (t, { isNull }) => isNull(t.deletedAt),
+    where: (t, { and, isNull, eq }) => {
+      const filters = [isNull(t.deletedAt)];
+      if (tenantId) {
+        filters.push(eq(t.tenantId, tenantId));
+      }
+      return and(...filters);
+    },
   });
 
   // Find all child ids recursively

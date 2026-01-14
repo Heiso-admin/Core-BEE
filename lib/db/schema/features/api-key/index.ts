@@ -5,11 +5,14 @@ import {
   index,
   integer,
   json,
+  pgPolicy,
   pgTable,
   text,
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { tenantSchema } from "../../utils";
 import {
   createInsertSchema,
   createSelectSchema,
@@ -18,12 +21,14 @@ import {
 import { users } from "../../auth";
 
 // API Key table
+// API Key table
 export const featureApiKeys = pgTable(
   "api_keys",
   {
     id: varchar("id", { length: 20 })
       .primaryKey()
       .$defaultFn(() => generateId()),
+    ...tenantSchema,
     userId: varchar("user_id", { length: 20 })
       .notNull()
       .references(() => users.id),
@@ -39,15 +44,22 @@ export const featureApiKeys = pgTable(
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
-  (table) => [
-    index("api_keys_user_id_idx").on(table.userId),
-    index("api_keys_key_hash_idx").on(table.keyHash),
-    index("api_keys_key_prefix_idx").on(table.keyPrefix),
-    index("api_keys_is_enabled_idx").on(table.isEnabled),
-    index("api_keys_deleted_at_idx").on(table.deletedAt),
-  ],
+  (table) => ({
+    apiKeysUserIdIdx: index("api_keys_user_id_idx").on(table.userId),
+    apiKeysKeyHashIdx: index("api_keys_key_hash_idx").on(table.keyHash),
+    apiKeysKeyPrefixIdx: index("api_keys_key_prefix_idx").on(table.keyPrefix),
+    apiKeysIsEnabledIdx: index("api_keys_is_enabled_idx").on(table.isEnabled),
+    apiKeysDeletedAtIdx: index("api_keys_deleted_at_idx").on(table.deletedAt),
+    policy: pgPolicy("tenant_isolation", {
+      for: "all",
+      to: "public",
+      using: sql`${table.tenantId} = current_setting('app.current_tenant_id')`,
+      withCheck: sql`${table.tenantId} = current_setting('app.current_tenant_id')`,
+    }),
+  }),
 );
 
+// API Key usage log table
 // API Key usage log table
 export const apiKeyUsageLogs = pgTable(
   "api_key_usage_logs",
@@ -55,6 +67,7 @@ export const apiKeyUsageLogs = pgTable(
     id: varchar("id", { length: 20 })
       .primaryKey()
       .$defaultFn(() => generateId()),
+    ...tenantSchema,
     apiKeyId: varchar("api_key_id", { length: 20 })
       .notNull()
       .references(() => featureApiKeys.id),
@@ -69,13 +82,26 @@ export const apiKeyUsageLogs = pgTable(
     errorMessage: text("error_message"), // Error message
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
-  (table) => [
-    index("api_key_usage_logs_api_key_id_idx").on(table.apiKeyId),
-    index("api_key_usage_logs_endpoint_idx").on(table.endpoint),
-    index("api_key_usage_logs_created_at_idx").on(table.createdAt),
-    index("api_key_usage_logs_response_status_idx").on(table.responseStatus),
-  ],
+  (table) => ({
+    apiKeyUsageLogsApiKeyIdIdx: index("api_key_usage_logs_api_key_id_idx").on(table.apiKeyId),
+    apiKeyUsageLogsEndpointIdx: index("api_key_usage_logs_endpoint_idx").on(table.endpoint),
+    apiKeyUsageLogsCreatedAtIdx: index("api_key_usage_logs_created_at_idx").on(table.createdAt),
+    apiKeyUsageLogsResponseStatusIdx: index("api_key_usage_logs_response_status_idx").on(table.responseStatus),
+    policy: pgPolicy("tenant_isolation", {
+      for: "all",
+      to: "public",
+      using: sql`${table.tenantId} = current_setting('app.current_tenant_id')`,
+      withCheck: sql`${table.tenantId} = current_setting('app.current_tenant_id')`,
+    }),
+  }),
 );
+
+export const enableFeatureApiKeyRls = sql`
+  ALTER TABLE "feature_api_keys" ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE "feature_api_keys" FORCE ROW LEVEL SECURITY;
+  ALTER TABLE "api_key_usage_logs" ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE "api_key_usage_logs" FORCE ROW LEVEL SECURITY;
+`;
 
 // Define relationships
 export const featureApiKeysRelations = relations(
