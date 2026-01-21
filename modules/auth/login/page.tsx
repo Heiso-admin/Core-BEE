@@ -33,7 +33,55 @@ export default async function Page({
   const tenantId = headersList.get("x-tenant-id");
 
   if (tenantId) {
-    const hasOwner = await checkTenantHasOwner(tenantId);
+    let hasOwner = false;
+    let needsProvisioning = false;
+
+    try {
+      hasOwner = await checkTenantHasOwner(tenantId);
+      // If table exists but no owner, it might mean partial initialization or just new tenant.
+      // We should arguably run provisioning here too to ensure menus/defaults exist.
+      if (!hasOwner) {
+         needsProvisioning = true;
+      }
+    } catch (e: any) {
+      // 42P01: undefined table (Schema missing)
+      if (e.code === "42P01") {
+         needsProvisioning = true;
+      } else {
+        throw e;
+      }
+    }
+
+    if (needsProvisioning) {
+        console.log(`[Login] Tenant ${tenantId} uninitialized (Missing Owner or Schema). Provisioning...`);
+        const { HiveClient } = await import("@heiso/hive/client");
+        const { provisionTenantDb } = await import("../../system/provisioning");
+        
+        // Use resolveSlug if we have tenantId/slug? 
+        // We have tenantId but Hive expects hostname?
+        // Actually we have x-tenant-id which is UUID. resolveTenant uses hostname.
+        // Assuming host header is reliable for resolution.
+        const host = headersList.get("host") || "";
+        const resolved = await HiveClient.resolveTenant(host);
+        
+        // Subscriptions structure: { 'cms': ['module1', ...], ... }
+        // Default to 'cms' if empty/missing
+        const cmsModules = resolved.subscriptions['cms'] || [];
+        const modules = cmsModules.length > 0 ? cmsModules : ["cms"];
+
+        // Determine DB URL (Shared vs Isolated)
+        const dbUrl = resolved.tenant?.dbConnection || process.env.DATABASE_URL;
+
+        if (dbUrl) {
+            await provisionTenantDb(dbUrl, modules, tenantId);
+        } else {
+             console.error("[Login] Cannot provision: No DATABASE_URL found.");
+        }
+    }
+
+    // Re-check owner status after provisioning (if we just provisioned)
+    // Actually, if we just provisioned, we know there is NO owner yet.
+    // So we show the Init Form.
     if (!hasOwner) {
       return (
         <div className="w-full max-w-md space-y-10">
@@ -59,6 +107,16 @@ export default async function Page({
   if (session?.user && !isRelogin) {
     const userId = session.user.id ?? undefined;
     const sessionEmail = session.user.email ?? undefined;
+
+    // Fix: Verify if user really exists in DB (Zombie Session Check)
+    if (sessionEmail) {
+      const { getUser } = await import("../_server/user.service");
+      const dbUser = await getUser(sessionEmail);
+      if (!dbUser) {
+          // User in session but not in DB. Force logout.
+          redirect("/api/auth/signout");
+      }
+    }
 
     // 開發人員直接進 Dashboard
     if (session.user.isDeveloper) {

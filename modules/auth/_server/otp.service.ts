@@ -7,6 +7,7 @@ import { user2faCode, users } from "@heiso/core/lib/db/schema";
 import { sendEmail } from "@heiso/core/lib/email";
 import { and, eq, gt, lt } from "drizzle-orm";
 import { getUser } from "./user.service";
+import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 
 export interface OTPGenerationResult {
   success: boolean;
@@ -40,10 +41,12 @@ export async function generateOTP(email: string): Promise<OTPGenerationResult> {
       };
     }
 
+    const tx = await getDynamicDb();
+
     // 如果用户不是开发者，检查用户是否已加入组织
     if (!user?.developer) {
       // 查找用户
-      const member = await db.query.members.findFirst({
+      const member = await tx.query.members.findFirst({
         columns: {
           id: true,
           email: true,
@@ -87,18 +90,18 @@ export async function generateOTP(email: string): Promise<OTPGenerationResult> {
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10分钟后过期
 
     // 保存到数据库
-    await db.insert(user2faCode).values({
+    await tx.insert(user2faCode).values({
       userId: user.id,
       code,
       used: false,
       expiresAt,
     });
 
-    const assets = await db.query.siteSettings.findFirst({
+    const assets = await tx.query.siteSettings.findFirst({
       where: (t, { eq }) => eq(t.name, "assets"),
     });
 
-    const { logo } = assets?.value as Record<string, string>;
+    const { logo } = (assets?.value || {}) as Record<string, string>;
 
     // 发送邮件
     const { NOTIFY_EMAIL } = await settings();
@@ -136,8 +139,9 @@ export async function verifyOTP(
   code: string,
 ): Promise<OTPVerificationResult> {
   try {
+    const tx = await getDynamicDb();
     // 查找用户
-    const user = await db.query.users.findFirst({
+    const user = await tx.query.users.findFirst({
       where: eq(users.email, email),
     });
 
@@ -149,7 +153,7 @@ export async function verifyOTP(
     }
 
     // 查找有效的验证码
-    const otpRecord = await db.query.user2faCode.findFirst({
+    const otpRecord = await tx.query.user2faCode.findFirst({
       where: and(
         eq(user2faCode.userId, user.id),
         eq(user2faCode.code, code),
@@ -166,13 +170,13 @@ export async function verifyOTP(
     }
 
     // 标记验证码为已使用
-    await db
+    await tx
       .update(user2faCode)
       .set({ used: true })
       .where(eq(user2faCode.id, otpRecord.id));
 
     // 更新用户最后登录时间
-    await db
+    await tx
       .update(users)
       .set({ lastLoginAt: new Date() })
       .where(eq(users.id, user.id));
@@ -196,18 +200,19 @@ export async function verifyOTP(
  */
 export async function cleanupExpiredOTPs(userId?: string): Promise<void> {
   try {
+    const tx = await getDynamicDb();
     const now = new Date();
 
     if (userId) {
       // 清理特定用户的过期验证码
-      await db
+      await tx
         .delete(user2faCode)
         .where(
           and(eq(user2faCode.userId, userId), lt(user2faCode.expiresAt, now)),
         );
     } else {
       // 清理所有过期验证码
-      await db.delete(user2faCode).where(lt(user2faCode.expiresAt, now));
+      await tx.delete(user2faCode).where(lt(user2faCode.expiresAt, now));
     }
   } catch (error) {
     console.error("Error cleaning up expired OTPs:", error);
@@ -219,7 +224,8 @@ export async function cleanupExpiredOTPs(userId?: string): Promise<void> {
  */
 export async function hasValidOTP(email: string): Promise<boolean> {
   try {
-    const user = await db.query.users.findFirst({
+    const tx = await getDynamicDb();
+    const user = await tx.query.users.findFirst({
       where: eq(users.email, email),
     });
 
@@ -227,7 +233,7 @@ export async function hasValidOTP(email: string): Promise<boolean> {
       return false;
     }
 
-    const validOTP = await db.query.user2faCode.findFirst({
+    const validOTP = await tx.query.user2faCode.findFirst({
       where: and(
         eq(user2faCode.userId, user.id),
         eq(user2faCode.used, false),
@@ -247,7 +253,8 @@ export async function hasValidOTP(email: string): Promise<boolean> {
  */
 export async function getOTPStatus(email: string) {
   try {
-    const user = await db.query.users.findFirst({
+    const tx = await getDynamicDb();
+    const user = await tx.query.users.findFirst({
       where: eq(users.email, email),
     });
 
@@ -255,7 +262,7 @@ export async function getOTPStatus(email: string) {
       return null;
     }
 
-    const validOTP = await db.query.user2faCode.findFirst({
+    const validOTP = await tx.query.user2faCode.findFirst({
       where: and(
         eq(user2faCode.userId, user.id),
         eq(user2faCode.used, false),
@@ -274,3 +281,4 @@ export async function getOTPStatus(email: string) {
     return null;
   }
 }
+

@@ -1,6 +1,6 @@
 "use server";
 
-import { sendInvite } from "@heiso/core/app/dashboard/(dashboard)/(permission)/team/_server/team.service";
+import { sendInvite } from "@heiso/core/modules/permission/team/_server/team.service";
 import { db } from "@heiso/core/lib/db";
 import {
   members,
@@ -11,16 +11,19 @@ import { hashPassword } from "@heiso/core/lib/hash";
 import { generateInviteToken } from "@heiso/core/lib/id-generator";
 import { hasAnyUser } from "@heiso/core/server/services/auth";
 import { and, eq, sql } from "drizzle-orm";
+import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 
 export async function getUsers() {
-  const users = await db.query.users.findMany({
+  const tx = await getDynamicDb();
+  const users = await tx.query.users.findMany({
     // where: (table, { isNull }) => isNull(table.deletedAt),
   });
   return users;
 }
 
 export async function isUserDeveloper(email: string) {
-  const user = await db.query.users.findFirst({
+  const tx = await getDynamicDb();
+  const user = await tx.query.users.findFirst({
     where: (table, { eq }) => eq(table.email, email),
     with: { developer: true },
   });
@@ -29,7 +32,8 @@ export async function isUserDeveloper(email: string) {
 }
 
 export async function getUserLoginMethod(email: string) {
-  const user = await db.query.users.findFirst({
+  const tx = await getDynamicDb();
+  const user = await tx.query.users.findFirst({
     where: (table, { eq }) => eq(table.email, email),
     columns: { loginMethod: true },
   });
@@ -38,8 +42,9 @@ export async function getUserLoginMethod(email: string) {
 }
 
 export async function getLoginMethod(email: string) {
+  const tx = await getDynamicDb();
   // 以 member 取得 roleId，然後查詢 role 的 loginMethod
-  const membership = await db.query.members.findFirst({
+  const membership = await tx.query.members.findFirst({
     columns: { roleId: true, isOwner: true },
     where: (t, { and, eq, isNull }) =>
       and(eq(t.email, email), isNull(t.deletedAt)),
@@ -51,7 +56,7 @@ export async function getLoginMethod(email: string) {
   const roleId = membership?.roleId ?? null;
   if (roleId === null) return null;
 
-  const role = await db.query.roles.findFirst({
+  const role = await tx.query.roles.findFirst({
     where: (t, { eq }) => eq(t.id, roleId),
     columns: { loginMethod: true },
   });
@@ -60,7 +65,8 @@ export async function getLoginMethod(email: string) {
 }
 
 export async function getMemberStatus(email: string) {
-  const member = await db.query.members.findFirst({
+  const tx = await getDynamicDb();
+  const member = await tx.query.members.findFirst({
     where: (t, { eq, isNull }) => and(eq(t.email, email), isNull(t.deletedAt)),
   });
 
@@ -71,7 +77,8 @@ export async function getMemberStatus(email: string) {
 
 // oAuth 已登入且有帳號，更新 user lastLoginAt
 export async function updateLastAt(id: string) {
-  await db
+  const tx = await getDynamicDb();
+  await tx
     .update(usersTable)
     .set({
       lastLoginAt: new Date(),
@@ -81,10 +88,11 @@ export async function updateLastAt(id: string) {
 
 export async function getMember(params: { id?: string; email?: string }) {
   const { id, email } = params || {};
+  const tx = await getDynamicDb();
 
   // 若提供 id，先以 userId 查找
   if (id) {
-    const byId = await db.query.members.findFirst({
+    const byId = await tx.query.members.findFirst({
       columns: { userId: true, status: true, email: true },
       where: (t, { and, eq }) => and(eq(t.userId, id)),
     });
@@ -97,7 +105,7 @@ export async function getMember(params: { id?: string; email?: string }) {
 
   // 若提供 email，則以 email 查找
   if (email) {
-    const byEmail = await db.query.members.findFirst({
+    const byEmail = await tx.query.members.findFirst({
       columns: { userId: true, status: true, email: true },
       where: (t, { and, eq }) => and(eq(t.email, email)),
     });
@@ -115,7 +123,8 @@ export async function getMember(params: { id?: string; email?: string }) {
 }
 
 export async function getMemberInviteTokenByEmail(email: string) {
-  const member = await db.query.members.findFirst({
+  const tx = await getDynamicDb();
+  const member = await tx.query.members.findFirst({
     columns: { inviteToken: true },
     where: (t, { and, eq }) => and(eq(t.email, email)),
   });
@@ -123,7 +132,8 @@ export async function getMemberInviteTokenByEmail(email: string) {
 }
 
 export async function getUser(email: string) {
-  const user = await db.query.users.findFirst({
+  const tx = await getDynamicDb();
+  const user = await tx.query.users.findFirst({
     with: {
       developer: true,
     },
@@ -134,7 +144,8 @@ export async function getUser(email: string) {
 
 // export async function update(id: string, data: TUserUpdate) {
 export async function update(id: string, data: TUserUpdate) {
-  const result = await db
+  const tx = await getDynamicDb();
+  const result = await tx
     .update(usersTable)
     .set(data)
     .where(eq(usersTable.id, id));
@@ -142,8 +153,9 @@ export async function update(id: string, data: TUserUpdate) {
 }
 
 export async function changePassword(id: string, password: string) {
+  const tx = await getDynamicDb();
   const hashedPassword = await hashPassword(password);
-  await db
+  await tx
     .update(usersTable)
     .set({
       password: hashedPassword,
@@ -156,7 +168,8 @@ export async function changePassword(id: string, password: string) {
  * Resend invite email to a owner, but owner invite in team.service.
  */
 export async function resendInviteByEmail(email: string) {
-  const member = await db.query.members.findFirst({
+  const tx = await getDynamicDb();
+  const member = await tx.query.members.findFirst({
     where: (t, { eq, isNull }) => and(eq(t.email, email), isNull(t.deletedAt)),
   });
 
@@ -167,7 +180,7 @@ export async function resendInviteByEmail(email: string) {
   const inviteToken = generateInviteToken();
   const inviteTokenExpiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7); // 7 days
 
-  await db
+  await tx
     .update(members)
     .set({
       inviteToken,
@@ -192,12 +205,14 @@ export async function resendInviteByEmail(email: string) {
  * - Returns the invite token.
  */
 export async function ensureInviteTokenSilently(email: string, tx?: any, tenantId?: string) {
-  const d = tx || db;
+  const d = tx || await getDynamicDb();
 
   // Resolve tenantId if not provided (fallback to RLS context context query, but explicit is better)
   if (!tenantId) {
-    const tenantIdResult = await d.execute(sql`SELECT current_setting('app.current_tenant_id', true) as tenant_id`);
-    tenantId = tenantIdResult[0]?.tenant_id as string;
+    try {
+        const tenantIdResult = await d.execute(sql`SELECT current_setting('app.current_tenant_id', true) as tenant_id`);
+        tenantId = tenantIdResult[0]?.tenant_id as string;
+    } catch(e) { /* Ignore if simple client */ }
   }
 
   if (!tenantId) {
@@ -276,6 +291,7 @@ export async function ensureMemberReviewOnFirstLogin(
   userId?: string,
   tenantId?: string,
 ) {
+  const db = await getDynamicDb();
   return await db.transaction(async (tx) => {
     console.log("[DEBUG] ensureMemberReviewOnFirstLogin: Transaction started. TenantId:", tenantId);
 
@@ -293,6 +309,18 @@ export async function ensureMemberReviewOnFirstLogin(
     const token = await ensureInviteTokenSilently(email, tx, tenantId);
     console.log("[DEBUG] ensureInviteTokenSilently result:", token);
 
+    // Fetch the member NOW so we can use its properties
+    const member = await tx.query.members.findFirst({
+      where: (t, { and, eq, isNull }) =>
+        and(
+          eq(t.email, email),
+          isNull(t.deletedAt),
+          eq(t.tenantId, tenantId!) // Explicitly filter
+        ),
+    });
+    
+    if (!member) return null; // Should not happen as ensured above
+
     // Check if tenant has any owner (Explicit Filter)
     const existingOwner = await tx.query.members.findFirst({
       where: (t, { and, eq, isNull }) =>
@@ -305,23 +333,24 @@ export async function ensureMemberReviewOnFirstLogin(
     });
 
     const shouldBeOwner = !existingOwner;
+    let assignedRoleId = member.roleId;
 
-    // 3. Update Status (Use tx, explicit filter)
-    const member = await tx.query.members.findFirst({
-      where: (t, { and, eq, isNull }) =>
-        and(
-          eq(t.email, email),
-          isNull(t.deletedAt),
-          eq(t.tenantId, tenantId!) // Explicitly filter
-        ),
-    });
-
-    if (!member) return null;
+    if ((shouldBeOwner || member.isOwner) && !assignedRoleId) {
+       // Find Admin Role (assigned to Owners)
+       const ownerRole = await tx.query.roles.findFirst({
+           where: (t, { and, eq, isNull }) => and(eq(t.name, 'Admin'), eq(t.tenantId, tenantId!), isNull(t.deletedAt)),
+           columns: { id: true }
+       });
+       if (ownerRole) {
+           assignedRoleId = ownerRole.id;
+       }
+    }
 
     const [updated] = await tx
       .update(members)
       .set({
         userId: member.userId ?? userId,
+        roleId: assignedRoleId,
         status: "joined",
         isOwner: member.isOwner || shouldBeOwner,
         updatedAt: new Date(),
@@ -343,15 +372,18 @@ export async function ensureMemberReviewOnFirstLogin(
  * Used for detecting initial tenant state.
  */
 export async function checkTenantHasOwner(tenantId?: string) {
+  const tx = await getDynamicDb();
   if (!tenantId) {
-    // If no tenantId explicitly passed, try to get it from current setting (unlikely to work in detached server action without context)
-    const tenantIdResult = await db.execute(sql`SELECT current_setting('app.current_tenant_id', true) as tenant_id`);
-    tenantId = tenantIdResult[0]?.tenant_id as string;
+    try {
+        // If no tenantId explicitly passed, try to get it from current setting (unlikely to work in detached server action without context)
+        const tenantIdResult = await tx.execute(sql`SELECT current_setting('app.current_tenant_id', true) as tenant_id`);
+        tenantId = tenantIdResult[0]?.tenant_id as string;
+    } catch(e) { /* Ignore */ }
   }
 
   if (!tenantId) return false;
 
-  const result = await db.transaction(async (tx) => {
+  const result = await tx.transaction(async (tx) => {
     // Set RLS context for this check
     await tx.execute(
       sql`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`,
@@ -371,6 +403,7 @@ export async function checkTenantHasOwner(tenantId?: string) {
 
   return result;
 }
+
 
 // export async function findRoles(userId: string) {
 //   const result = await db

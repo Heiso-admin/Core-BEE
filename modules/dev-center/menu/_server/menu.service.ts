@@ -6,12 +6,14 @@ import { recursiveList } from "@heiso/core/lib/tree";
 import { eq, inArray, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
+import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 
 async function getMenus({ recursive = false }: { recursive?: boolean }) {
   const h = await headers();
   const tenantId = h.get("x-tenant-id");
+  const tx = await getDynamicDb();
 
-  const result = await db.query.menus.findMany({
+  const result = await tx.query.menus.findMany({
     where: (t, { and, isNull, eq }) => {
       const filters = [isNull(t.deletedAt)];
       if (tenantId) {
@@ -40,7 +42,9 @@ async function addMenu({
   const tenantId = h.get("x-tenant-id");
   if (!tenantId) throw new Error("Tenant context missing");
 
-  const result = await db
+  const tx = await getDynamicDb();
+
+  const result = await tx
     .insert(menus)
     .values({
       ...menu,
@@ -63,7 +67,8 @@ async function updateMenu({
   menu: any;
   revalidateUri?: string;
 }) {
-  const result = await db
+  const tx = await getDynamicDb();
+  const result = await tx
     .update(menus)
     .set({
       ...menu,
@@ -82,9 +87,10 @@ async function updateMenu({
 async function removeMenu({ id }: { id: string }) {
   const h = await headers();
   const tenantId = h.get("x-tenant-id");
+  const tx = await getDynamicDb();
 
   // Get all menu items to find children
-  const allItems = await db.query.menus.findMany({
+  const allItems = await tx.query.menus.findMany({
     where: (t, { and, isNull, eq }) => {
       const filters = [isNull(t.deletedAt)];
       if (tenantId) {
@@ -107,7 +113,7 @@ async function removeMenu({ id }: { id: string }) {
   const idsToDelete = [id, ...findChildIds(id)];
 
   // Delete all items
-  const result = await db
+  const result = await tx
     .update(menus)
     .set({ deletedAt: new Date() })
     .where(inArray(menus.id, idsToDelete))
@@ -120,8 +126,11 @@ async function removeMenu({ id }: { id: string }) {
 async function updateMenusOrder(
   items: { id: string; parentId: string | null; order: number }[],
 ) {
+  const tx = await getDynamicDb(); // Use one tx for all updates if possible, or per operation
+  // Since we execute in parallel with Promise.all, we should get tx first.
+  
   const updates = items.map((item) => {
-    return db
+    return tx
       .update(menus)
       .set({
         parentId: item.parentId,
@@ -136,3 +145,4 @@ async function updateMenusOrder(
 }
 
 export { getMenus, addMenu, updateMenu, removeMenu, updateMenusOrder };
+

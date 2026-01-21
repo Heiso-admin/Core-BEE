@@ -1,5 +1,1 @@
-import { redirect } from "next/navigation";
-
-export default function MemberPage() {
-  redirect("/dev-center/developers");
-}
+export { default } from "@heiso/core/modules/dev-center/page"

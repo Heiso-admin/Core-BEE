@@ -1,11 +1,13 @@
 "use server";
 
-import { db } from "@heiso/core/lib/db";
+import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
+// import { db } from "@heiso/core/lib/db";
 import { users } from "@heiso/core/lib/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function updateAvatar(userId: string, avatar: string) {
   try {
+    const db = await getDynamicDb();
     const result = await db
       .update(users)
       .set({
@@ -32,6 +34,7 @@ export async function updateAvatar(userId: string, avatar: string) {
 // Function to update nickname
 export async function updateNickname(userId: string, name: string) {
   try {
+    const db = await getDynamicDb();
     await db
       .update(users)
       .set({

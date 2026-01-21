@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { varchar } from "drizzle-orm/pg-core";
 
 /**
@@ -5,5 +6,5 @@ import { varchar } from "drizzle-orm/pg-core";
  * Include this in every table definition that requires tenant separation.
  */
 export const tenantSchema = {
-    tenantId: varchar("tenant_id", { length: 50 }).notNull().default("74acd0b4-bea5-464b-b658-e9402a0b042c"),
+    tenantId: varchar("tenant_id", { length: 50 }).notNull().default(sql`current_setting('app.current_tenant_id', true)`),
 };

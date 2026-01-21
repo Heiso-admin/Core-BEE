@@ -1,5 +1,5 @@
-import { MemberStatus } from "@heiso/core/app/dashboard/(dashboard)/(permission)/team/_components/member-list";
-import { invite } from "@heiso/core/app/dashboard/(dashboard)/(permission)/team/_server/team.service";
+import { MemberStatus } from "@heiso/core/modules/permission/team/_components/member-list";
+import { invite } from "@heiso/core/modules/permission/team/_server/team.service";
 import { ActionButton } from "@heiso/core/components/primitives/action-button";
 import {
   Form,

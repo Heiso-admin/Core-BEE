@@ -29,15 +29,25 @@ export { db };
 /**
  * Hybrid Connection Factory
  * Returns either the Shared DB (RLS) or an Isolated DB client based on Tier.
+ * Accepts an optional custom schema for extending apps (e.g. CMS).
  */
-export function getDbClient(tier?: TenantTier, connectionString?: string | null) {
+export function getDbClient<TS extends Record<string, unknown> = typeof schema>(
+  tier?: TenantTier,
+  connectionString?: string | null,
+  customSchema?: TS,
+) {
+  const targetSchema = (customSchema || schema) as TS;
+
   // 1. Enterprise / Custom
   // If connectionString looks like a URL, use it directly (Different Server/Cluster)
   // Otherwise, treat it as a Database Name on the same server (Supabase/Same Cluster)
-  if ((tier === 'ENTERPRISE' || tier === 'CUSTOM') && connectionString) {
+  if ((tier === "ENTERPRISE" || tier === "CUSTOM") && connectionString) {
     let isoClient;
 
-    if (connectionString.startsWith("postgres://") || connectionString.startsWith("postgresql://")) {
+    if (
+      connectionString.startsWith("postgres://") ||
+      connectionString.startsWith("postgresql://")
+    ) {
       isoClient = postgres(connectionString);
     } else {
       // Reuse credentials from default DB, but switch database name
@@ -45,17 +55,23 @@ export function getDbClient(tier?: TenantTier, connectionString?: string | null)
       isoClient = postgres(process.env.DATABASE_URL, {
         // @ts-ignore
         database: connectionString,
-        onnotice: () => { }, // prevent noise
+        onnotice: () => {}, // prevent noise
       });
     }
 
-    const isoDb = drizzle({ client: isoClient, schema });
+    const isoDb = drizzle({ client: isoClient, schema: targetSchema });
     // Optional: Set timezone for isolated DB too
     isoDb.execute("SET TIME ZONE 'Asia/Shanghai'");
     return isoDb;
   }
 
   // 2. Default -> Shared DB
-  return db;
+  // If custom schema is requested, we must create a lightweight drizzle instance
+  // reusing the SAME shared client but with the new schema.
+  if (customSchema) {
+    return drizzle({ client, schema: customSchema });
+  }
+
+  return db as unknown as ReturnType<typeof drizzle<TS>>;
 }
 

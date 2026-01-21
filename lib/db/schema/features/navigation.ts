@@ -30,6 +30,7 @@ export const navigations = pgTable(
     name: varchar("name", { length: 100 }).notNull(),
     parentId: varchar("parent_id", { length: 20 }),
     description: varchar("description", { length: 255 }),
+    order: integer("order_number").default(0),
     // status: varchar('status', { length: 20 }).notNull().default('active'), // active, inactive
     deletedAt: timestamp("deleted_at"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -63,7 +64,9 @@ export const navigationMenus = pgTable(
     subTitle: varchar("sub_title", { length: 100 }),
     icon: varchar("icon", { length: 255 }),
     linkType: varchar("link_type", { length: 20 }).notNull().default("none"), // none, link, pages,  articles
+    style: varchar("style", { length: 20 }).notNull().default("none"), // none, button
     link: varchar("link", { length: 255 }).notNull(),
+    targetBlank: boolean("target_blank").notNull().default(false),
     enabled: boolean("enabled").notNull().default(true),
     parentId: varchar("parent_id", { length: 20 }),
     order: integer("order_number"),
