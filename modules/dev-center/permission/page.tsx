@@ -1,16 +1,16 @@
 import { PermissionCard } from "@heiso/core/components/primitives";
-import { permissionsConfig } from "@heiso/core/config/permissions";
+import { permissionsConfig, type PermissionConfigShape } from "@heiso/core/config/permissions";
 import { Suspense } from "react";
-import { getMenus } from "./_server/menu.service";
+import { getMenus } from "@heiso/core/modules/dev-center/permission/_server/menu.service";
 import {
   getPermissions,
   groupPermissionsByMenu,
-} from "./_server/permission.service";
+} from "@heiso/core/modules/dev-center/permission/_server/permission.service";
 
 export default async function PermissionPage() {
   const menus = await getMenus();
   // 使用 config/permissions.ts 的靜態資料，並對應 menu id
-  const permissions = permissionsConfig.map((p) => {
+  const permissions = (permissionsConfig as readonly PermissionConfigShape[]).map((p) => {
     return {
       id: p.id,
       resource: p.resource,

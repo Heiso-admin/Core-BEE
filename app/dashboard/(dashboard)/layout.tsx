@@ -30,6 +30,18 @@ async function OrgLayoutWrap({ children }: { children: React.ReactNode }) {
   // Get user membership and permissions
   const membership = await getMyMembership();
 
+  // Zombie Session Check: If no membership record found, force signout
+  // This handles cases where DB is reset but Browser Cookie remains.
+  if (!membership.id) {
+    const { headers } = await import("next/headers");
+    const { redirect } = await import("next/navigation");
+    const h = await headers();
+    const host = h.get("host");
+    const proto = h.get("x-forwarded-proto") || "http";
+    const callbackUrl = `${proto}://${host}/`;
+    redirect(`/api/auth/signout?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+  }
+
   // // 若非開發者，且尚未加入（無 membership 或 status !== 'joined'），強制導向 Join 頁
   // if (!membership.isDeveloper && (!membership?.id || membership?.status !== 'joined')) {
   //   const cookieStore = await cookies();
