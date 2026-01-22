@@ -1,11 +1,12 @@
 "use server";
 
-import { db } from "@heiso/core/lib/db";
+import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 import { permissions } from "@heiso/core/lib/db/schema";
 import { and, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 async function getPermissions() {
+  const db = await getDynamicDb();
   const result = await db.query.permissions.findMany({
     where: (t, { isNull }) => isNull(t.deletedAt),
   });
@@ -68,6 +69,7 @@ async function createPermission({
   resource: string;
   action: string;
 }) {
+  const db = await getDynamicDb();
   const result = await db.insert(permissions).values({
     menuId,
     resource,
@@ -87,6 +89,7 @@ async function updatePermission({
   resource: string;
   action: string;
 }) {
+  const db = await getDynamicDb();
   const result = await db
     .update(permissions)
     .set({
@@ -100,6 +103,7 @@ async function updatePermission({
 }
 
 async function deletePermission({ id }: { id: string }) {
+  const db = await getDynamicDb();
   const result = await db
     .update(permissions)
     .set({
@@ -112,6 +116,7 @@ async function deletePermission({ id }: { id: string }) {
 }
 
 async function deletePermissionByKey({ id }: { id: string }) {
+  const db = await getDynamicDb();
   const result = await db
     .update(permissions)
     .set({ deletedAt: new Date() })
@@ -123,6 +128,7 @@ async function deletePermissionByKey({ id }: { id: string }) {
 
 // Soft delete all current permissions (set deletedAt)
 async function deleteAllPermissions() {
+  const db = await getDynamicDb();
   const result = await db
     .update(permissions)
     .set({ deletedAt: new Date() })

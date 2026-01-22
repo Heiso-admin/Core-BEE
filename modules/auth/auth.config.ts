@@ -3,7 +3,6 @@ import NextAuth, { CredentialsSignin, type DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import GitHub from "next-auth/providers/github";
 import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
-import type { TenantTier } from "@heiso/core/types/tenant";
 
 declare module "next-auth" {
   interface Session {
@@ -51,27 +50,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!email) return true;
 
         // Dynamic DB
-        const { db, getDbClient } = await import("@heiso/core/lib/db");
-        const { headers } = await import("next/headers");
-        const h = await headers();
-        const tier = h.get("x-tenant-tier") as TenantTier | null;
-        const dbUrl = h.get("x-tenant-db-url");
-
-        let tx = db;
-        if (tier === "ENTERPRISE" || tier === "CUSTOM") {
-          tx = getDbClient(tier, dbUrl);
-        }
+        const { getDynamicDb } = await import("@heiso/core/lib/db/dynamic");
+        const db = await getDynamicDb();
 
         const { users, members } = await import("@heiso/core/lib/db/schema");
         const { and, eq, isNull } = await import("drizzle-orm");
 
-        const existingMember = await tx.query.members.findFirst({
+        const existingMember = await db.query.members.findFirst({
           where: (t, ops) =>
             ops.and(ops.eq(t.email, email), ops.isNull(t.deletedAt)),
           columns: { id: true, status: true, userId: true, roleId: true },
         });
 
-        const existingUser = await tx.query.users.findFirst({
+        const existingUser = await db.query.users.findFirst({
           where: (t, ops) => ops.eq(t.email, email),
           columns: { id: true, loginMethod: true },
         });
@@ -87,7 +78,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           existingMember &&
           existingMember.status === "invited"
         ) {
-          await tx
+          await db
             .update(users)
             .set({
               mustChangePassword: false,
@@ -95,7 +86,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             })
             .where(and(eq(users.id, existingUser.id)));
 
-          await tx
+          await db
             .update(members)
             .set({
               inviteToken: "",
@@ -235,8 +226,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         // 動態載入 db 與 schema，避免在 edge/客戶端造成打包問題
-        // 動態載入 db 與 schema，避免在 edge/客戶端造成打包問題
-        const { db, getDbClient } = await import("@heiso/core/lib/db");
+        const { getDynamicDb } = await import("@heiso/core/lib/db/dynamic");
         const { users, members } = await import("@heiso/core/lib/db/schema");
         const { and, eq, isNull } = await import("drizzle-orm");
         const { hashPassword } = await import("@heiso/core/lib/hash");
@@ -246,22 +236,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const { headers } = await import("next/headers");
         const h = await headers();
         const tenantId = h.get("x-tenant-id");
-        const tier = h.get("x-tenant-tier") as TenantTier | null;
-        const dbUrl = h.get("x-tenant-db-url");
 
-        let tx = db;
-        if (tier === "ENTERPRISE" || tier === "CUSTOM") {
-          tx = getDbClient(tier, dbUrl);
-        }
+        const db = await getDynamicDb();
 
         // 嘗試以 email 查找現有使用者
-        const existingUser = await tx.query.users.findFirst({
+        const existingUser = await db.query.users.findFirst({
           where: (t, _ops) => eq(t.email, email),
         });
 
         let existingMember: any = null;
         if (tenantId) {
-          existingMember = await tx.query.members.findFirst({
+          existingMember = await db.query.members.findFirst({
             where: (t, _ops) => and(eq(t.email, email), isNull(t.deletedAt), eq(t.tenantId, tenantId)),
           });
         }
@@ -286,7 +271,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             (profile as any)?.picture ||
             null;
 
-          const inserted = await tx
+          const inserted = await db
             .insert(users)
             .values({
               email,
@@ -305,7 +290,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           console.log("[OAuth signIn] created user:", userId);
         } else {
           // 更新最後登入時間
-          await tx
+          await db
             .update(users)
             .set({ lastLoginAt: new Date(), updatedAt: new Date() })
             .where(eq(users.id, existingUser.id));
@@ -316,7 +301,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (tenantId) {
           // 再次登入，但未審核過，僅更新 updateAt
           if (existingMember) {
-            await tx
+            await db
               .update(members)
               .set({
                 userId: userId ?? existingMember.userId,
@@ -330,7 +315,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           } else {
             // 首次 OAuth 登入
             // 檢查該 Tenant 是否已有任何成員 (是否為第一位初始建立者)
-            const hasAnyMember = await tx.query.members.findFirst({
+            const hasAnyMember = await db.query.members.findFirst({
               where: (t, { eq, and, isNull }) =>
                 and(eq(t.tenantId, tenantId), isNull(t.deletedAt)),
               columns: { id: true },
@@ -338,7 +323,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
             const isFirstMember = !hasAnyMember;
 
-            const insertedMember = await tx
+            const insertedMember = await db
               .insert(members)
               .values({
                 email,

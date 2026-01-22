@@ -1,11 +1,12 @@
 "use server";
 
-import { db } from "@heiso/core/lib/db";
+import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 import type { Settings } from "@heiso/core/types/system";
 
 export async function getSettings(
   withoutKey: boolean = false,
 ): Promise<Settings> {
+  const db = await getDynamicDb();
   const settings = await db.query.settings.findMany({
     columns: { name: true, value: true },
     where: (fields, { and, eq, isNull }) =>
@@ -22,6 +23,7 @@ export async function getSettings(
 }
 
 export async function getGeneralSettings(): Promise<Settings> {
+  const db = await getDynamicDb();
   const settings = await db.query.generalSettings.findMany({
     where: (fields, { isNull }) =>
       // and(eq(fields.isKey, false), isNull(fields.deletedAt)),
@@ -35,6 +37,7 @@ export async function getGeneralSettings(): Promise<Settings> {
 }
 
 export async function getSiteSettings(): Promise<Settings> {
+  const db = await getDynamicDb();
   const settings = await db.query.siteSettings.findMany({
     where: (fields, { isNull }) => isNull(fields.deletedAt),
   });

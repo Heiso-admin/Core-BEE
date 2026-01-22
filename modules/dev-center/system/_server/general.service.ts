@@ -1,12 +1,13 @@
 "use server";
 
 import type { Locale } from "@heiso/core/i18n/config";
-import { db } from "@heiso/core/lib/db";
+import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 import { generalSettings } from "@heiso/core/lib/db/schema";
 import type { Settings } from "@heiso/core/types/system";
 
 // 讀取 general_settings（系統級設定）
 async function getGeneralSettings(): Promise<Settings> {
+  const db = await getDynamicDb();
   const settings = await db.query.generalSettings.findMany({
     columns: { name: true, value: true },
     where: (fields, { isNull }) => isNull(fields.deletedAt),
@@ -20,6 +21,7 @@ async function getGeneralSettings(): Promise<Settings> {
 
 // 寫入 general_settings（以 name 為 key upsert）
 async function saveGeneralSetting(data: Settings) {
+  const db = await getDynamicDb();
   await db.transaction(async (tx) => {
     const entries = Object.entries(data ?? {});
     if (entries.length === 0) return;
@@ -45,6 +47,7 @@ async function saveGeneralSetting(data: Settings) {
 
 // 快捷：更新系統預設語言到 general_settings
 async function saveDefaultLanguage(locale: Locale) {
+  const db = await getDynamicDb();
   await db
     .insert(generalSettings)
     .values({

@@ -1,7 +1,7 @@
 "use server";
 
 import { settings } from "@heiso/core/config/settings";
-import { db } from "@heiso/core/lib/db";
+import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 import type { TMember, TRole, TUser } from "@heiso/core/lib/db/schema";
 import { members, roles } from "@heiso/core/lib/db/schema";
 import { users } from "@heiso/core/lib/db/schema/auth/user";
@@ -19,6 +19,7 @@ export type Member = TMember & {
   role: TRole | null;
 };
 async function getTeamMembers(): Promise<Member[]> {
+  const db = await getDynamicDb();
   const h = await headers();
   const tenantId = h.get("x-tenant-id");
 
@@ -46,6 +47,7 @@ async function invite({
   role?: string;
   name?: string;
 }) {
+  const db = await getDynamicDb();
   const h = await headers();
   const tenantId = h.get("x-tenant-id");
   if (!tenantId) throw new Error("Tenant context missing");
@@ -133,6 +135,7 @@ async function updateMember({
     status?: string;
   };
 }) {
+  const db = await getDynamicDb();
   // Prepare member updates, including deletedAt based on status
   const isJoined = data.status === "joined";
 
@@ -199,6 +202,7 @@ async function sendApproved({ email }: { email: string }) {
 }
 
 async function resendInvite(id: string) {
+  const db = await getDynamicDb();
   const h = await headers();
   const tenantId = h.get("x-tenant-id");
 
@@ -238,6 +242,7 @@ async function resendInvite(id: string) {
 }
 
 async function revokeInvite(id: string) {
+  const db = await getDynamicDb();
   const h = await headers();
   const tenantId = h.get("x-tenant-id");
   const filters = [eq(members.id, id)];
@@ -247,6 +252,7 @@ async function revokeInvite(id: string) {
 }
 
 async function leaveTeam(id: string) {
+  const db = await getDynamicDb();
   const h = await headers();
   const tenantId = h.get("x-tenant-id");
   const filters = [eq(members.id, id)];
@@ -276,6 +282,7 @@ async function addMember({
   roleId: string;
   initialPassword: string;
 }) {
+  const db = await getDynamicDb();
   const h = await headers();
   const tenantId = h.get("x-tenant-id");
   if (!tenantId) throw new Error("Tenant context missing");
@@ -337,6 +344,7 @@ async function transferOwnership({
   newOwnerId: string;
   currentOwnerId: string;
 }) {
+  const db = await getDynamicDb();
   const session = await auth();
   if (!session?.user?.id) {
     throw new Error("Unauthorized");
@@ -422,6 +430,7 @@ async function resetMemberPassword({
   targetMemberId: string;
   newPassword: string;
 }) {
+  const db = await getDynamicDb();
   const session = await auth();
   if (!session?.user?.id) {
     throw new Error("UNAUTHORIZED");

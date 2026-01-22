@@ -1,7 +1,6 @@
 "use server";
 
 import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
-// import { db } from "@heiso/core/lib/db";
 import { users } from "@heiso/core/lib/db/schema";
 import { eq } from "drizzle-orm";
 

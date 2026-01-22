@@ -1,12 +1,11 @@
 "use server";
 
-import { db } from "@heiso/core/lib/db";
+import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 import type { TMenu, TPermission } from "@heiso/core/lib/db/schema";
 import { menus, roleMenus } from "@heiso/core/lib/db/schema";
 import { auth } from "@heiso/core/modules/auth/auth.config";
 import { and, asc, eq, isNull, sql } from "drizzle-orm";
 import { headers } from "next/headers";
-import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 
 // Types
 type AccessParams = {
@@ -22,8 +21,8 @@ async function getUser() {
   const userId = session?.user?.id;
   if (!userId) throw new Error(UNAUTHORIZED_ERROR);
 
-  const tx = await getDynamicDb();
-  const user = await tx.query.users.findFirst({
+  const db = await getDynamicDb();
+  const user = await db.query.users.findFirst({
     columns: { id: true, mustChangePassword: true },
     where: (t, { eq }) => eq(t.id, userId),
   });
@@ -131,10 +130,10 @@ async function getMyOrgPermissions({
 }: AccessParams): Promise<Pick<TPermission, "resource" | "action">[]> {
   if (!roleId) return [];
 
-  const tx = await getDynamicDb();
+  const db = await getDynamicDb();
 
   if (fullAccess) {
-    return tx.query.permissions.findMany({
+    return db.query.permissions.findMany({
       columns: {
         resource: true,
         action: true,
@@ -144,7 +143,7 @@ async function getMyOrgPermissions({
     });
   }
 
-  const rolePermissionsResult = await tx.query.rolePermissions.findMany({
+  const rolePermissionsResult = await db.query.rolePermissions.findMany({
     with: {
       permission: {
         columns: {

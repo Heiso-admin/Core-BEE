@@ -172,7 +172,7 @@ export function UserAvatar({
                   key={item.id}
                   onClick={() => {
                     signOut({
-                      callbackUrl: "/",
+                      callbackUrl: `${window.location.origin}/login`,
                     });
                   }}
                 >

@@ -1,10 +1,9 @@
 "use server";
 
-import { db } from "@heiso/core/lib/db";
+import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 import { roleMenus, rolePermissions } from "@heiso/core/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 
 async function assignMenus({
   roleId,

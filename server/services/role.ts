@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@heiso/core/lib/db";
+import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 
 interface UserPermission {
   role: string;
@@ -13,6 +13,7 @@ interface UserPermission {
 }
 
 async function findUserPermissions(userId: string): Promise<UserPermission> {
+  const db = await getDynamicDb();
   const user = await db.query.users.findFirst({
     with: {
       developer: true,

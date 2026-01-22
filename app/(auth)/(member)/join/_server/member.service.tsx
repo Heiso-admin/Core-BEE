@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@heiso/core/lib/db";
+import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 import { members } from "@heiso/core/lib/db/schema";
 import { users } from "@heiso/core/lib/db/schema/auth/user";
 import { auth } from "@heiso/core/modules/auth/auth.config";
@@ -8,6 +8,7 @@ import { and, eq, isNull } from "drizzle-orm";
 import { cookies } from "next/headers";
 
 async function getMembership() {
+  const db = await getDynamicDb();
   const session = await auth();
   const userId = session?.user?.id;
 
@@ -48,6 +49,7 @@ async function getMembership() {
 }
 
 async function getInviteToken({ token }: { token: string }) {
+  const db = await getDynamicDb();
   const member = await db.query.members.findFirst({
     where: (t, { eq }) => and(eq(t.inviteToken, token), isNull(t.deletedAt)),
     with: {
@@ -67,6 +69,7 @@ async function getInviteToken({ token }: { token: string }) {
 }
 
 async function join(userId: string) {
+  const db = await getDynamicDb();
   const result = await db
     .update(members)
     .set({
@@ -82,6 +85,7 @@ async function join(userId: string) {
 }
 
 async function decline(id: string) {
+  const db = await getDynamicDb();
   return await db
     .update(members)
     .set({
@@ -113,6 +117,7 @@ export async function updateBasicProfile({
   avatar?: string | null;
   password?: string;
 }) {
+  const db = await getDynamicDb();
   const session = await auth();
   if (!session?.user?.id || session.user.id !== userId) {
     throw new Error("Unauthorized");

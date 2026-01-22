@@ -1,9 +1,10 @@
 "use server";
 
-import { db } from "@heiso/core/lib/db";
+import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 import type { SiteSetting } from "@heiso/core/modules/dev-center/system/settings/general/page";
 
 export async function getSiteSettings(): Promise<SiteSetting> {
+  const db = await getDynamicDb();
   const settings = await db.query.siteSettings.findMany({
     where: (fields, { isNull }) => isNull(fields.deletedAt),
   });

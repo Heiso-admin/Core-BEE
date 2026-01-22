@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@heiso/core/lib/db";
+import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 import {
   type TUserUpdate,
   users as usersTable,
@@ -8,6 +8,7 @@ import {
 import { eq } from "drizzle-orm";
 
 export async function getUsers() {
+  const db = await getDynamicDb();
   const users = await db.query.users.findMany({
     // where: (table, { isNull }) => isNull(table.deletedAt),
   });
@@ -15,6 +16,7 @@ export async function getUsers() {
 }
 
 export async function getUserById(id: string) {
+  const db = await getDynamicDb();
   const user = await db.query.users.findFirst({
     columns: {
       id: true,
@@ -36,6 +38,7 @@ export async function getUserById(id: string) {
 }
 
 export async function getInvitation(token: string) {
+  const db = await getDynamicDb();
   const invitation = await db.query.members.findFirst({
     columns: {
       id: true,
@@ -65,6 +68,7 @@ export async function getInvitation(token: string) {
 }
 
 export async function getAccount(id: string) {
+  const db = await getDynamicDb();
   const account = await db.query.users.findFirst({
     columns: {
       id: true,
@@ -100,6 +104,7 @@ export async function getAccount(id: string) {
 }
 
 export async function getAccountByEmail(email: string) {
+  const db = await getDynamicDb();
   const account = await db.query.users.findFirst({
     columns: {
       id: true,
@@ -135,6 +140,7 @@ export async function getAccountByEmail(email: string) {
 }
 
 export async function getUser(email: string) {
+  const db = await getDynamicDb();
   const user = await db.query.users.findFirst({
     columns: {
       id: true,
@@ -152,6 +158,7 @@ export async function getUser(email: string) {
 }
 
 export async function update(id: string, data: TUserUpdate) {
+  const db = await getDynamicDb();
   const result = await db
     .update(usersTable)
     .set(data)

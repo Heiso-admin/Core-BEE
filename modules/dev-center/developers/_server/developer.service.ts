@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@heiso/core/lib/db";
+import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 import type { TDeveloper, TUser } from "@heiso/core/lib/db/schema";
 import { developers } from "@heiso/core/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -12,6 +12,7 @@ type Developer = TDeveloper & {
 };
 
 async function getDevelopers(): Promise<Developer[]> {
+  const db = await getDynamicDb();
   const devs = await db.query.developers.findMany({
     with: {
       user: true,
@@ -22,6 +23,7 @@ async function getDevelopers(): Promise<Developer[]> {
 }
 
 async function addDeveloper({ email }: { email: string }): Promise<TDeveloper> {
+  const db = await getDynamicDb();
   const t = await getTranslations("devCenter.developers");
 
   const user = await db.query.users.findFirst({
@@ -44,6 +46,7 @@ async function addDeveloper({ email }: { email: string }): Promise<TDeveloper> {
 }
 
 async function removeDeveloper({ id }: { id: string }): Promise<TDeveloper> {
+  const db = await getDynamicDb();
   const t = await getTranslations("devCenter.developers");
 
   const [dev] = await db

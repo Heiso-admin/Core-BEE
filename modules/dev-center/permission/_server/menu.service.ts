@@ -1,8 +1,9 @@
 "use server";
 
-import { db } from "@heiso/core/lib/db";
+import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 
 async function getMenus() {
+  const db = await getDynamicDb();
   const result = await db.query.menus.findMany({
     columns: {
       id: true,

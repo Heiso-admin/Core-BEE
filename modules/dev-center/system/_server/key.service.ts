@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@heiso/core/lib/db";
+import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 import { settings } from "@heiso/core/lib/db/schema/system/setting";
 import { eq } from "drizzle-orm";
 
@@ -18,6 +18,7 @@ import { headers } from "next/headers";
 import { sql } from "drizzle-orm";
 
 export async function getKeys() {
+  const db = await getDynamicDb();
   const h = await headers();
   const tenantId = h.get("x-tenant-id");
 
@@ -56,6 +57,7 @@ export async function getKeys() {
 }
 
 export async function saveKeys(data: any) {
+  const db = await getDynamicDb();
   const h = await headers();
   const tenantId = h.get("x-tenant-id");
   if (!tenantId) throw new Error("Tenant context missing");
