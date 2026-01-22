@@ -1,7 +1,7 @@
 "use server";
 
 import { permissionsConfig, type PermissionConfigShape } from "@heiso/core/config/permissions";
-import { db } from "@heiso/core/lib/db";
+import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 import {
   permissions,
   type TMenu,
@@ -9,7 +9,6 @@ import {
 } from "@heiso/core/lib/db/schema";
 import { and, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 
 async function getPermissions() {
   // 合併 config 中的 permissions 與 db 中的 permissions
@@ -27,8 +26,8 @@ async function getPermissions() {
     map.set(p.id, p);
   }
 
-  const tx = await getDynamicDb();
-  const result = await tx.query.permissions.findMany({
+  const db = await getDynamicDb();
+  const result = await db.query.permissions.findMany({
     where: (t, { and, isNull }) => and(isNull(t.deletedAt)),
   });
 
@@ -73,8 +72,8 @@ async function createPermission({
   action: string;
   // type: 'Organization' | 'Project';
 }) {
-  const tx = await getDynamicDb();
-  const result = await tx.insert(permissions).values({
+  const db = await getDynamicDb();
+  const result = await db.insert(permissions).values({
     menuId,
     resource,
     action,
@@ -94,8 +93,8 @@ async function updatePermission({
   resource: string;
   action: string;
 }) {
-  const tx = await getDynamicDb();
-  const result = await tx
+  const db = await getDynamicDb();
+  const result = await db
     .update(permissions)
     .set({
       resource,
@@ -108,8 +107,8 @@ async function updatePermission({
 }
 
 async function deletePermission({ id }: { id: string }) {
-  const tx = await getDynamicDb();
-  const result = await tx
+  const db = await getDynamicDb();
+  const result = await db
     .update(permissions)
     .set({
       deletedAt: new Date(),

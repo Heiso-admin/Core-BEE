@@ -14,7 +14,7 @@ export const CMS_DEFAULT_MENUS = {
       ]
     }
   ],
-  homePage: [
+  homepage: [
     {
       group: "functions",
       items: [
@@ -44,7 +44,7 @@ export const CMS_DEFAULT_MENUS = {
       ],
     },
   ],
-  page: [
+  pages: [
     {
       group: "functions",
       items: [
@@ -74,7 +74,7 @@ export const CMS_DEFAULT_MENUS = {
       ],
     },
   ],
-  site_seo: [
+  settings: [
     {
       group: "functions",
       items: [

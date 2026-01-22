@@ -1,7 +1,7 @@
 "use server";
 
 import { settings } from "@heiso/core/config/settings";
-import { db } from "@heiso/core/lib/db";
+import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 import {
   userPasswordReset,
   users as usersTable,
@@ -11,14 +11,13 @@ import { hashPassword } from "@heiso/core/lib/hash";
 import { generateId } from "@heiso/core/lib/id-generator";
 import { eq } from "drizzle-orm";
 // import { users as usersTable } from '@heiso/core/lib/db/schema';
-import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 
 /**
  * Request password reset: generate token, persist, and send reset email
  */
 export async function requestPasswordReset(email: string) {
-  const tx = await getDynamicDb();
-  const user = await tx.query.users.findFirst({
+  const db = await getDynamicDb();
+  const user = await db.query.users.findFirst({
     where: (table, { eq }) => eq(table.email, email),
   });
 
@@ -30,7 +29,7 @@ export async function requestPasswordReset(email: string) {
   const token = generateId(undefined, 32);
   const expiresAt = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
 
-  await tx.insert(userPasswordReset).values({
+  await db.insert(userPasswordReset).values({
     userId: user.id,
     token,
     expiresAt,
@@ -55,8 +54,8 @@ export async function requestPasswordReset(email: string) {
  * Reset password using token: validate, update user password, mark token used
  */
 export async function resetPassword(token: string, newPassword: string) {
-  const tx = await getDynamicDb();
-  const record = await tx.query.userPasswordReset.findFirst({
+  const db = await getDynamicDb();
+  const record = await db.query.userPasswordReset.findFirst({
     where: (t, { and, eq, gt }) =>
       and(eq(t.token, token), eq(t.used, false), gt(t.expiresAt, new Date())),
   });
@@ -67,12 +66,12 @@ export async function resetPassword(token: string, newPassword: string) {
 
   const hashedPassword = await hashPassword(newPassword);
 
-  await tx
+  await db
     .update(usersTable)
     .set({ password: hashedPassword, mustChangePassword: false })
     .where(eq(usersTable.id, record.userId));
 
-  await tx
+  await db
     .update(userPasswordReset)
     .set({ used: true })
     .where(eq(userPasswordReset.id, record.id));

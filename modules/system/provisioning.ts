@@ -79,38 +79,49 @@ export async function provisionTenantDb(dbUrl: string, modules: string[], tenant
 
 async function seedDefaults(db: any, modules: string[], tenantId: string) {
     // 1. Seed 'menus' (Dashboard RBAC Menus)
-    // Check if menus exist specifically for THIS tenant
-    const existingMenus = await db.select().from(menus).where(eq(menus.tenantId, tenantId)).limit(1);
-    
-    if (existingMenus.length === 0) {
-        console.log('[Provisioning] Seeding "menus" table for tenant:', tenantId);
-        await db.transaction(async (tx: any) => {
-            let orderCounter = 1000;
-            for (const mod of modules) {
-                const modMenus = CMS_DEFAULT_MENUS[mod as keyof typeof CMS_DEFAULT_MENUS];
-                if (modMenus) {
-                    for (const group of modMenus) {
-                        const groupName = group.group;
-                        if (group.items && group.items.length > 0) {
-                            for (const item of group.items) {
+    // Idempotent seeding: Check each item
+    console.log('[Provisioning] Checking "menus" seeding for tenant:', tenantId);
+    await db.transaction(async (tx: any) => {
+        let orderCounter = 1000;
+        const { and, eq } = await import("drizzle-orm"); // Ensure operators available
+
+        for (const mod of modules) {
+            const modMenus = CMS_DEFAULT_MENUS[mod as keyof typeof CMS_DEFAULT_MENUS];
+            if (modMenus) {
+                for (const group of modMenus) {
+                    const groupName = group.group;
+                    if (group.items && group.items.length > 0) {
+                        for (const item of group.items) {
+                             const title = item.meta?.title || item.name;
+                             const path = item.meta?.url || '#';
+
+                             // Check if this specific menu exists
+                             const existing = await tx.select({ id: menus.id })
+                                .from(menus)
+                                .where(and(
+                                    eq(menus.tenantId, tenantId),
+                                    eq(menus.path, path),
+                                    eq(menus.title, title) 
+                                )) // Composite check
+                                .limit(1);
+
+                             if (existing.length === 0) {
                                  await tx.insert(menus).values({
                                      tenantId: tenantId,
-                                     title: item.meta?.title || item.name,
-                                     path: item.meta?.url || '#',
+                                     title,
+                                     path,
                                      icon: item.meta?.icon,
                                      group: groupName,
                                      order: orderCounter++,
                                      updatedAt: new Date(),
                                  });
-                            }
+                             }
                         }
                     }
                 }
             }
-        });
-    } else {
-        console.log(`[Provisioning] Menus already exist for tenant ${tenantId}. Skipping.`);
-    }
+        }
+    });
 
     // 2. Seed 'roles'
     if (modules.includes('role')) {
@@ -162,30 +173,5 @@ async function seedDefaults(db: any, modules: string[], tenantId: string) {
             description: 'Default system generated menu',
             tenantId: tenantId,
         });
-
-        let orderCounter = 0;
-        for (const mod of modules) {
-            const modMenus = CMS_DEFAULT_MENUS[mod as keyof typeof CMS_DEFAULT_MENUS];
-            if (modMenus) {
-                // Flatten items for navigation_menus?
-                // The config structure is Group -> Items.
-                for (const group of modMenus) {
-                     if (group.items) {
-                        for (const item of group.items) {
-                            await tx.insert(navigationMenus).values({
-                                navigationId: navId,
-                                slug: (item.name || 'item').toLowerCase().replace(/\s+/g, '-'),
-                                title: item.meta?.title || item.name,
-                                link: item.meta?.url || '#',
-                                linkType: 'link',
-                                enabled: true,
-                                order: orderCounter++,
-                                tenantId: tenantId, 
-                            });
-                        }
-                     }
-                }
-            }
-        }
     });
 }

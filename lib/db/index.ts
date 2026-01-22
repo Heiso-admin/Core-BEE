@@ -7,7 +7,19 @@ if (!process.env.DATABASE_URL) {
   throw new Error("DATABASE_URL is not set");
 }
 
-export const client = postgres(process.env.DATABASE_URL);
+// Global cache to prevent connection exhaustion in dev (hot-reloading)
+const globalForDb = globalThis as unknown as {
+  isoClients: Map<string, postgres.Sql>;
+  sharedClient: postgres.Sql | undefined;
+};
+
+if (!globalForDb.isoClients) globalForDb.isoClients = new Map();
+
+// Shared Client
+export const client =
+  globalForDb.sharedClient ?? postgres(process.env.DATABASE_URL);
+
+if (process.env.NODE_ENV !== "production") globalForDb.sharedClient = client;
 
 // class MyLogger implements Logger {
 //   logQuery(query: string, params: unknown[]): void {
@@ -17,14 +29,23 @@ export const client = postgres(process.env.DATABASE_URL);
 
 const db = drizzle({ client, schema });
 // We should probably set timezone on connection, but global usage is fine for Shared DB.
-db.execute("SET TIME ZONE 'Asia/Shanghai'");
+// Only execute if strict shared DB
+// db.execute("SET TIME ZONE 'Asia/Shanghai'");
 
 export async function closeDb() {
   // Ensure all connections are closed so scripts can exit cleanly
   await client.end({ timeout: 0 });
+  for (const [key, cachedClient] of globalForDb.isoClients.entries()) {
+    await cachedClient.end({ timeout: 0 });
+    globalForDb.isoClients.delete(key);
+  }
 }
 
 export { db };
+
+export type Db = typeof db;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Transaction = Parameters<Parameters<Db["transaction"]>[0]>[0];
 
 /**
  * Hybrid Connection Factory
@@ -42,21 +63,24 @@ export function getDbClient<TS extends Record<string, unknown> = typeof schema>(
   // If connectionString looks like a URL, use it directly (Different Server/Cluster)
   // Otherwise, treat it as a Database Name on the same server (Supabase/Same Cluster)
   if ((tier === "ENTERPRISE" || tier === "CUSTOM") && connectionString) {
-    let isoClient;
+    let isoClient = globalForDb.isoClients.get(connectionString);
 
-    if (
-      connectionString.startsWith("postgres://") ||
-      connectionString.startsWith("postgresql://")
-    ) {
-      isoClient = postgres(connectionString);
-    } else {
-      // Reuse credentials from default DB, but switch database name
-      if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is not set");
-      isoClient = postgres(process.env.DATABASE_URL, {
-        // @ts-ignore
-        database: connectionString,
-        onnotice: () => {}, // prevent noise
-      });
+    if (!isoClient) {
+      if (
+        connectionString.startsWith("postgres://") ||
+        connectionString.startsWith("postgresql://")
+      ) {
+        isoClient = postgres(connectionString);
+      } else {
+        // Reuse credentials from default DB, but switch database name
+        if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is not set");
+        isoClient = postgres(process.env.DATABASE_URL, {
+          // @ts-ignore
+          database: connectionString,
+          onnotice: () => {}, // prevent noise
+        });
+      }
+      globalForDb.isoClients.set(connectionString, isoClient);
     }
 
     const isoDb = drizzle({ client: isoClient, schema: targetSchema });

@@ -1,6 +1,6 @@
 "use server";
 
-import { db, getDbClient } from "@heiso/core/lib/db";
+import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 import { users } from "@heiso/core/lib/db/schema";
 import { hashPassword, verifyPassword } from "@heiso/core/lib/hash";
 import type { TenantTier } from "@heiso/core/types/tenant";
@@ -8,7 +8,6 @@ import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { getDynamicDb } from "@heiso/core/lib/db/dynamic";
 
 const passwordSchema = z
   .object({
@@ -27,8 +26,8 @@ export async function updatePassword(userId: string, data: unknown) {
     throw new Error("Invalid password format");
   }
 
-  const tx = await getDynamicDb();
-  const user = await tx.query.users.findFirst({
+  const db = await getDynamicDb();
+  const user = await db.query.users.findFirst({
     where: eq(users.id, userId),
   });
 
@@ -45,7 +44,7 @@ export async function updatePassword(userId: string, data: unknown) {
   }
 
   const hashedPassword = await hashPassword(result.data.newPassword);
-  await tx
+  await db
     .update(users)
     .set({
       password: hashedPassword,
@@ -58,8 +57,8 @@ export async function updatePassword(userId: string, data: unknown) {
 }
 
 export async function toggle2FA(userId: string, enabled: boolean) {
-  const tx = await getDynamicDb();
-  const user = await tx.query.users.findFirst({
+  const db = await getDynamicDb();
+  const user = await db.query.users.findFirst({
     where: eq(users.id, userId),
   });
 
@@ -67,7 +66,7 @@ export async function toggle2FA(userId: string, enabled: boolean) {
     throw new Error("User not found");
   }
 
-  await tx
+  await db
     .update(users)
     .set({
       twoFactorEnabled: enabled,
@@ -84,10 +83,10 @@ export async function findMembershipByUserOrEmail(params: {
   email?: string;
 }) {
   const { userId, email } = params || {};
-  const tx = await getDynamicDb();
+  const db = await getDynamicDb();
 
   const membershipById = userId
-    ? await tx.query.members.findFirst({
+    ? await db.query.members.findFirst({
         columns: {
           id: true,
           status: true,
@@ -104,7 +103,7 @@ export async function findMembershipByUserOrEmail(params: {
   const membership =
     membershipById ??
     (email
-      ? await tx.query.members.findFirst({
+      ? await db.query.members.findFirst({
           columns: {
             id: true,
             status: true,
