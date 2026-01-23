@@ -7,14 +7,24 @@ declare module "next-auth" {
   interface Session {
     user: {
       isDeveloper: boolean;
+      isAdminUser?: boolean;
     } & DefaultSession["user"];
+    member?: {
+      status: string | null;
+      isOwner: boolean;
+      roleName: string | null;
+      fullAccess: boolean;
+    };
   }
   interface JWT {
     isDeveloper?: boolean;
+    memberStatus?: string | null;
+    isAdminUser?: boolean;
   }
 
   interface User {
     isDeveloper: boolean;
+    isAdminUser?: boolean;
   }
 }
 
