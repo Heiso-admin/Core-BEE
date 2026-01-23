@@ -12,6 +12,13 @@ export async function getUserPermissions() {
 
   const cached = permissionCache.get(userId);
   if (cached) return cached;
+  if ((session.user as any).isAdminUser) {
+    return {
+      role: 'Internal Admin',
+      fullAccess: true,
+      permissions: [],
+    };
+  }
   const permissions = await roleService.findUserPermissions(userId);
   permissionCache.set(userId, permissions);
   return permissions;

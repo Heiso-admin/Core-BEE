@@ -14,6 +14,29 @@ export async function GET() {
     const userId = session.user.id;
     const email = session.user.email ?? "";
 
+    if ((session.user as any).isAdminUser) {
+      return NextResponse.json({
+        id: userId,
+        name: session.user.name,
+        email: email,
+        avatar: session.user.image,
+        active: true,
+        lastLoginAt: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        developer: { userId },
+        membership: {
+          id: 'admin',
+          isOwner: true,
+          role: {
+            id: 'admin',
+            name: 'Internal Admin',
+            fullAccess: true,
+          }
+        }
+      });
+    }
+
     let data = userId ? await getAccount(userId) : null;
 
     if (!data && email) {
